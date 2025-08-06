@@ -1,21 +1,23 @@
-import { withAuth } from 'next-auth/middleware'
+import { auth } from '@/auth'
 import { NextResponse } from 'next/server'
 
-export default withAuth(
-  function middleware(req) {
+export default auth((req) => {
+  const path = req.nextUrl.pathname
+
+  // Allow login page
+  if (path === '/admin/login') {
     return NextResponse.next()
-  },
-  {
-    callbacks: {
-      authorized: ({ req, token }) => {
-        if (req.nextUrl.pathname.startsWith('/admin')) {
-          return token?.role === 'admin'
-        }
-        return true
-      }
+  }
+
+  // Protect admin routes
+  if (path.startsWith('/admin') || path.startsWith('/api/admin')) {
+    if (!req.auth || req.auth.user?.role !== 'admin') {
+      return NextResponse.redirect(new URL('/admin/login', req.url))
     }
   }
-)
+
+  return NextResponse.next()
+})
 
 export const config = {
   matcher: [

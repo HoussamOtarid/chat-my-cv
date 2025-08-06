@@ -1,6 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { NextResponse } from 'next/server'
+import { auth } from '@/auth'
 
 const PROVIDERS = {
   openai: {
@@ -36,10 +35,10 @@ const PROVIDERS = {
   }
 }
 
-export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions)
+export async function GET() {
+  const session = await auth()
   
-  if (!session || session.user.role !== 'admin') {
+  if (!session || session.user?.role !== 'admin') {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

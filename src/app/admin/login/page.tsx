@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { signIn } from 'next-auth/react'
+import { signIn } from '@/auth/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/registry/new-york-v4/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card'

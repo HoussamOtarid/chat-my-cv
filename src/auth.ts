@@ -1,11 +1,12 @@
-import { NextAuthOptions } from 'next-auth'
-import CredentialsProvider from 'next-auth/providers/credentials'
+import NextAuth from 'next-auth'
+import Credentials from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { config } from '@/config'
+import type { NextAuthConfig } from 'next-auth'
 
-export const authOptions: NextAuthOptions = {
+export const authConfig = {
   providers: [
-    CredentialsProvider({
+    Credentials({
       name: 'credentials',
       credentials: {
         email: { label: 'Email', type: 'email' },
@@ -21,7 +22,7 @@ export const authOptions: NextAuthOptions = {
         }
 
         const isValidPassword = await bcrypt.compare(
-          credentials.password,
+          credentials.password as string,
           config.auth.adminPassword
         )
 
@@ -32,6 +33,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: '1',
           email: config.auth.adminEmail,
+          name: 'Admin',
           role: 'admin'
         }
       }
@@ -64,4 +66,6 @@ export const authOptions: NextAuthOptions = {
     error: '/admin/login',
   },
   secret: config.auth.secret,
-}
+} satisfies NextAuthConfig
+
+export const { auth, handlers, signIn, signOut } = NextAuth(authConfig)

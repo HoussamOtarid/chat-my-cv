@@ -20,7 +20,7 @@ async function getKey(salt: Uint8Array): Promise<CryptoKey> {
   return crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt,
+      salt: salt as ArrayBuffer,
       iterations,
       hash: 'SHA-256'
     },
@@ -85,5 +85,5 @@ export async function decrypt(encryptedText: string): Promise<string> {
 
 export function validateEncryptionKey(): boolean {
   const key = config.encryption.key
-  return key && key.length >= 32
+  return typeof key === 'string' && key.length >= 32
 }

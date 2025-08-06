@@ -40,7 +40,6 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false)
   const [validating, setValidating] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [apiKeyValid, setApiKeyValid] = useState<boolean | null>(null)
 
   useEffect(() => {
     fetchProviders()
@@ -80,7 +79,6 @@ export default function AdminDashboard() {
     }
 
     setValidating(true)
-    setApiKeyValid(null)
     setMessage(null)
 
     try {
@@ -95,7 +93,6 @@ export default function AdminDashboard() {
 
       if (response.ok) {
         const { valid } = await response.json()
-        setApiKeyValid(valid)
         setMessage({
           type: valid ? 'success' : 'error',
           text: valid ? 'API key is valid' : 'Invalid API key'
@@ -174,7 +171,6 @@ export default function AdminDashboard() {
                 value={config.llm_provider}
                 onValueChange={(value) => {
                   setConfig({ ...config, llm_provider: value, llm_model: '' })
-                  setApiKeyValid(null)
                 }}
               >
                 <SelectTrigger id="provider">
@@ -223,7 +219,6 @@ export default function AdminDashboard() {
                 value={config.api_key}
                 onChange={(e) => {
                   setConfig({ ...config, api_key: e.target.value })
-                  setApiKeyValid(null)
                 }}
               />
               <Button
