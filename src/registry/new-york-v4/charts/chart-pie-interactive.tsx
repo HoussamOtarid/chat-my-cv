@@ -59,7 +59,7 @@ const chartConfig = {
 
 export function ChartPieInteractive() {
     const id = 'pie-interactive';
-    const [activeMonth, setActiveMonth] = React.useState(desktopData[0].month);
+    const [activeMonth, setActiveMonth] = React.useState(desktopData[0]!.month);
 
     const activeIndex = React.useMemo(() => desktopData.findIndex((item) => item.month === activeMonth), [activeMonth]);
     const months = React.useMemo(() => desktopData.map((item) => item.month), []);
@@ -131,7 +131,7 @@ export function ChartPieInteractive() {
                                                     x={viewBox.cx}
                                                     y={viewBox.cy}
                                                     className='fill-foreground text-3xl font-bold'>
-                                                    {desktopData[activeIndex].desktop.toLocaleString()}
+                                                    {desktopData[activeIndex]?.desktop.toLocaleString()}
                                                 </tspan>
                                                 <tspan
                                                     x={viewBox.cx}
@@ -142,6 +142,7 @@ export function ChartPieInteractive() {
                                             </text>
                                         );
                                     }
+                                    return null;
                                 }}
                             />
                         </Pie>

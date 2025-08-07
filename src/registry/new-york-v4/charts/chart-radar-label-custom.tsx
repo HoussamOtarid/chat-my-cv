@@ -61,11 +61,11 @@ export function ChartRadarLabelCustom() {
                                         fontSize={13}
                                         fontWeight={500}
                                         {...props}>
-                                        <tspan>{data.desktop}</tspan>
+                                        <tspan>{data?.desktop}</tspan>
                                         <tspan className='fill-muted-foreground'>/</tspan>
-                                        <tspan>{data.mobile}</tspan>
+                                        <tspan>{data?.mobile}</tspan>
                                         <tspan x={x} dy={'1rem'} fontSize={12} className='fill-muted-foreground'>
-                                            {data.month}
+                                            {data?.month}
                                         </tspan>
                                     </text>
                                 );

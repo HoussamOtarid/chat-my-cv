@@ -22,7 +22,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function ChartRadialStacked() {
-    const totalVisitors = chartData[0].desktop + chartData[0].mobile;
+    const totalVisitors = (chartData[0]?.desktop ?? 0) + (chartData[0]?.mobile ?? 0);
 
     return (
         <Card className='flex flex-col'>
@@ -55,6 +55,7 @@ export function ChartRadialStacked() {
                                             </text>
                                         );
                                     }
+                                    return null;
                                 }}
                             />
                         </PolarRadiusAxis>

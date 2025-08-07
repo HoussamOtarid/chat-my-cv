@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 
 import { createBrowserClient } from '@supabase/ssr';
 import { type CookieOptions, createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 
 // ============================================
 // Browser Client
@@ -47,8 +48,6 @@ export async function createSupabaseServer() {
 // Service Role Client (for admin operations)
 // ============================================
 export async function createSupabaseAdmin() {
-    const { createClient } = await import('@supabase/supabase-js');
-
     return createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
         auth: {
             autoRefreshToken: false,
@@ -61,7 +60,7 @@ export async function createSupabaseAdmin() {
 // Server Client for Middleware
 // ============================================
 export function createSupabaseMiddleware(request: Request) {
-    let response = new Response();
+    const response = new Response();
 
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -77,7 +76,7 @@ export function createSupabaseMiddleware(request: Request) {
                         `${name}=${value}; Path=/; ${options.maxAge ? `Max-Age=${options.maxAge};` : ''}`
                     );
                 },
-                remove(name: string, options: CookieOptions) {
+                remove(name: string, _options: CookieOptions) {
                     response.headers.append('set-cookie', `${name}=; Path=/; Max-Age=0`);
                 }
             }

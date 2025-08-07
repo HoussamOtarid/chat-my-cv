@@ -84,6 +84,7 @@ export function ChartPieDonutText() {
                                             </text>
                                         );
                                     }
+                                    return null;
                                 }}
                             />
                         </Pie>

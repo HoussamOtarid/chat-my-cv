@@ -9,3 +9,6 @@
 // export { ChatInput } from './ChatInput'
 // export { StreamingIndicator } from './StreamingIndicator'
 // export { SuggestedQuestions } from './SuggestedQuestions'
+
+// Export empty object to make this a module
+export {}

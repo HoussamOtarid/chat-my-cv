@@ -64,7 +64,7 @@ export async function getRegistryItem(name: string) {
 export function fixImport(content: string) {
     const regex = /@\/(.+?)\/((?:.*?\/)?(?:components|ui|hooks|lib))\/([\w-]+)/g;
 
-    const replacement = (match: string, path: string, type: string, component: string) => {
+    const replacement = (match: string, _path: string, type: string, component: string) => {
         if (type.endsWith('components')) {
             return `@/components/${component}`;
         } else if (type.endsWith('ui')) {
@@ -109,7 +109,7 @@ export function createFileTreeForRegistryItemFiles(files: Array<{ path: string; 
                     currentLevel = existingNode.children!;
                 }
             } else {
-                const newNode: FileTree = isFile ? { name: part, path } : { name: part, children: [] };
+                const newNode: FileTree = isFile ? { name: part || '', path } : { name: part || '', children: [] };
 
                 currentLevel.push(newNode);
 
