@@ -142,7 +142,7 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground">Configure your AI Resume Chat application</p>
+        <p className="text-muted-foreground">Configure your Chat My CV application</p>
       </div>
 
       {message && (

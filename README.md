@@ -1,4 +1,4 @@
-# AI Resume Chat
+# Chat My CV
 
 An intelligent chat interface that allows visitors to interact with your resume through natural conversation, powered by AI.
 

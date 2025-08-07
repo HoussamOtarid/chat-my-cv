@@ -158,7 +158,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Insert default configuration
 INSERT INTO configuration (key, value, encrypted) VALUES
-  ('app_settings', '{"name": "AI Resume Chat", "version": "1.0.0"}', false),
+  ('app_settings', '{"name": "Chat My CV", "version": "1.0.0"}', false),
   ('rate_limit', '{"max_requests": 10, "window_ms": 60000}', false)
 ON CONFLICT (key) DO NOTHING;
 

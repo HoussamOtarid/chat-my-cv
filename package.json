@@ -1,8 +1,8 @@
 {
-    "name": "nextjs-15-starter-shadcn",
+    "name": "chat-my-cv",
     "version": "1.0.0",
-    "private": false,
-    "website": "https://nextjs-15-starter-shadcn.vercel.app/",
+    "private": true,
+    "description": "Chat My CV - Intelligent conversational interface for your professional resume",
     "license": "MIT",
     "scripts": {
         "dev": "next dev --turbopack",

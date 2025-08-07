@@ -2,7 +2,7 @@
 // Application Constants
 // ============================================
 
-export const APP_NAME = 'AI Resume Chat'
+export const APP_NAME = 'Chat My CV'
 export const APP_VERSION = '1.0.0'
 
 // API Routes
