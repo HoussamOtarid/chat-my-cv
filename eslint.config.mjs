@@ -31,7 +31,6 @@ export default [
     pluginPromise.configs['flat/recommended'], // ? https://github.com/eslint-community/eslint-plugin-promise
     pluginReact.configs.flat.recommended, // ? https://github.com/jsx-eslint/eslint-plugin-react
     pluginReact.configs.flat['jsx-runtime'], // ? https://github.com/jsx-eslint/eslint-plugin-react
-    eslintConfigPrettier, // ? https://github.com/prettier/eslint-config-prettier
     {
         rules: {
             'no-unused-vars': 'off',
@@ -73,6 +72,7 @@ export default [
             '@next/next/no-html-link-for-pages': 'off'
         }
     },
+    eslintConfigPrettier, // ? https://github.com/prettier/eslint-config-prettier - This should be last to disable conflicting rules
     {
         ignores: ['.next/*']
     }
