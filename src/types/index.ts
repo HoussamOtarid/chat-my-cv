@@ -44,6 +44,26 @@ export interface Resume {
     filename: string;
     content: string;
     fileSize: number;
+    fileUrl?: string;
+    storagePath?: string;
     uploadedAt: Date;
     isActive: boolean;
+}
+
+export interface StorageFile {
+    name: string;
+    id: string;
+    created_at: string;
+    updated_at: string;
+    size?: number;
+}
+
+export interface StorageUploadResult {
+    success: boolean;
+    path?: string;
+    url?: string;
+    error?: {
+        message: string;
+        details?: any;
+    };
 }
