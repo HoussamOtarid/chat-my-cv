@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { createSupabaseAdmin } from '@/lib/supabase';
 import { uploadResume, initializeStorageBucket } from '@/lib/storage';
+import { extractTextFromPDF } from '@/lib/langchain';
 
 export const runtime = 'nodejs';
 
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
             // Continue anyway - bucket might already exist
         }
 
-        // Convert File to Buffer for upload
+        // Convert File to Buffer for upload and processing
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
@@ -73,6 +74,25 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Extract text content from PDF
+        let extractedContent = '';
+        let extractionError: string | null = null;
+        
+        try {
+            const extractionResult = await extractTextFromPDF(buffer);
+            
+            if (extractionResult.success && extractionResult.content) {
+                extractedContent = extractionResult.content;
+                console.log(`Successfully extracted ${extractedContent.length} characters from PDF`);
+            } else {
+                extractionError = extractionResult.error?.message || 'Failed to extract text from PDF';
+                console.error('PDF extraction failed:', extractionError);
+            }
+        } catch (error) {
+            extractionError = 'Unexpected error during PDF text extraction';
+            console.error('PDF extraction error:', error);
+        }
+
         // Get Supabase admin client
         const supabase = await createSupabaseAdmin();
 
@@ -87,10 +107,10 @@ export async function POST(request: NextRequest) {
             // Continue anyway - this is not critical
         }
 
-        // Store metadata in database
+        // Store metadata and extracted content in database
         const resumeData = {
             filename: file.name,
-            content: '', // Content will be extracted in Step 19 with LangChain
+            content: extractedContent, // Store the extracted text content
             file_size: file.size,
             mime_type: file.type,
             file_url: uploadResult.path, // Storage path
@@ -120,7 +140,14 @@ return NextResponse.json(
                 filename: resume.filename,
                 fileSize: resume.file_size,
                 uploadedAt: resume.uploaded_at,
-                isActive: resume.is_active
+                isActive: resume.is_active,
+                hasContent: extractedContent.length > 0,
+                contentLength: extractedContent.length
+            },
+            extraction: {
+                success: !extractionError,
+                error: extractionError,
+                charactersExtracted: extractedContent.length
             }
         });
 
