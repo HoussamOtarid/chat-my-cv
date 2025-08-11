@@ -2,13 +2,9 @@
 // Chat Components Barrel Export
 // ============================================
 
-// These will be implemented progressively
+export { MessageBubble } from './MessageBubble';
+export { MessageList } from './MessageList';
 // export { ChatInterface } from './ChatInterface'
-// export { MessageBubble } from './MessageBubble'
-// export { MessageList } from './MessageList'
 // export { ChatInput } from './ChatInput'
 // export { StreamingIndicator } from './StreamingIndicator'
 // export { SuggestedQuestions } from './SuggestedQuestions'
-
-// Export empty object to make this a module
-export {}
