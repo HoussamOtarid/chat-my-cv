@@ -239,7 +239,7 @@ devDependencies:
     specifier: ^1.0.7
     version: 1.0.7(tailwindcss@4.1.11)
   typescript:
-    specifier: ^5.8.3
+    specifier: ^5.9.2
     version: 5.9.2
   typescript-eslint:
     specifier: ^8.38.0
