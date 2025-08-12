@@ -194,7 +194,7 @@ devDependencies:
     specifier: ^5.2.2
     version: 5.2.2(prettier@3.6.2)
   '@types/node':
-    specifier: ^24.1.0
+    specifier: ^24.2.1
     version: 24.2.1
   '@types/react':
     specifier: ^19.1.9
