@@ -185,7 +185,7 @@ devDependencies:
     specifier: ^15.4.5
     version: 15.4.6
   '@next/eslint-plugin-next':
-    specifier: ^15.4.5
+    specifier: ^15.4.6
     version: 15.4.6
   '@tailwindcss/postcss':
     specifier: ^4.1.11
