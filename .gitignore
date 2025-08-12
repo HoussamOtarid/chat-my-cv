@@ -1,55 +1,36 @@
-# Dependencies
-node_modules/
-.pnp
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
 .pnp.js
+.yarn/install-state.gz
 
-# Testing
-coverage/
-.nyc_output
+# testing
+/coverage
 
-# Next.js
-.next/
-out/
-build/
-dist/
+# next.js
+/.next/
+/out/
 
-# Production
-*.production
+# production
+/build
 
-# Misc
+# misc
 .DS_Store
 *.pem
 
-# Debug
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
 
-# Local env files
-.env
+# local env files
 .env*.local
 
-# Vercel
+# vercel
 .vercel
 
-# TypeScript
+# typescript
 *.tsbuildinfo
 next-env.d.ts
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# OS
-Thumbs.db
-
-# Supabase
-**/supabase/.branches
-**/supabase/.temp
-
-# Documentation (private)
-docs/
