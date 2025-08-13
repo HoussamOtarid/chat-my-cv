@@ -150,7 +150,7 @@ dependencies:
     specifier: ^3.0.4
     version: 3.0.4(react-dom@19.1.1)(react@19.1.1)
   recharts:
-    specifier: ^3.1.0
+    specifier: ^3.1.2
     version: 3.1.2(@types/react@19.1.10)(react-dom@19.1.1)(react-is@19.1.1)(react@19.1.1)(redux@5.0.1)
   rimraf:
     specifier: ^6.0.1
