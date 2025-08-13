@@ -176,7 +176,7 @@ dependencies:
 
 devDependencies:
   '@eslint/js':
-    specifier: ^9.32.0
+    specifier: ^9.33.0
     version: 9.33.0
   '@faker-js/faker':
     specifier: ^9.9.0
