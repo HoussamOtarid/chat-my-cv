@@ -27,3 +27,21 @@ export {
     messageArchival,
     useMessageArchival
 } from './message-archival';
+export {
+    createRateLimiter,
+    getDefaultRateLimiter,
+    checkRateLimit,
+    addRateLimitHeaders,
+    rateLimitResponse,
+    getRateLimitIdentifier,
+    rateLimiters,
+    TieredRateLimiter
+} from './rate-limit';
+export type { RateLimitConfig, RateLimitResult } from './rate-limit';
+export {
+    withRateLimit,
+    withMethodRateLimit,
+    skipConditions,
+    createRateLimitedRoute
+} from './rate-limit-middleware';
+export type { RateLimitMiddlewareConfig } from './rate-limit-middleware';
