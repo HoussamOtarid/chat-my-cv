@@ -1,8 +1,10 @@
 import { NextRequest } from 'next/server';
-import { createSupabaseAdmin } from '@/lib/supabase';
+
 import { createChatModel } from '@/lib/llm';
 import { createChatPrompt } from '@/lib/prompts';
-import type { ChatStreamRequest, ChatStreamEvent, LLMConfig, ChatMessage } from '@/types';
+import { withRateLimit } from '@/lib/rate-limit-middleware';
+import { createSupabaseAdmin } from '@/lib/supabase';
+import type { ChatMessage, ChatStreamEvent, ChatStreamRequest, LLMConfig } from '@/types';
 
 // Use Node.js runtime for streaming
 export const runtime = 'nodejs';
@@ -14,7 +16,7 @@ export const dynamic = 'force-dynamic';
  * GET /api/chat/stream
  * Server-Sent Events endpoint for streaming chat responses
  */
-export async function GET(request: NextRequest) {
+async function handleGET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const message = searchParams.get('message');
     const clientId = searchParams.get('clientId');
@@ -30,8 +32,8 @@ export async function GET(request: NextRequest) {
     const headers = {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no', // Disable nginx buffering
+        Connection: 'keep-alive',
+        'X-Accel-Buffering': 'no' // Disable nginx buffering
     };
 
     // Create a TransformStream for SSE
@@ -60,11 +62,11 @@ export async function GET(request: NextRequest) {
                 .single();
 
             if (resumeError || !resume) {
-                await sendEvent({ 
-                    type: 'error', 
-                    error: 'No active resume found. Please ask the administrator to upload one.' 
+                await sendEvent({
+                    type: 'error',
+                    error: 'No active resume found. Please ask the administrator to upload one.'
                 });
-                
+
                 return;
             }
 
@@ -76,11 +78,11 @@ export async function GET(request: NextRequest) {
                 .single();
 
             if (configError || !llmConfig) {
-                await sendEvent({ 
-                    type: 'error', 
-                    error: 'LLM not configured. Please contact the administrator.' 
+                await sendEvent({
+                    type: 'error',
+                    error: 'LLM not configured. Please contact the administrator.'
                 });
-                
+
                 return;
             }
 
@@ -102,11 +104,11 @@ export async function GET(request: NextRequest) {
             }
 
             if (!config.apiKey) {
-                await sendEvent({ 
-                    type: 'error', 
-                    error: 'API key not configured. Please contact the administrator.' 
+                await sendEvent({
+                    type: 'error',
+                    error: 'API key not configured. Please contact the administrator.'
                 });
-                
+
                 return;
             }
 
@@ -127,11 +129,11 @@ export async function GET(request: NextRequest) {
                         .insert({
                             client_id: clientId,
                             user_agent: request.headers.get('user-agent') || null,
-                            ip_hash: null, // Could add IP hashing if needed
+                            ip_hash: null // Could add IP hashing if needed
                         })
                         .select('id')
                         .single();
- 
+
                     if (sessionError || !newSession) {
                         console.error('Failed to create session:', sessionError);
                         // Continue without session logging
@@ -150,11 +152,11 @@ export async function GET(request: NextRequest) {
                         client_message_id: clientMessageId,
                         role: 'user',
                         content: message,
-                        seq: 0, // Could be incremented based on conversation
+                        seq: 0 // Could be incremented based on conversation
                     })
                     .then(({ error }) => {
                         if (error) console.error('Failed to log user message:', error);
-                        
+
                         return undefined;
                     });
             }
@@ -191,23 +193,22 @@ export async function GET(request: NextRequest) {
                         role: 'assistant',
                         content: fullResponse,
                         seq: 1, // Could be incremented
-                        model: config.model || config.provider,
+                        model: config.model || config.provider
                     })
                     .then(({ error }) => {
                         if (error) console.error('Failed to log assistant message:', error);
-                        
+
                         return undefined;
                     });
             }
-
         } catch (error) {
             console.error('Streaming error:', error);
             const errorMessage = error instanceof Error ? error.message : 'An error occurred';
-            
+
             // Send error event
-            await sendEvent({ 
-                type: 'error', 
-                error: errorMessage 
+            await sendEvent({
+                type: 'error',
+                error: errorMessage
             });
         } finally {
             // Close the stream
@@ -223,17 +224,17 @@ export async function GET(request: NextRequest) {
  * POST /api/chat/stream
  * Alternative endpoint that accepts JSON body
  */
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
     try {
         const body: ChatStreamRequest = await request.json();
-        
+
         // Convert to query params and delegate to GET
         const params = new URLSearchParams({
             message: body.message,
             clientId: body.clientId,
-            clientMessageId: body.clientMessageId,
+            clientMessageId: body.clientMessageId
         });
-        
+
         if (body.sessionId) {
             params.append('sessionId', body.sessionId);
         }
@@ -241,17 +242,47 @@ export async function POST(request: NextRequest) {
         // Create a new request with query params
         const url = new URL(request.url);
         url.search = params.toString();
-        
+
         const newRequest = new NextRequest(url, {
             method: 'GET',
-            headers: request.headers,
+            headers: request.headers
         });
 
-        return GET(newRequest);
+        return handleGET(newRequest);
     } catch (error) {
         console.error('POST error:', error);
-        
+
         return new Response('Invalid request body', { status: 400 });
     }
 }
 
+/**
+ * Export rate-limited handlers
+ * Rate limiting is configured via environment variables:
+ * - RATE_LIMIT_MAX: Maximum requests per window (default: 30)
+ * - RATE_LIMIT_WINDOW_SECONDS: Window duration in seconds (default: 600)
+ */
+export const GET = withRateLimit(handleGET, {
+    // Use default configuration from environment variables
+    // Key on IP address (optionally combined with clientId)
+    onRateLimitExceeded: (request) => {
+        // Log rate limit exceeded events for monitoring
+        const ip =
+            request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+            request.headers.get('x-real-ip') ||
+            'unknown';
+        const clientId = request.nextUrl.searchParams.get('clientId');
+        console.warn(`Rate limit exceeded for IP: ${ip}, clientId: ${clientId}`);
+    }
+});
+
+export const POST = withRateLimit(handlePOST, {
+    // Use same configuration as GET
+    onRateLimitExceeded: (request) => {
+        const ip =
+            request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+            request.headers.get('x-real-ip') ||
+            'unknown';
+        console.warn(`Rate limit exceeded for IP: ${ip} on POST endpoint`);
+    }
+});

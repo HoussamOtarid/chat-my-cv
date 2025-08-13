@@ -48,7 +48,7 @@ export function withRateLimit(
         const response = await handler(request);
 
         // Add rate limit headers to successful response
-        if (response.ok) {
+        if (response.ok || response.headers.get('content-type')?.includes('text/event-stream')) {
             const headers = new Headers(response.headers);
             addRateLimitHeaders(headers, rateLimitResult);
 
@@ -115,7 +115,7 @@ export const skipConditions = {
             request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
             request.headers.get('x-real-ip') ||
             'unknown';
-            
+
         return allowedIPs.includes(ip);
     },
 
