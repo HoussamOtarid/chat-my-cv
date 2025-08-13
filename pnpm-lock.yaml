@@ -144,7 +144,7 @@ dependencies:
     specifier: ^19.1.1
     version: 19.1.1(react@19.1.1)
   react-hook-form:
-    specifier: ^7.61.1
+    specifier: ^7.62.0
     version: 7.62.0(react@19.1.1)
   react-resizable-panels:
     specifier: ^3.0.4
