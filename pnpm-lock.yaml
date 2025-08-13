@@ -182,7 +182,7 @@ devDependencies:
     specifier: ^9.9.0
     version: 9.9.0
   '@next/bundle-analyzer':
-    specifier: ^15.4.5
+    specifier: ^15.4.6
     version: 15.4.6
   '@next/eslint-plugin-next':
     specifier: ^15.4.5
