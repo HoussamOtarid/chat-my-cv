@@ -22,3 +22,8 @@ export {
 export type { 
     SSEClientConfig 
 } from './sse-client';
+export {
+    MessageArchival,
+    messageArchival,
+    useMessageArchival
+} from './message-archival';
