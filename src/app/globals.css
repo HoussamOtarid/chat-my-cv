@@ -207,4 +207,15 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Smooth theme transitions */
+  html.dark,
+  html.light {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Prevent transitions on theme change when specified */
+  html[data-theme-transition="none"] * {
+    transition: none !important;
+  }
 }
