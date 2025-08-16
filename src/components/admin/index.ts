@@ -3,7 +3,6 @@
 // ============================================
 
 export { AdminSidebar } from './AdminSidebar';
-export { ResumeUploader } from './ResumeUploader';
+export { LLMConfiguration } from './LLMConfiguration';
 export { ResumePreview } from './ResumePreview';
-// export { StatsCard } from './StatsCard'
-// export { ConfigForm } from './ConfigForm'
+export { ResumeUploader } from './ResumeUploader';

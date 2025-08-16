@@ -71,13 +71,13 @@ async function handleGET(request: NextRequest) {
             }
 
             // 2. Get LLM configuration
-            const { data: llmConfig, error: configError } = await supabase
+            const { data: llmConfigRow, error: configError } = await supabase
                 .from('configuration')
-                .select('value')
+                .select('value, encrypted')
                 .eq('key', 'llm_config')
                 .single();
 
-            if (configError || !llmConfig) {
+            if (configError || !llmConfigRow) {
                 await sendEvent({
                     type: 'error',
                     error: 'LLM not configured. Please contact the administrator.'
@@ -86,27 +86,53 @@ async function handleGET(request: NextRequest) {
                 return;
             }
 
-            // 3. Decrypt API key if needed
-            const config = llmConfig.value as LLMConfig;
-            if (!config.apiKey) {
-                // Try to get encrypted API key
-                const { data: encryptedKey } = await supabase
-                    .from('configuration')
-                    .select('value')
-                    .eq('key', `${config.provider}_api_key`)
-                    .single();
-
-                if (encryptedKey) {
-                    // Import encryption utilities
-                    const { decrypt } = await import('@/lib/encryption');
-                    config.apiKey = await decrypt(encryptedKey.value as string);
+            // 3. Decrypt credentials if needed
+            const config = llmConfigRow.value as LLMConfig;
+            
+            // Decrypt encrypted fields if the config is marked as encrypted
+            if (llmConfigRow.encrypted) {
+                const { decrypt } = await import('@/lib/encryption');
+                
+                // Type-safe decryption based on provider
+                if ((config.provider === 'openai' || config.provider === 'anthropic' || config.provider === 'openai-compatible') && 'apiKey' in config && config.apiKey) {
+                    config.apiKey = await decrypt(config.apiKey);
+                }
+                if (config.provider === 'azure-openai' && 'azureApiKey' in config && config.azureApiKey) {
+                    config.azureApiKey = await decrypt(config.azureApiKey);
+                }
+                if (config.provider === 'bedrock-anthropic' && 'awsSecretAccessKey' in config && config.awsSecretAccessKey) {
+                    config.awsSecretAccessKey = await decrypt(config.awsSecretAccessKey);
+                }
+                if (config.provider === 'bedrock-anthropic' && 'awsSessionToken' in config && config.awsSessionToken) {
+                    config.awsSessionToken = await decrypt(config.awsSessionToken);
                 }
             }
+            
+            // Check if credentials are configured based on provider type
+            let credentialsConfigured = false;
+            switch (config.provider) {
+                case 'openai':
+                case 'anthropic':
+                    credentialsConfigured = 'apiKey' in config && !!config.apiKey;
+                    break;
+                    
+                case 'azure-openai':
+                    credentialsConfigured = !!config.azureApiKey && !!config.azureEndpoint && !!config.azureDeploymentName;
+                    break;
+                    
+                case 'bedrock-anthropic':
+                    credentialsConfigured = !!config.awsAccessKeyId && !!config.awsSecretAccessKey && !!config.awsRegion;
+                    break;
+                    
+                case 'openai-compatible':
+                    credentialsConfigured = !!config.baseUrl;
+                    break;
+            }
 
-            if (!config.apiKey) {
+            if (!credentialsConfigured) {
                 await sendEvent({
                     type: 'error',
-                    error: 'API key not configured. Please contact the administrator.'
+                    error: 'LLM credentials not configured. Please contact the administrator.'
                 });
 
                 return;

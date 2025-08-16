@@ -7,13 +7,56 @@ export * from './utils';
 // Application Types
 // ============================================
 
-export interface LLMConfig {
-    provider: 'openai' | 'anthropic';
-    apiKey: string;
+// Base LLM configuration
+interface BaseLLMConfig {
     model?: string;
     temperature?: number;
     maxTokens?: number;
 }
+
+// Direct API configuration
+interface DirectOpenAIConfig extends BaseLLMConfig {
+    provider: 'openai';
+    apiKey: string;
+}
+
+interface DirectAnthropicConfig extends BaseLLMConfig {
+    provider: 'anthropic';
+    apiKey: string;
+}
+
+// Azure OpenAI configuration
+interface AzureOpenAIConfig extends BaseLLMConfig {
+    provider: 'azure-openai';
+    azureEndpoint: string;
+    azureApiKey: string;
+    azureDeploymentName: string;
+    azureApiVersion?: string;
+}
+
+// AWS Bedrock configuration
+interface BedrockAnthropicConfig extends BaseLLMConfig {
+    provider: 'bedrock-anthropic';
+    awsRegion: string;
+    awsAccessKeyId: string;
+    awsSecretAccessKey: string;
+    awsSessionToken?: string;
+}
+
+// OpenAI-compatible endpoints (Ollama, LM Studio, etc.)
+interface OpenAICompatibleConfig extends BaseLLMConfig {
+    provider: 'openai-compatible';
+    baseUrl: string;
+    apiKey?: string;  // Optional as some local services don't require auth
+    defaultHeaders?: Record<string, string>;
+}
+
+export type LLMConfig = 
+    | DirectOpenAIConfig 
+    | DirectAnthropicConfig 
+    | AzureOpenAIConfig 
+    | BedrockAnthropicConfig
+    | OpenAICompatibleConfig;
 
 export interface RateLimitConfig {
     maxRequests: number;

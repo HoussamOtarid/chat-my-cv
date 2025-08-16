@@ -1,5 +1,6 @@
 import { ChatOpenAI } from '@langchain/openai';
 import { ChatAnthropic } from '@langchain/anthropic';
+import { ChatBedrockConverse } from '@langchain/aws';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { HumanMessage } from '@langchain/core/messages';
 import type { LLMConfig } from '@/types';
@@ -78,16 +79,9 @@ export function getModelMaxOutput(model: string): number {
 export function createChatModel(config: LLMConfig): BaseChatModel {
     const {
         provider,
-        apiKey,
-        model = DEFAULT_MODELS[provider],
         temperature = DEFAULT_TEMPERATURE,
         maxTokens = DEFAULT_MAX_TOKENS,
     } = config;
-
-    // Validate API key
-    if (!apiKey) {
-        throw new Error(`API key is required for ${provider}`);
-    }
 
     // Common configuration
     const baseConfig = {
@@ -98,18 +92,29 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
     };
 
     switch (provider) {
-        case 'openai':
+        case 'openai': {
+            const { apiKey, model = DEFAULT_MODELS.openai } = config;
+            if (!apiKey) {
+                throw new Error('API key is required for OpenAI');
+            }
+
             return new ChatOpenAI({
                 ...baseConfig,
-                openAIApiKey: apiKey,
+                apiKey,
                 modelName: model,
                 // OpenAI specific options
                 topP: 1,
                 frequencyPenalty: 0,
                 presencePenalty: 0,
             });
+        }
 
-        case 'anthropic':
+        case 'anthropic': {
+            const { apiKey, model = DEFAULT_MODELS.anthropic } = config;
+            if (!apiKey) {
+                throw new Error('API key is required for Anthropic');
+            }
+
             return new ChatAnthropic({
                 ...baseConfig,
                 anthropicApiKey: apiKey,
@@ -117,6 +122,76 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
                 // Anthropic specific options
                 anthropicApiUrl: process.env.ANTHROPIC_API_URL,
             });
+        }
+
+        case 'azure-openai': {
+            const { azureEndpoint, azureApiKey, azureDeploymentName, azureApiVersion = '2024-10-01-preview', model } = config;
+            if (!azureEndpoint || !azureApiKey || !azureDeploymentName) {
+                throw new Error('Azure endpoint, API key, and deployment name are required for Azure OpenAI');
+            }
+            
+            // Use ChatOpenAI with Azure configuration
+            return new ChatOpenAI({
+                ...baseConfig,
+                apiKey: azureApiKey,
+                modelName: model || azureDeploymentName,
+                configuration: {
+                    baseURL: `${azureEndpoint}/openai/deployments/${azureDeploymentName}`,
+                    defaultQuery: { 'api-version': azureApiVersion },
+                    defaultHeaders: {
+                        'api-key': azureApiKey,
+                    },
+                },
+            });
+        }
+
+        case 'bedrock-anthropic': {
+            const { awsRegion, awsAccessKeyId, awsSecretAccessKey, awsSessionToken, model = 'anthropic.claude-3-sonnet-20240229-v1:0' } = config;
+            if (!awsRegion || !awsAccessKeyId || !awsSecretAccessKey) {
+                throw new Error('AWS region, access key ID, and secret access key are required for Bedrock');
+            }
+
+            return new ChatBedrockConverse({
+                ...baseConfig,
+                model: model,
+                region: awsRegion,
+                credentials: {
+                    accessKeyId: awsAccessKeyId,
+                    secretAccessKey: awsSecretAccessKey,
+                    sessionToken: awsSessionToken,
+                },
+            });
+        }
+
+        case 'openai-compatible': {
+            const { baseUrl, apiKey = 'dummy', model = 'gpt-3.5-turbo', defaultHeaders } = config;
+
+            console.log({
+                baseUrl,
+                apiKey,
+                model,
+                defaultHeaders,
+            });
+
+            if (!baseUrl) {
+                throw new Error('Base URL is required for OpenAI-compatible endpoints');
+            }
+
+            // Configure for OpenAI-compatible services (Ollama, LM Studio, etc.)
+            return new ChatOpenAI({
+                ...baseConfig,
+                apiKey, // Some services don't require auth but the field is mandatory
+                modelName: model,
+                configuration: {
+                    baseURL: baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl,
+                    defaultHeaders: {
+                        ...defaultHeaders,
+                        // Only add Authorization header if apiKey is not the dummy value
+                        ...(apiKey !== 'dummy' ? { 'Authorization': `Bearer ${apiKey}` } : {}),
+                    },
+                },
+            });
+        }
 
         default:
             throw new Error(`Unsupported LLM provider: ${provider}`);
@@ -181,21 +256,67 @@ export function validateLLMConfig(config: Partial<LLMConfig>): { valid: boolean;
         return { valid: false, error: 'Provider is required' };
     }
 
-    if (!['openai', 'anthropic'].includes(config.provider)) {
-        return { valid: false, error: 'Invalid provider. Must be "openai" or "anthropic"' };
+    const validProviders = ['openai', 'anthropic', 'azure-openai', 'bedrock-anthropic', 'openai-compatible'];
+    if (!validProviders.includes(config.provider)) {
+        return { valid: false, error: `Invalid provider. Must be one of: ${validProviders.join(', ')}` };
     }
 
-    if (!config.apiKey) {
-        return { valid: false, error: 'API key is required' };
-    }
+    // Provider-specific validation
+    switch (config.provider) {
+        case 'openai': {
+            const { apiKey } = config as any;
+            if (!apiKey) {
+                return { valid: false, error: 'API key is required for OpenAI' };
+            }
+            if (!apiKey.startsWith('sk-')) {
+                return { valid: false, error: 'Invalid OpenAI API key format' };
+            }
+            break;
+        }
 
-    // Basic API key format validation
-    if (config.provider === 'openai' && !config.apiKey.startsWith('sk-')) {
-        return { valid: false, error: 'Invalid OpenAI API key format' };
-    }
+        case 'anthropic': {
+            const { apiKey } = config as any;
+            if (!apiKey) {
+                return { valid: false, error: 'API key is required for Anthropic' };
+            }
+            if (!apiKey.startsWith('sk-ant-')) {
+                return { valid: false, error: 'Invalid Anthropic API key format' };
+            }
+            break;
+        }
 
-    if (config.provider === 'anthropic' && !config.apiKey.startsWith('sk-ant-')) {
-        return { valid: false, error: 'Invalid Anthropic API key format' };
+        case 'azure-openai': {
+            const { azureEndpoint, azureApiKey, azureDeploymentName } = config as any;
+            if (!azureEndpoint || !azureApiKey || !azureDeploymentName) {
+                return { valid: false, error: 'Azure endpoint, API key, and deployment name are required' };
+            }
+            if (!azureEndpoint.includes('.openai.azure.com')) {
+                return { valid: false, error: 'Invalid Azure endpoint format' };
+            }
+            break;
+        }
+
+        case 'bedrock-anthropic': {
+            const { awsRegion, awsAccessKeyId, awsSecretAccessKey } = config as any;
+            if (!awsRegion || !awsAccessKeyId || !awsSecretAccessKey) {
+                return { valid: false, error: 'AWS region, access key ID, and secret access key are required' };
+            }
+            break;
+        }
+
+        case 'openai-compatible': {
+            const { baseUrl } = config as any;
+            if (!baseUrl) {
+                return { valid: false, error: 'Base URL is required for OpenAI-compatible endpoints' };
+            }
+            // Validate URL format
+            try {
+                new URL(baseUrl);
+            } catch {
+                return { valid: false, error: 'Invalid base URL format' };
+            }
+            break;
+        }
     }
 
     if (config.temperature !== undefined) {
@@ -226,9 +347,33 @@ export async function testLLMConnection(config: LLMConfig): Promise<{ success: b
         ]);
 
         if (response && response.content) {
+            let providerName: string = config.provider;
+            let modelName = '';
+            
+            switch (config.provider) {
+                case 'openai':
+                    modelName = config.model || DEFAULT_MODELS.openai;
+                    break;
+                case 'anthropic':
+                    modelName = config.model || DEFAULT_MODELS.anthropic;
+                    break;
+                case 'azure-openai':
+                    providerName = 'Azure OpenAI';
+                    modelName = config.azureDeploymentName;
+                    break;
+                case 'bedrock-anthropic':
+                    providerName = 'AWS Bedrock';
+                    modelName = config.model || 'Claude';
+                    break;
+                case 'openai-compatible':
+                    providerName = 'OpenAI Compatible';
+                    modelName = config.model || 'Custom Model';
+                    break;
+            }
+            
             return {
                 success: true,
-                message: `Successfully connected to ${config.provider} (${config.model || DEFAULT_MODELS[config.provider]})`,
+                message: `Successfully connected to ${providerName} (${modelName})`,
             };
         }
 
@@ -243,7 +388,7 @@ export async function testLLMConnection(config: LLMConfig): Promise<{ success: b
         if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
             return {
                 success: false,
-                error: 'Invalid API key',
+                error: 'Invalid API key or credentials',
             };
         }
 
@@ -257,7 +402,7 @@ export async function testLLMConnection(config: LLMConfig): Promise<{ success: b
         if (errorMessage.includes('model') || errorMessage.includes('not found')) {
             return {
                 success: false,
-                error: `Model not available: ${config.model}`,
+                error: `Model or deployment not available`,
             };
         }
 
@@ -271,9 +416,10 @@ export async function testLLMConnection(config: LLMConfig): Promise<{ success: b
 /**
  * Get available models for a provider
  */
-export function getAvailableModels(provider: 'openai' | 'anthropic'): string[] {
+export function getAvailableModels(provider: string): string[] {
     switch (provider) {
         case 'openai':
+        case 'azure-openai':
             return [
                 'gpt-5',
                 'gpt-5-mini',
@@ -295,6 +441,32 @@ export function getAvailableModels(provider: 'openai' | 'anthropic'): string[] {
                 'claude-3-7-sonnet-20250219',
                 'claude-3-5-haiku-20241022',
                 'claude-3-haiku-20240307',
+            ];
+        
+        case 'bedrock-anthropic':
+            return [
+                'anthropic.claude-3-opus-20240229-v1:0',
+                'anthropic.claude-3-sonnet-20240229-v1:0',
+                'anthropic.claude-3-haiku-20240307-v1:0',
+                'anthropic.claude-instant-v1',
+            ];
+        
+        case 'openai-compatible':
+            // Common models for OpenAI-compatible services
+            return [
+                // Standard OpenAI models
+                'gpt-4',
+                'gpt-3.5-turbo',
+                // Ollama models
+                'llama2',
+                'llama2:70b',
+                'mistral',
+                'mixtral',
+                'codellama',
+                'deepseek-coder',
+                'phi',
+                // Custom model - user can type their own
+                'custom',
             ];
         
         default:
