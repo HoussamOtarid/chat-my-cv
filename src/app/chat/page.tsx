@@ -121,14 +121,13 @@ export default function ChatPage() {
 
     return (
         <AppLayout>
-            <div className='container mx-auto px-4 py-4 md:py-8'>
-                <div className='mx-auto max-w-4xl'>
+            <div className='container mx-auto max-w-4xl px-4 py-4'>
+                <div className='h-[calc(100vh-8rem)] overflow-hidden rounded-lg border bg-background shadow-sm'>
                     <ChatInterface
-                        className='h-[calc(100vh-8rem)] md:h-[calc(100vh-10rem)]'
-                        welcomeMessage='Welcome! Ask me anything about my professional background, skills, or experience.'
-                        placeholder='Type your question about the resume...'
+                        className='h-full'
+                        welcomeMessage="Welcome! Ask me anything about this person's background, skills, or experience."
+                        placeholder="Ask a question about their experience..."
                         showSuggestedQuestions={true}
-                        maxHeight='calc(100vh - 12rem)'
                         onMessageSent={(message) => {
                             console.log('Message sent:', message);
                         }}

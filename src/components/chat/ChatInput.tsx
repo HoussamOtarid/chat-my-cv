@@ -4,7 +4,6 @@ import React, { useState, useRef, useCallback, KeyboardEvent, FormEvent } from '
 import { cn } from '@/lib/utils';
 import { Textarea } from '@/registry/new-york-v4/ui/textarea';
 import { Button } from '@/registry/new-york-v4/ui/button';
-import { Card } from '@/registry/new-york-v4/ui/card';
 import { Send, Loader2, AlertCircle, Paperclip, Mic } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -174,7 +173,7 @@ export function ChatInput({
     const showCharCount = charCount > maxLength * 0.8; // Show when 80% of limit reached
 
     return (
-        <Card className={cn('border-t rounded-t-none', className)}>
+        <div className={cn('border-t bg-background', className)}>
             <form onSubmit={handleSubmit} className="p-4">
                 <div className="flex flex-col gap-2">
                     {/* Character count warning */}
@@ -281,6 +280,6 @@ export function ChatInput({
                     </div>
                 </div>
             </form>
-        </Card>
+        </div>
     );
 }

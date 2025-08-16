@@ -114,7 +114,7 @@ function ChatEmptyState({
                 {/* Welcome message */}
                 <div className='space-y-2'>
                     <h3 className='text-lg font-semibold'>{welcomeMessage || 'Start a Conversation'}</h3>
-                    <p className='text-muted-foreground text-sm'>Ask me anything about the resume. I'm here to help!</p>
+                    <p className='text-muted-foreground text-sm'>Ask me anything about this person's qualifications and experience.</p>
                 </div>
 
                 {/* Suggested questions */}
@@ -137,7 +137,6 @@ export function ChatInterface({
     welcomeMessage,
     placeholder = 'Type your message...',
     showSuggestedQuestions = true,
-    maxHeight = '600px',
     onMessageSent,
     onMessageReceived
 }: ChatInterfaceProps) {
@@ -293,7 +292,7 @@ export function ChatInterface({
     }
 
     return (
-        <Card className={cn('flex flex-col overflow-hidden', className)}>
+        <div className={cn('flex h-full flex-col bg-background', className)}>
             {/* Connection status banner */}
             {isOffline && (
                 <Alert className='rounded-none border-x-0 border-t-0'>
@@ -305,7 +304,7 @@ export function ChatInterface({
             )}
 
             {/* Chat header */}
-            <div className='bg-muted/30 flex items-center justify-between border-b p-4'>
+            <div className='bg-muted/30 flex items-center justify-between border-b px-4 py-3'>
                 <div className='flex items-center gap-2'>
                     <Sparkles className='text-primary h-5 w-5' />
                     <span className='font-semibold'>AI Resume Chat</span>
@@ -326,7 +325,7 @@ export function ChatInterface({
             </div>
 
             {/* Main chat area */}
-            <div className='flex-1 overflow-hidden' style={{ maxHeight }}>
+            <div className='flex-1 overflow-hidden'>
                 {showEmptyState ? (
                     <ChatEmptyState
                         welcomeMessage={welcomeMessage}
@@ -338,15 +337,21 @@ export function ChatInterface({
                 )}
             </div>
 
-            {/* Suggested questions (when there are messages) */}
+            {/* Suggested questions (when there are messages) - now as a compact inline strip */}
             {showSuggestedQuestions && hasMessages && !isStreaming && (
-                <div className='bg-muted/20 border-t p-4'>
-                    <SuggestedQuestions
-                        onSelectQuestion={handleSelectQuestion}
-                        isLoading={isStreaming}
-                        maxQuestions={2}
-                        className='mx-auto max-w-2xl'
-                    />
+                <div className='border-t px-4 py-2 bg-muted/10'>
+                    <div className='flex items-center gap-2'>
+                        <Sparkles className='text-muted-foreground h-3.5 w-3.5 flex-shrink-0' />
+                        <div className='flex gap-2 flex-wrap'>
+                            <SuggestedQuestions
+                                onSelectQuestion={handleSelectQuestion}
+                                isLoading={isStreaming}
+                                maxQuestions={3}
+                                className='flex gap-2'
+                                compact={true}
+                            />
+                        </div>
+                    </div>
                 </div>
             )}
 
@@ -365,6 +370,6 @@ export function ChatInterface({
                     <StreamingIndicator />
                 </div>
             )}
-        </Card>
+        </div>
     );
 }

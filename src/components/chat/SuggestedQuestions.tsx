@@ -29,6 +29,7 @@ interface SuggestedQuestionsProps {
     maxQuestions?: number;
     showCategories?: boolean;
     customQuestions?: SuggestedQuestion[];
+    compact?: boolean;
 }
 
 /**
@@ -38,19 +39,19 @@ const DEFAULT_QUESTIONS: SuggestedQuestion[] = [
     // Experience questions
     {
         id: 'exp-1',
-        text: 'What is my most relevant work experience?',
+        text: 'What is their most relevant work experience?',
         category: 'experience',
         icon: <Briefcase className='h-4 w-4' />
     },
     {
         id: 'exp-2',
-        text: 'Tell me about my professional background',
+        text: 'Tell me about their professional background',
         category: 'experience',
         icon: <Briefcase className='h-4 w-4' />
     },
     {
         id: 'exp-3',
-        text: 'What are my key achievements in my career?',
+        text: 'What are their key achievements?',
         category: 'experience',
         icon: <Award className='h-4 w-4' />
     },
@@ -58,19 +59,19 @@ const DEFAULT_QUESTIONS: SuggestedQuestion[] = [
     // Skills questions
     {
         id: 'skill-1',
-        text: 'What are my main technical skills?',
+        text: 'What technical skills do they have?',
         category: 'skills',
         icon: <Code className='h-4 w-4' />
     },
     {
         id: 'skill-2',
-        text: 'Which programming languages do I know?',
+        text: 'Which programming languages do they know?',
         category: 'skills',
         icon: <Code className='h-4 w-4' />
     },
     {
         id: 'skill-3',
-        text: 'What tools and technologies am I proficient in?',
+        text: 'What tools and technologies are they proficient in?',
         category: 'skills',
         icon: <Code className='h-4 w-4' />
     },
@@ -78,13 +79,13 @@ const DEFAULT_QUESTIONS: SuggestedQuestion[] = [
     // Education questions
     {
         id: 'edu-1',
-        text: 'What is my educational background?',
+        text: 'What is their educational background?',
         category: 'education',
         icon: <GraduationCap className='h-4 w-4' />
     },
     {
         id: 'edu-2',
-        text: 'What degrees or certifications do I have?',
+        text: 'What degrees or certifications do they have?',
         category: 'education',
         icon: <GraduationCap className='h-4 w-4' />
     },
@@ -92,13 +93,13 @@ const DEFAULT_QUESTIONS: SuggestedQuestion[] = [
     // Project questions
     {
         id: 'proj-1',
-        text: 'What notable projects have I worked on?',
+        text: 'What notable projects have they worked on?',
         category: 'projects',
         icon: <Sparkles className='h-4 w-4' />
     },
     {
         id: 'proj-2',
-        text: 'Can you describe my most significant project?',
+        text: 'Can you describe their most significant project?',
         category: 'projects',
         icon: <Sparkles className='h-4 w-4' />
     },
@@ -106,25 +107,25 @@ const DEFAULT_QUESTIONS: SuggestedQuestion[] = [
     // General questions
     {
         id: 'gen-1',
-        text: 'Give me a brief summary of my resume',
+        text: 'Give me a brief professional summary',
         category: 'general',
         icon: <MessageSquare className='h-4 w-4' />
     },
     {
         id: 'gen-2',
-        text: 'What makes me a strong candidate?',
+        text: 'What makes this person a strong candidate?',
         category: 'general',
         icon: <MessageSquare className='h-4 w-4' />
     },
     {
         id: 'gen-3',
-        text: 'How many years of experience do I have?',
+        text: 'How many years of experience do they have?',
         category: 'general',
         icon: <MessageSquare className='h-4 w-4' />
     },
     {
         id: 'gen-4',
-        text: 'What type of roles am I qualified for?',
+        text: 'What type of roles would they be suitable for?',
         category: 'general',
         icon: <MessageSquare className='h-4 w-4' />
     }
@@ -160,7 +161,8 @@ export function SuggestedQuestions({
     className,
     maxQuestions = 4,
     showCategories = false,
-    customQuestions
+    customQuestions,
+    compact = false
 }: SuggestedQuestionsProps) {
     const [questions, setQuestions] = useState<SuggestedQuestion[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<SuggestedQuestion['category'] | 'all'>('all');
@@ -209,6 +211,26 @@ export function SuggestedQuestions({
 
     // Get unique categories
     const categories = Array.from(new Set((customQuestions || DEFAULT_QUESTIONS).map((q) => q.category)));
+
+    // Compact mode - return just buttons
+    if (compact) {
+        return (
+            <>
+                {questions.map((question) => (
+                    <Button
+                        key={question.id}
+                        variant='outline'
+                        size='sm'
+                        onClick={() => handleQuestionClick(question)}
+                        disabled={disabled || isLoading}
+                        className={cn('text-xs whitespace-nowrap', className)}
+                    >
+                        {question.text}
+                    </Button>
+                ))}
+            </>
+        );
+    }
 
     return (
         <div className={cn('space-y-3', className)}>

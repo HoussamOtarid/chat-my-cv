@@ -7,6 +7,8 @@ import { Card } from '@/registry/new-york-v4/ui/card';
 import { User, Bot, Copy, Check } from 'lucide-react';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { toast } from '@/hooks/use-toast';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { ChatMessage } from '@/types';
 
 interface MessageBubbleProps {
@@ -41,35 +43,6 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
         }
     };
 
-    // Format the message content - preserve newlines and code blocks
-    const formatContent = (content: string) => {
-        // Split by code blocks (```...```)
-        const parts = content.split(/(```[\s\S]*?```)/g);
-        
-        return parts.map((part, index) => {
-            if (part.startsWith('```')) {
-                // Code block
-                const codeContent = part.slice(3, -3);
-                const [language, ...codeLines] = codeContent.split('\n');
-                const code = codeLines.join('\n');
-                
-                return (
-                    <pre key={index} className="bg-muted p-4 rounded-md overflow-x-auto my-2">
-                        <code className={`language-${language || 'plaintext'}`}>
-                            {code || codeContent}
-                        </code>
-                    </pre>
-                );
-            } else {
-                // Regular text - preserve line breaks
-                return (
-                    <span key={index} className="whitespace-pre-wrap break-words">
-                        {part}
-                    </span>
-                );
-            }
-        });
-    };
 
     if (isSystem) {
         // System messages are displayed as notices
@@ -118,8 +91,54 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
                         isStreaming && 'animate-pulse'
                     )}
                 >
-                    <div className="relative">
-                        {formatContent(message.content)}
+                    <div className="relative prose prose-sm dark:prose-invert max-w-none">
+                        {isUser ? (
+                            // User messages render as plain text
+                            <p className="mb-0">{message.content}</p>
+                        ) : (
+                            // Assistant messages render as markdown
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    // Custom component overrides for better styling
+                                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                                    ul: ({ children }) => <ul className="mb-2 ml-4 list-disc">{children}</ul>,
+                                    ol: ({ children }) => <ol className="mb-2 ml-4 list-decimal">{children}</ol>,
+                                    li: ({ children }) => <li className="mb-1">{children}</li>,
+                                    code: ({ className, children }) => {
+                                        const match = /language-(\w+)/.exec(className || '');
+                                        const isInline = !match;
+                                        
+                                        if (isInline) {
+                                            return <code className="px-1 py-0.5 rounded bg-muted text-sm">{children}</code>;
+                                        }
+                                        return (
+                                            <code className={cn("block p-3 rounded-md bg-muted overflow-x-auto text-sm", className)}>
+                                                {children}
+                                            </code>
+                                        );
+                                    },
+                                    pre: ({ children }) => <pre className="mb-2 overflow-x-auto">{children}</pre>,
+                                    h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+                                    h2: ({ children }) => <h2 className="text-base font-bold mb-2">{children}</h2>,
+                                    h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
+                                    blockquote: ({ children }) => (
+                                        <blockquote className="border-l-4 border-muted-foreground/30 pl-4 italic my-2">
+                                            {children}
+                                        </blockquote>
+                                    ),
+                                    a: ({ href, children }) => (
+                                        <a href={href} target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">
+                                            {children}
+                                        </a>
+                                    ),
+                                    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                                    em: ({ children }) => <em className="italic">{children}</em>,
+                                }}
+                            >
+                                {message.content}
+                            </ReactMarkdown>
+                        )}
                         
                         {/* Streaming indicator */}
                         {isStreaming && isAssistant && (
