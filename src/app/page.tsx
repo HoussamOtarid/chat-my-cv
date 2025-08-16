@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 
+import { AppLayout } from '@/components/layout';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
 
@@ -7,8 +10,9 @@ import { MessageSquare, Shield, Sparkles } from 'lucide-react';
 
 export default function Page() {
     return (
-        <div className='from-background to-secondary/20 min-h-screen bg-gradient-to-b'>
-            <div className='container mx-auto px-4 py-16'>
+        <AppLayout>
+            <div className='from-background to-secondary/20 bg-gradient-to-b'>
+                <div className='container mx-auto px-4 py-16'>
                 <div className='mx-auto max-w-4xl space-y-8 text-center'>
                     <h1 className='text-5xl font-bold tracking-tight'>Chat My CV</h1>
                     <p className='text-muted-foreground text-xl'>
@@ -64,6 +68,7 @@ export default function Page() {
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+        </AppLayout>
     );
 }
