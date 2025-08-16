@@ -60,14 +60,14 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
     return (
         <div
             className={cn(
-                'flex gap-3 mb-4',
+                'flex gap-2 sm:gap-3 mb-3 sm:mb-4',
                 isUser ? 'justify-end' : 'justify-start',
                 className
             )}
         >
             {/* Avatar for assistant messages */}
             {isAssistant && (
-                <Avatar className="h-8 w-8 shrink-0">
+                <Avatar className="h-7 w-7 sm:h-8 sm:w-8 shrink-0">
                     <AvatarImage src="/ai-avatar.png" alt="AI Assistant" />
                     <AvatarFallback>
                         <Bot className="h-4 w-4" />
@@ -78,13 +78,13 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
             {/* Message bubble */}
             <div
                 className={cn(
-                    'group relative max-w-[70%] md:max-w-[60%]',
+                    'group relative max-w-[85%] sm:max-w-[70%] md:max-w-[60%]',
                     isUser && 'flex flex-col items-end'
                 )}
             >
                 <div
                     className={cn(
-                        'rounded-lg px-4 py-2.5 text-sm',
+                        'rounded-lg px-3 sm:px-4 py-2 sm:py-2.5 text-sm',
                         isUser
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-muted border border-border',
@@ -95,7 +95,14 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
                         {isUser ? (
                             // User messages render as plain text
                             <p className="mb-0">{message.content}</p>
-                        ) : (
+                        ) : isAssistant && isStreaming && message.content === '' ? (
+                            // Show loading dots for empty streaming assistant messages
+                            <div className="flex items-center space-x-1 py-1">
+                                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" />
+                            </div>
+                        ) : isAssistant ? (
                             // Assistant messages render as markdown
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
@@ -112,7 +119,8 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
                                         if (isInline) {
                                             return <code className="px-1 py-0.5 rounded bg-muted text-sm">{children}</code>;
                                         }
-                                        return (
+                                        
+return (
                                             <code className={cn("block p-3 rounded-md bg-muted overflow-x-auto text-sm", className)}>
                                                 {children}
                                             </code>
@@ -138,10 +146,13 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
                             >
                                 {message.content}
                             </ReactMarkdown>
+                        ) : (
+                            // System or other messages
+                            <p className="mb-0">{message.content}</p>
                         )}
                         
-                        {/* Streaming indicator */}
-                        {isStreaming && isAssistant && (
+                        {/* Streaming cursor - only show when there's content */}
+                        {isStreaming && isAssistant && message.content && (
                             <span className="inline-block w-1 h-4 bg-current animate-blink ml-1" />
                         )}
                     </div>
@@ -153,8 +164,9 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
                         variant="ghost"
                         size="icon"
                         className={cn(
-                            'absolute -right-10 top-0 h-8 w-8',
-                            'opacity-0 group-hover:opacity-100 transition-opacity'
+                            'absolute -right-8 sm:-right-10 top-0 h-7 w-7 sm:h-8 sm:w-8',
+                            'opacity-0 group-hover:opacity-100 transition-opacity',
+                            'hidden sm:flex' // Hide on mobile to avoid crowding
                         )}
                         onClick={handleCopy}
                     >
@@ -183,7 +195,7 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
 
             {/* Avatar for user messages */}
             {isUser && (
-                <Avatar className="h-8 w-8 shrink-0">
+                <Avatar className="h-7 w-7 sm:h-8 sm:w-8 shrink-0">
                     <AvatarImage src="/user-avatar.png" alt="User" />
                     <AvatarFallback>
                         <User className="h-4 w-4" />

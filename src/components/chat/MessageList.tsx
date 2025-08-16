@@ -123,13 +123,13 @@ export function MessageList({
         <div className={cn('relative h-full', className)}>
             <ScrollArea 
                 ref={scrollAreaRef}
-                className="h-full px-4 py-4"
+                className="h-full px-3 sm:px-4 py-3 sm:py-4 -webkit-overflow-scrolling-touch"
             >
                 {/* Virtual scrolling implementation */}
                 {/* For large message lists, we could use react-window or react-virtualized */}
                 {/* For MVP, we'll render all messages but limit history in localStorage */}
                 
-                <div className="space-y-2">
+                <div className="space-y-2 sm:space-y-3">
                     {messages.map((message) => (
                         <MessageBubble
                             key={message.id}
@@ -137,19 +137,6 @@ export function MessageList({
                             isStreaming={streamingMessageId === message.id}
                         />
                     ))}
-                    
-                    {/* Loading indicator */}
-                    {isLoading && !streamingMessageId && (
-                        <div className="flex justify-start gap-3 mb-4">
-                            <div className="flex items-center space-x-2 bg-muted rounded-lg px-4 py-2.5">
-                                <div className="flex space-x-1">
-                                    <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                                    <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                                    <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" />
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Scroll anchor */}
@@ -162,9 +149,10 @@ export function MessageList({
                     variant="secondary"
                     size="icon"
                     className={cn(
-                        'absolute bottom-4 right-4 rounded-full shadow-lg',
+                        'absolute bottom-3 right-3 sm:bottom-4 sm:right-4 rounded-full shadow-lg',
                         'transition-all duration-200 ease-in-out',
-                        'hover:scale-110'
+                        'hover:scale-110',
+                        'h-9 w-9 sm:h-10 sm:w-10 touch-manipulation'
                     )}
                     onClick={handleScrollButtonClick}
                 >

@@ -223,7 +223,7 @@ export function SuggestedQuestions({
                         size='sm'
                         onClick={() => handleQuestionClick(question)}
                         disabled={disabled || isLoading}
-                        className={cn('text-xs whitespace-nowrap', className)}
+                        className={cn('text-[11px] sm:text-xs whitespace-nowrap px-2 sm:px-3 h-7 sm:h-8', className)}
                     >
                         {question.text}
                     </Button>
@@ -279,7 +279,7 @@ export function SuggestedQuestions({
 
             {/* Question cards */}
             {questions.length > 0 ? (
-                <div className='grid gap-2 sm:grid-cols-2'>
+                <div className='grid gap-2 grid-cols-1 sm:grid-cols-2'>
                     {questions.map((question) => (
                         <Card
                             key={question.id}
@@ -300,10 +300,10 @@ export function SuggestedQuestions({
                                 }
                             }}
                             aria-label={`Ask: ${question.text}`}>
-                            <div className='p-3'>
-                                <div className='flex items-start gap-2'>
-                                    {question.icon && <div className='mt-0.5 flex-shrink-0'>{question.icon}</div>}
-                                    <p className='text-sm leading-relaxed'>{question.text}</p>
+                            <div className='p-2.5 sm:p-3'>
+                                <div className='flex items-start gap-1.5 sm:gap-2'>
+                                    {question.icon && <div className='mt-0.5 flex-shrink-0 scale-90 sm:scale-100'>{question.icon}</div>}
+                                    <p className='text-xs sm:text-sm leading-relaxed'>{question.text}</p>
                                 </div>
                             </div>
                         </Card>

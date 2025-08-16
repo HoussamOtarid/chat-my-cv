@@ -59,7 +59,8 @@ export function useSessionStorage(): UseSessionStorageReturn {
         });
 
         setMessages(storage.getMessages());
-        return message;
+        
+    return message;
     }, [storage]);
 
     // Add assistant message
@@ -75,6 +76,7 @@ export function useSessionStorage(): UseSessionStorageReturn {
         });
 
         setMessages(storage.getMessages());
+        
         return message;
     }, [storage]);
 
@@ -91,6 +93,7 @@ export function useSessionStorage(): UseSessionStorageReturn {
         });
 
         setMessages(storage.getMessages());
+        
         return message;
     }, [storage]);
 
@@ -121,18 +124,21 @@ export function useSessionStorage(): UseSessionStorageReturn {
     // Get recent messages
     const getRecentMessages = useCallback((count?: number): ChatMessage[] => {
         if (!storage) return [];
+        
         return storage.getRecentMessages(count);
     }, [storage]);
 
     // Check if session expired
     const isSessionExpired = useCallback((maxInactivityHours?: number): boolean => {
         if (!storage) return false;
+        
         return storage.isSessionExpired(maxInactivityHours);
     }, [storage]);
 
     // Export session
     const exportSession = useCallback((): string => {
         if (!storage) return '{}';
+        
         return storage.exportSession();
     }, [storage]);
 
@@ -144,6 +150,7 @@ export function useSessionStorage(): UseSessionStorageReturn {
         if (success) {
             setMessages(storage.getMessages());
         }
+        
         return success;
     }, [storage]);
 
@@ -201,7 +208,8 @@ export function useStreamingMessage() {
         setStreamingContent(prev => {
             const newContent = prev + content;
             updateMessage(streamingMessageId, newContent);
-            return newContent;
+            
+        return newContent;
         });
     }, [streamingMessageId, updateMessage]);
 

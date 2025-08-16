@@ -11,7 +11,8 @@ async function validateOpenAI(apiKey: string): Promise<boolean> {
                 Authorization: `Bearer ${apiKey}`
             }
         });
-        return response.ok;
+        
+return response.ok;
     } catch {
         return false;
     }
@@ -32,7 +33,8 @@ async function validateAnthropic(apiKey: string): Promise<boolean> {
                 messages: [{ role: 'user', content: 'Hi' }]
             })
         });
-        return response.status !== 401;
+        
+return response.status !== 401;
     } catch {
         return false;
     }
@@ -41,7 +43,8 @@ async function validateAnthropic(apiKey: string): Promise<boolean> {
 async function validateGoogle(apiKey: string): Promise<boolean> {
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        return response.ok;
+        
+return response.ok;
     } catch {
         return false;
     }
@@ -80,6 +83,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ valid: isValid });
     } catch (error) {
         console.error('Failed to validate API key:', error);
-        return NextResponse.json({ error: 'Failed to validate API key' }, { status: 500 });
+        
+return NextResponse.json({ error: 'Failed to validate API key' }, { status: 500 });
     }
 }

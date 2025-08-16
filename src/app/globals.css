@@ -218,4 +218,70 @@
   html[data-theme-transition="none"] * {
     transition: none !important;
   }
+  
+  /* Mobile-specific optimizations */
+  @media (max-width: 640px) {
+    /* Prevent double-tap zoom on iOS */
+    button,
+    input,
+    select,
+    textarea {
+      touch-action: manipulation;
+    }
+    
+    /* Optimize scrolling performance */
+    .scroll-container {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    
+    /* Prevent text selection on UI elements */
+    button,
+    [role="button"] {
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    
+    /* Improve tap target sizes */
+    button,
+    a,
+    [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+  
+  /* Better focus styles for mobile */
+  @media (hover: none) and (pointer: coarse) {
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+  }
+  
+  /* Prevent iOS form zoom */
+  @supports (-webkit-touch-callout: none) {
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="password"],
+    textarea,
+    select {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Better touch interaction feedback */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+  
+  /* Smooth momentum scrolling on iOS */
+  .-webkit-overflow-scrolling-touch {
+    -webkit-overflow-scrolling: touch;
+  }
 }

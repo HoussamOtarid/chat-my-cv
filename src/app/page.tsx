@@ -12,23 +12,23 @@ export default function Page() {
     return (
         <AppLayout>
             <div className='flex h-full flex-1 flex-col from-background via-background to-muted/30 bg-gradient-to-b'>
-                <div className='container mx-auto flex-1 px-4 py-16'>
-                    <div className='mx-auto max-w-4xl space-y-8 text-center'>
-                        <h1 className='text-5xl font-bold tracking-tight'>Chat My CV</h1>
-                        <p className='text-muted-foreground text-xl'>
+                <div className='container mx-auto flex-1 px-4 py-8 sm:py-16'>
+                    <div className='mx-auto max-w-4xl space-y-6 sm:space-y-8 text-center'>
+                        <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight'>Chat My CV</h1>
+                        <p className='text-muted-foreground text-base sm:text-lg md:text-xl px-4 sm:px-0'>
                             Intelligent conversational interface for exploring professional backgrounds
                         </p>
 
-                        <div className='flex justify-center gap-4 pt-8'>
-                            <Button asChild size='lg'>
+                        <div className='flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 pt-4 sm:pt-8 px-4 sm:px-0'>
+                            <Button asChild size='lg' className='w-full sm:w-auto'>
                                 <Link href='/chat'>Start Chatting</Link>
                             </Button>
-                            <Button asChild variant='outline' size='lg'>
+                            <Button asChild variant='outline' size='lg' className='w-full sm:w-auto'>
                                 <Link href='/admin/login'>Admin Login</Link>
                             </Button>
                         </div>
 
-                        <div className='grid gap-6 pt-16 md:grid-cols-3'>
+                        <div className='grid gap-4 sm:gap-6 pt-8 sm:pt-16 grid-cols-1 sm:grid-cols-2 md:grid-cols-3'>
                         <Card>
                             <CardHeader className='text-center'>
                                 <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10'>

@@ -18,7 +18,6 @@ import type { ChatMessage } from '@/types';
 import { ChatInput } from './ChatInput';
 // Import chat components
 import { MessageList } from './MessageList';
-import { StreamingIndicator } from './StreamingIndicator';
 import { SuggestedQuestions } from './SuggestedQuestions';
 import { AlertCircle, Loader2, RefreshCw, Sparkles, WifiOff } from 'lucide-react';
 
@@ -102,8 +101,8 @@ function ChatEmptyState({
     onSelectQuestion: (question: string) => void;
 }) {
     return (
-        <div className='flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center'>
-            <div className='max-w-md space-y-6'>
+        <div className='flex h-full min-h-[400px] flex-col items-center justify-center p-4 sm:p-8 text-center'>
+            <div className='w-full max-w-md space-y-4 sm:space-y-6'>
                 {/* Icon */}
                 <div className='flex justify-center'>
                     <div className='bg-primary/10 rounded-full p-4'>
@@ -113,8 +112,8 @@ function ChatEmptyState({
 
                 {/* Welcome message */}
                 <div className='space-y-2'>
-                    <h3 className='text-lg font-semibold'>{welcomeMessage || 'Start a Conversation'}</h3>
-                    <p className='text-muted-foreground text-sm'>Ask me anything about this person's qualifications and experience.</p>
+                    <h3 className='text-base sm:text-lg font-semibold'>{welcomeMessage || 'Start a Conversation'}</h3>
+                    <p className='text-muted-foreground text-xs sm:text-sm px-2 sm:px-0'>Ask me anything about this person's qualifications and experience.</p>
                 </div>
 
                 {/* Suggested questions */}
@@ -304,12 +303,12 @@ export function ChatInterface({
             )}
 
             {/* Chat header */}
-            <div className='bg-muted/30 flex items-center justify-between border-b px-4 py-3'>
-                <div className='flex items-center gap-2'>
-                    <Sparkles className='text-primary h-5 w-5' />
-                    <span className='font-semibold'>AI Resume Chat</span>
+            <div className='bg-muted/30 flex items-center justify-between border-b px-3 sm:px-4 py-2 sm:py-3'>
+                <div className='flex items-center gap-1.5 sm:gap-2'>
+                    <Sparkles className='text-primary h-4 w-4 sm:h-5 sm:w-5' />
+                    <span className='font-semibold text-sm sm:text-base'>AI Resume Chat</span>
                     {isStreaming && (
-                        <span className='text-muted-foreground flex items-center gap-1 text-xs'>
+                        <span className='text-muted-foreground hidden sm:flex items-center gap-1 text-xs'>
                             <Loader2 className='h-3 w-3 animate-spin' />
                             Responding...
                         </span>
@@ -317,9 +316,10 @@ export function ChatInterface({
                 </div>
 
                 {hasMessages && (
-                    <Button variant='ghost' size='sm' onClick={handleClearSession} className='text-xs'>
-                        <RefreshCw className='mr-1 h-3 w-3' />
-                        Clear
+                    <Button variant='ghost' size='sm' onClick={handleClearSession} className='text-xs px-2 sm:px-3'>
+                        <RefreshCw className='mr-0.5 sm:mr-1 h-3 w-3' />
+                        <span className='hidden sm:inline'>Clear</span>
+                        <span className='sm:hidden'>Clear</span>
                     </Button>
                 )}
             </div>
@@ -333,16 +333,21 @@ export function ChatInterface({
                         onSelectQuestion={handleSelectQuestion}
                     />
                 ) : (
-                    <MessageList messages={messages} isLoading={isStreaming} className='h-full' />
+                    <MessageList 
+                        messages={messages} 
+                        isLoading={isStreaming} 
+                        streamingMessageId={currentAssistantId.current || undefined}
+                        className='h-full' 
+                    />
                 )}
             </div>
 
             {/* Suggested questions (when there are messages) - now as a compact inline strip */}
             {showSuggestedQuestions && hasMessages && !isStreaming && (
-                <div className='border-t px-4 py-2 bg-muted/10'>
-                    <div className='flex items-center gap-2'>
-                        <Sparkles className='text-muted-foreground h-3.5 w-3.5 flex-shrink-0' />
-                        <div className='flex gap-2 flex-wrap'>
+                <div className='border-t px-3 sm:px-4 py-2 bg-muted/10'>
+                    <div className='flex items-start sm:items-center gap-2'>
+                        <Sparkles className='text-muted-foreground h-3.5 w-3.5 flex-shrink-0 mt-0.5 sm:mt-0' />
+                        <div className='flex gap-1.5 sm:gap-2 flex-wrap'>
                             <SuggestedQuestions
                                 onSelectQuestion={handleSelectQuestion}
                                 isLoading={isStreaming}
@@ -363,13 +368,6 @@ export function ChatInterface({
                 placeholder={placeholder}
                 className='border-t-0'
             />
-
-            {/* Streaming indicator overlay */}
-            {isStreaming && currentAssistantId.current && !currentResponse && (
-                <div className='absolute bottom-20 left-1/2 -translate-x-1/2 transform'>
-                    <StreamingIndicator />
-                </div>
-            )}
         </div>
     );
 }

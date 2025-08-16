@@ -174,7 +174,7 @@ export function ChatInput({
 
     return (
         <div className={cn('border-t bg-background', className)}>
-            <form onSubmit={handleSubmit} className="p-4">
+            <form onSubmit={handleSubmit} className="p-3 sm:p-4">
                 <div className="flex flex-col gap-2">
                     {/* Character count warning */}
                     {showCharCount && (
@@ -187,7 +187,7 @@ export function ChatInput({
                     )}
 
                     {/* Input area */}
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5 sm:gap-2">
                         <div className="flex-1 relative">
                             <Textarea
                                 ref={textareaRef}
@@ -203,6 +203,8 @@ export function ChatInput({
                                     'resize-none pr-2',
                                     'focus-visible:ring-1',
                                     'transition-all duration-200',
+                                    'min-h-[44px] sm:min-h-[40px]', // Better touch target on mobile
+                                    'text-base sm:text-sm', // Prevent zoom on iOS
                                     isDisabled && 'opacity-50 cursor-not-allowed'
                                 )}
                                 aria-label="Chat message input"
@@ -216,7 +218,7 @@ export function ChatInput({
                                 type="submit"
                                 size="icon"
                                 disabled={isDisabled || !message.trim()}
-                                className="h-9 w-9"
+                                className="h-10 w-10 sm:h-9 sm:w-9 touch-manipulation"
                                 aria-label="Send message"
                             >
                                 {isLoading ? (
@@ -269,8 +271,9 @@ export function ChatInput({
                     </div>
 
                     {/* Help text */}
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>Press Enter to send, Shift+Enter for new line</span>
+                    <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
+                        <span className="hidden sm:inline">Press Enter to send, Shift+Enter for new line</span>
+                        <span className="sm:hidden">Tap send or press Enter</span>
                         {isLoading && (
                             <span className="flex items-center gap-1">
                                 <Loader2 className="h-3 w-3 animate-spin" />

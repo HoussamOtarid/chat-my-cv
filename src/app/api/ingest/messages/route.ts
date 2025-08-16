@@ -56,7 +56,8 @@ function getClientIP(request: NextRequest): string | null {
     if (forwardedFor) {
         // Take first IP if multiple
         const firstIP = forwardedFor.split(',')[0];
-        return firstIP ? firstIP.trim() : null;
+        
+return firstIP ? firstIP.trim() : null;
     }
 
     const realIP = request.headers.get('x-real-ip');
@@ -68,7 +69,8 @@ function getClientIP(request: NextRequest): string | null {
     const vercelIP = request.headers.get('x-vercel-forwarded-for');
     if (vercelIP) {
         const firstIP = vercelIP.split(',')[0];
-        return firstIP ? firstIP.trim() : null;
+        
+return firstIP ? firstIP.trim() : null;
     }
 
     return null;
@@ -151,7 +153,8 @@ export async function POST(request: NextRequest) {
 
                     if (sessionError || !newSession) {
                         console.error('Failed to create session:', sessionError);
-                        return;
+                        
+return;
                     }
 
                     sessionId = newSession.id;
@@ -207,7 +210,8 @@ export async function POST(request: NextRequest) {
         return response;
     } catch (error) {
         console.error('Ingest endpoint error:', error);
-        return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+        
+return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
     }
 }
 

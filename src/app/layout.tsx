@@ -20,7 +20,27 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
     title: 'Chat My CV',
-    description: 'Intelligent conversational interface for your professional resume'
+    description: 'Intelligent conversational interface for your professional resume',
+    appleWebApp: {
+        capable: true,
+        statusBarStyle: 'default',
+        title: 'Chat My CV'
+    },
+    formatDetection: {
+        telephone: false
+    }
+};
+
+export const viewport = {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+    viewportFit: 'cover',
+    themeColor: [
+        { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+        { media: '(prefers-color-scheme: dark)', color: '#000000' }
+    ]
 };
 
 const Layout = ({ children }: Readonly<{ children: ReactNode }>) => {

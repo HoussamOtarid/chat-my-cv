@@ -69,10 +69,12 @@ export async function decrypt(encryptedText: string): Promise<string> {
     const decrypted = await crypto.subtle.decrypt({ name: algorithm, iv }, key, encryptedData);
 
     const decoder = new TextDecoder();
+    
     return decoder.decode(decrypted);
 }
 
 export function validateEncryptionKey(): boolean {
     const key = config.encryption.key;
+    
     return typeof key === 'string' && key.length >= 32;
 }
