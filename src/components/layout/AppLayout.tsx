@@ -42,7 +42,7 @@ export function AppLayout({
     };
 
     return (
-        <div className={cn('flex min-h-screen flex-col bg-background', className)}>
+        <div className={cn('bg-background flex min-h-screen flex-col', className)}>
             {/* Header */}
             {showHeader && (
                 <Header
@@ -60,9 +60,7 @@ export function AppLayout({
             <main className='flex flex-1 flex-col'>{children}</main>
 
             {/* Footer */}
-            {showFooter && (
-                <Footer minimal={minimalFooter} showSocial={showSocialLinks} showLinks={showFooterLinks} />
-            )}
+            {showFooter && <Footer minimal={minimalFooter} showSocial={showSocialLinks} showLinks={showFooterLinks} />}
         </div>
     );
 }

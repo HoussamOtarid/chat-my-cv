@@ -1,14 +1,14 @@
-import { ChatOpenAI } from '@langchain/openai';
+import type { LLMConfig } from '@/types';
 import { ChatAnthropic } from '@langchain/anthropic';
 import { ChatBedrockConverse } from '@langchain/aws';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import { HumanMessage } from '@langchain/core/messages';
-import type { LLMConfig } from '@/types';
+import { ChatOpenAI } from '@langchain/openai';
 
 // Default model configurations
 const DEFAULT_MODELS = {
     openai: 'gpt-5',
-    anthropic: 'claude-sonnet-4-20250514',
+    anthropic: 'claude-sonnet-4-20250514'
 } as const;
 
 const DEFAULT_TEMPERATURE = 0.7;
@@ -16,47 +16,47 @@ const DEFAULT_MAX_TOKENS = 4000;
 
 // Model token limits (context window)
 const MODEL_LIMITS = {
-    'gpt-5': 128000,                      // 128K context
-    'gpt-5-mini': 128000,                 // 128K context  
-    'gpt-5-nano': 128000,                 // 128K context
-    'gpt-4-1': 1000000,                   // 1M context
-    'gpt-4-1-mini': 1000000,              // 1M context
-    'gpt-4-1-nano': 1000000,              // 1M context
-    'gpt-4o': 128000,                     // 128K context
-    'gpt-4o-mini': 128000,                // 128K context
-    'gpt-4-turbo': 128000,                // 128K context
-    'gpt-3.5-turbo': 16385,               // 16K context
-    
+    'gpt-5': 128000, // 128K context
+    'gpt-5-mini': 128000, // 128K context
+    'gpt-5-nano': 128000, // 128K context
+    'gpt-4-1': 1000000, // 1M context
+    'gpt-4-1-mini': 1000000, // 1M context
+    'gpt-4-1-nano': 1000000, // 1M context
+    'gpt-4o': 128000, // 128K context
+    'gpt-4o-mini': 128000, // 128K context
+    'gpt-4-turbo': 128000, // 128K context
+    'gpt-3.5-turbo': 16385, // 16K context
+
     // Anthropic models (as of 2025)
-    'claude-opus-4-1-20250805': 200000,      // 200K context
-    'claude-opus-4-20250514': 200000,       // 200K context
-    'claude-sonnet-4-20250514': 200000,      // 200K context (1M beta available)
-    'claude-3-7-sonnet-20250219': 200000,    // 200K context
-    'claude-3-5-haiku-20241022': 200000,     // 200K context  
-    'claude-3-haiku-20240307': 200000,       // 200K context
+    'claude-opus-4-1-20250805': 200000, // 200K context
+    'claude-opus-4-20250514': 200000, // 200K context
+    'claude-sonnet-4-20250514': 200000, // 200K context (1M beta available)
+    'claude-3-7-sonnet-20250219': 200000, // 200K context
+    'claude-3-5-haiku-20241022': 200000, // 200K context
+    'claude-3-haiku-20240307': 200000 // 200K context
 } as const;
 
 export type ModelName = keyof typeof MODEL_LIMITS;
 
 // Maximum output tokens per model
 const MODEL_MAX_OUTPUT = {
-    'gpt-5': 32768,                          // 32K output
-    'gpt-5-mini': 32768,                     // 32K output
-    'gpt-5-nano': 32768,                     // 32K output
-    'gpt-4-1': 32768,                        // 32K output
-    'gpt-4-1-mini': 32768,                   // 32K output
-    'gpt-4-1-nano': 32768,                   // 32K output
-    'gpt-4o': 16384,                         // 16K output
-    'gpt-4o-mini': 16384,                    // 16K output
-    'gpt-4-turbo': 4096,                     // 4K output
-    'gpt-3.5-turbo': 4096,                   // 4K output
-    
+    'gpt-5': 32768, // 32K output
+    'gpt-5-mini': 32768, // 32K output
+    'gpt-5-nano': 32768, // 32K output
+    'gpt-4-1': 32768, // 32K output
+    'gpt-4-1-mini': 32768, // 32K output
+    'gpt-4-1-nano': 32768, // 32K output
+    'gpt-4o': 16384, // 16K output
+    'gpt-4o-mini': 16384, // 16K output
+    'gpt-4-turbo': 4096, // 4K output
+    'gpt-3.5-turbo': 4096, // 4K output
+
     // Anthropic models (as of 2025)
-    'claude-opus-4-1-20250805': 32000,       // 32K output
-    'claude-sonnet-4-20250514': 64000,       // 64K output
-    'claude-3-7-sonnet-20250219': 64000,     // 64K output
-    'claude-3-5-haiku-20241022': 8192,       // 8K output
-    'claude-3-haiku-20240307': 4096,         // 4K output
+    'claude-opus-4-1-20250805': 32000, // 32K output
+    'claude-sonnet-4-20250514': 64000, // 64K output
+    'claude-3-7-sonnet-20250219': 64000, // 64K output
+    'claude-3-5-haiku-20241022': 8192, // 8K output
+    'claude-3-haiku-20240307': 4096 // 4K output
 } as const;
 
 /**
@@ -77,18 +77,14 @@ export function getModelMaxOutput(model: string): number {
  * Create a chat model instance based on configuration
  */
 export function createChatModel(config: LLMConfig): BaseChatModel {
-    const {
-        provider,
-        temperature = DEFAULT_TEMPERATURE,
-        maxTokens = DEFAULT_MAX_TOKENS,
-    } = config;
+    const { provider, temperature = DEFAULT_TEMPERATURE, maxTokens = DEFAULT_MAX_TOKENS } = config;
 
     // Common configuration
     const baseConfig = {
         temperature,
         maxTokens,
         streaming: true,
-        verbose: process.env.NODE_ENV === 'development',
+        verbose: process.env.NODE_ENV === 'development'
     };
 
     switch (provider) {
@@ -105,7 +101,7 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
                 // OpenAI specific options
                 topP: 1,
                 frequencyPenalty: 0,
-                presencePenalty: 0,
+                presencePenalty: 0
             });
         }
 
@@ -120,16 +116,22 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
                 anthropicApiKey: apiKey,
                 modelName: model,
                 // Anthropic specific options
-                anthropicApiUrl: process.env.ANTHROPIC_API_URL,
+                anthropicApiUrl: process.env.ANTHROPIC_API_URL
             });
         }
 
         case 'azure-openai': {
-            const { azureEndpoint, azureApiKey, azureDeploymentName, azureApiVersion = '2024-10-01-preview', model } = config;
+            const {
+                azureEndpoint,
+                azureApiKey,
+                azureDeploymentName,
+                azureApiVersion = '2024-10-01-preview',
+                model
+            } = config;
             if (!azureEndpoint || !azureApiKey || !azureDeploymentName) {
                 throw new Error('Azure endpoint, API key, and deployment name are required for Azure OpenAI');
             }
-            
+
             // Use ChatOpenAI with Azure configuration
             return new ChatOpenAI({
                 ...baseConfig,
@@ -139,14 +141,20 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
                     baseURL: `${azureEndpoint}/openai/deployments/${azureDeploymentName}`,
                     defaultQuery: { 'api-version': azureApiVersion },
                     defaultHeaders: {
-                        'api-key': azureApiKey,
-                    },
-                },
+                        'api-key': azureApiKey
+                    }
+                }
             });
         }
 
         case 'bedrock-anthropic': {
-            const { awsRegion, awsAccessKeyId, awsSecretAccessKey, awsSessionToken, model = 'anthropic.claude-3-sonnet-20240229-v1:0' } = config;
+            const {
+                awsRegion,
+                awsAccessKeyId,
+                awsSecretAccessKey,
+                awsSessionToken,
+                model = 'anthropic.claude-3-sonnet-20240229-v1:0'
+            } = config;
             if (!awsRegion || !awsAccessKeyId || !awsSecretAccessKey) {
                 throw new Error('AWS region, access key ID, and secret access key are required for Bedrock');
             }
@@ -158,8 +166,8 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
                 credentials: {
                     accessKeyId: awsAccessKeyId,
                     secretAccessKey: awsSecretAccessKey,
-                    sessionToken: awsSessionToken,
-                },
+                    sessionToken: awsSessionToken
+                }
             });
         }
 
@@ -170,7 +178,7 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
                 baseUrl,
                 apiKey,
                 model,
-                defaultHeaders,
+                defaultHeaders
             });
 
             if (!baseUrl) {
@@ -187,9 +195,9 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
                     defaultHeaders: {
                         ...defaultHeaders,
                         // Only add Authorization header if apiKey is not the dummy value
-                        ...(apiKey !== 'dummy' ? { 'Authorization': `Bearer ${apiKey}` } : {}),
-                    },
-                },
+                        ...(apiKey !== 'dummy' ? { Authorization: `Bearer ${apiKey}` } : {})
+                    }
+                }
             });
         }
 
@@ -219,7 +227,7 @@ export class StreamHandler {
 
     async handleLLMNewToken(token: string) {
         this.tokens.push(token);
-        
+
         if (this.onToken) {
             this.onToken(token);
         }
@@ -227,7 +235,7 @@ export class StreamHandler {
 
     async handleLLMEnd() {
         const fullText = this.tokens.join('');
-        
+
         if (this.onComplete) {
             this.onComplete(fullText);
         }
@@ -337,19 +345,19 @@ export function validateLLMConfig(config: Partial<LLMConfig>): { valid: boolean;
 /**
  * Test LLM connection with a simple prompt
  */
-export async function testLLMConnection(config: LLMConfig): Promise<{ success: boolean; message?: string; error?: string }> {
+export async function testLLMConnection(
+    config: LLMConfig
+): Promise<{ success: boolean; message?: string; error?: string }> {
     try {
         const model = createChatModel(config);
-        
+
         // Simple test prompt
-        const response = await model.invoke([
-            new HumanMessage('Say "Connection successful" in exactly three words.'),
-        ]);
+        const response = await model.invoke([new HumanMessage('Say "Connection successful" in exactly three words.')]);
 
         if (response && response.content) {
             let providerName: string = config.provider;
             let modelName = '';
-            
+
             switch (config.provider) {
                 case 'openai':
                     modelName = config.model || DEFAULT_MODELS.openai;
@@ -370,45 +378,45 @@ export async function testLLMConnection(config: LLMConfig): Promise<{ success: b
                     modelName = config.model || 'Custom Model';
                     break;
             }
-            
+
             return {
                 success: true,
-                message: `Successfully connected to ${providerName} (${modelName})`,
+                message: `Successfully connected to ${providerName} (${modelName})`
             };
         }
 
         return {
             success: false,
-            error: 'No response from LLM',
+            error: 'No response from LLM'
         };
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        
+
         // Parse common API errors
         if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
             return {
                 success: false,
-                error: 'Invalid API key or credentials',
+                error: 'Invalid API key or credentials'
             };
         }
 
         if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
             return {
                 success: false,
-                error: 'Rate limit exceeded. Please try again later.',
+                error: 'Rate limit exceeded. Please try again later.'
             };
         }
 
         if (errorMessage.includes('model') || errorMessage.includes('not found')) {
             return {
                 success: false,
-                error: `Model or deployment not available`,
+                error: `Model or deployment not available`
             };
         }
 
         return {
             success: false,
-            error: errorMessage,
+            error: errorMessage
         };
     }
 }
@@ -430,9 +438,9 @@ export function getAvailableModels(provider: string): string[] {
                 'gpt-4o',
                 'gpt-4o-mini',
                 'gpt-4-turbo',
-                'gpt-3.5-turbo',
+                'gpt-3.5-turbo'
             ];
-        
+
         case 'anthropic':
             return [
                 'claude-opus-4-1-20250805',
@@ -440,17 +448,17 @@ export function getAvailableModels(provider: string): string[] {
                 'claude-sonnet-4-20250514',
                 'claude-3-7-sonnet-20250219',
                 'claude-3-5-haiku-20241022',
-                'claude-3-haiku-20240307',
+                'claude-3-haiku-20240307'
             ];
-        
+
         case 'bedrock-anthropic':
             return [
                 'anthropic.claude-3-opus-20240229-v1:0',
                 'anthropic.claude-3-sonnet-20240229-v1:0',
                 'anthropic.claude-3-haiku-20240307-v1:0',
-                'anthropic.claude-instant-v1',
+                'anthropic.claude-instant-v1'
             ];
-        
+
         case 'openai-compatible':
             // Common models for OpenAI-compatible services
             return [
@@ -466,9 +474,9 @@ export function getAvailableModels(provider: string): string[] {
                 'deepseek-coder',
                 'phi',
                 // Custom model - user can type their own
-                'custom',
+                'custom'
             ];
-        
+
         default:
             return [];
     }
@@ -490,14 +498,14 @@ export function getModelDisplayName(model: string): string {
         'gpt-4o-mini': 'GPT-4o Mini',
         'gpt-4-turbo': 'GPT-4 Turbo',
         'gpt-3.5-turbo': 'GPT-3.5 Turbo',
-        
+
         // Anthropic (2025)
         'claude-opus-4-1-20250805': 'Claude Opus 4.1',
         'claude-opus-4-20250514': 'Claude Opus 4',
         'claude-sonnet-4-20250514': 'Claude Sonnet 4',
         'claude-3-7-sonnet-20250219': 'Claude 3.7 Sonnet',
         'claude-3-5-haiku-20241022': 'Claude 3.5 Haiku',
-        'claude-3-haiku-20240307': 'Claude 3 Haiku',
+        'claude-3-haiku-20240307': 'Claude 3 Haiku'
     };
 
     return displayNames[model] || model;

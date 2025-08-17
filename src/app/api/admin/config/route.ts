@@ -73,7 +73,7 @@ export async function GET() {
         return NextResponse.json(config);
     } catch (error) {
         console.error('Failed to fetch configuration:', error);
-        
+
         return NextResponse.json({ error: 'Failed to fetch configuration' }, { status: 500 });
     }
 }
@@ -99,7 +99,7 @@ export async function PUT(request: NextRequest) {
         // Prepare the LLM config - encrypt sensitive data if needed
         const llmConfigToStore = { ...llm };
         let encrypted = false;
-        
+
         // Encrypt API keys and sensitive data
         if (llm.apiKey) {
             llmConfigToStore.apiKey = await encrypt(llm.apiKey);
@@ -123,7 +123,8 @@ export async function PUT(request: NextRequest) {
 
         // Upsert LLM config
         upsertPromises.push(
-            supabase.from('configuration')
+            supabase
+                .from('configuration')
                 .upsert({
                     key: 'llm_config',
                     value: llmConfigToStore,
@@ -135,7 +136,8 @@ export async function PUT(request: NextRequest) {
         // Upsert other settings if provided
         if (system_prompt !== undefined) {
             upsertPromises.push(
-                supabase.from('configuration')
+                supabase
+                    .from('configuration')
                     .upsert({
                         key: 'system_prompt',
                         value: system_prompt,
@@ -147,7 +149,8 @@ export async function PUT(request: NextRequest) {
 
         if (welcome_message !== undefined) {
             upsertPromises.push(
-                supabase.from('configuration')
+                supabase
+                    .from('configuration')
                     .upsert({
                         key: 'welcome_message',
                         value: welcome_message,
@@ -159,7 +162,8 @@ export async function PUT(request: NextRequest) {
 
         if (theme_color !== undefined) {
             upsertPromises.push(
-                supabase.from('configuration')
+                supabase
+                    .from('configuration')
                     .upsert({
                         key: 'theme_color',
                         value: theme_color,
@@ -171,7 +175,7 @@ export async function PUT(request: NextRequest) {
 
         // Execute all upserts
         const results = await Promise.all(upsertPromises);
-        
+
         // Check for errors
         for (const result of results) {
             if (result.error) {
@@ -181,14 +185,14 @@ export async function PUT(request: NextRequest) {
 
         // Return the saved configuration (with unencrypted values for display)
         return NextResponse.json({
-            llm: llm,  // Return the original unencrypted config
+            llm: llm, // Return the original unencrypted config
             system_prompt: system_prompt || '',
             welcome_message: welcome_message || 'Hello! Upload your resume to get started.',
             theme_color: theme_color || '#0ea5e9'
         });
     } catch (error) {
         console.error('Failed to update configuration:', error);
-        
+
         return NextResponse.json({ error: 'Failed to update configuration' }, { status: 500 });
     }
 }

@@ -142,8 +142,8 @@ export function ChartPieInteractive() {
                                             </text>
                                         );
                                     }
-                                    
-return null;
+
+                                    return null;
                                 }}
                             />
                         </Pie>

@@ -152,17 +152,20 @@ function selectDiverseQuestions(
     includeContextual: boolean = true
 ): SuggestedQuestion[] {
     // Group questions by category
-    const questionsByCategory = allQuestions.reduce((acc, q) => {
-        if (!acc[q.category]) {
-            acc[q.category] = [];
-        }
-        const categoryList = acc[q.category];
-        if (categoryList) {
-            categoryList.push(q);
-        }
+    const questionsByCategory = allQuestions.reduce(
+        (acc, q) => {
+            if (!acc[q.category]) {
+                acc[q.category] = [];
+            }
+            const categoryList = acc[q.category];
+            if (categoryList) {
+                categoryList.push(q);
+            }
 
-        return acc;
-    }, {} as Record<string, SuggestedQuestion[]>);
+            return acc;
+        },
+        {} as Record<string, SuggestedQuestion[]>
+    );
 
     // Sort questions within each category by priority
     Object.keys(questionsByCategory).forEach((category) => {
@@ -194,7 +197,7 @@ function selectDiverseQuestions(
         while (selected.length < count && otherCategories.length > 0) {
             const categoryName = otherCategories[categoryIndex % otherCategories.length];
             if (!categoryName) break;
-            
+
             const categoryQuestions = questionsByCategory[categoryName];
 
             if (categoryQuestions && categoryQuestions.length > 0) {

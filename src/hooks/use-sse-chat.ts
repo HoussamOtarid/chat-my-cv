@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
-import { createSSEClient, SSEState } from '@/lib/sse-client';
-import type { SSEClient, FetchSSEClient } from '@/lib/sse-client';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { SSEState, createSSEClient } from '@/lib/sse-client';
+import type { FetchSSEClient, SSEClient } from '@/lib/sse-client';
 import type { ChatStreamEvent } from '@/types/api';
 
 export interface UseSSEChatOptions {
@@ -30,40 +31,43 @@ export function useSSEChat(options: UseSSEChatOptions = {}): UseSSEChatReturn {
     const [connectionState, setConnectionState] = useState<SSEState>(SSEState.DISCONNECTED);
     const [error, setError] = useState<string | null>(null);
     const [currentResponse, setCurrentResponse] = useState('');
-    
+
     const sseClientRef = useRef<SSEClient | FetchSSEClient | null>(null);
     const responseBufferRef = useRef<string>('');
 
     /**
      * Handle incoming SSE messages
      */
-    const handleMessage = useCallback((event: ChatStreamEvent) => {
-        switch (event.type) {
-            case 'token': {
-                if (event.content) {
-                    responseBufferRef.current += event.content;
-                    setCurrentResponse(responseBufferRef.current);
-                    options.onToken?.(event.content);
+    const handleMessage = useCallback(
+        (event: ChatStreamEvent) => {
+            switch (event.type) {
+                case 'token': {
+                    if (event.content) {
+                        responseBufferRef.current += event.content;
+                        setCurrentResponse(responseBufferRef.current);
+                        options.onToken?.(event.content);
+                    }
+                    break;
                 }
-                break;
+
+                case 'done': {
+                    setIsStreaming(false);
+                    const completeMessage = responseBufferRef.current;
+                    options.onComplete?.(completeMessage);
+                    break;
+                }
+
+                case 'error': {
+                    setIsStreaming(false);
+                    const errorMessage = event.error || 'An error occurred';
+                    setError(errorMessage);
+                    options.onError?.(errorMessage);
+                    break;
+                }
             }
-                
-            case 'done': {
-                setIsStreaming(false);
-                const completeMessage = responseBufferRef.current;
-                options.onComplete?.(completeMessage);
-                break;
-            }
-                
-            case 'error': {
-                setIsStreaming(false);
-                const errorMessage = event.error || 'An error occurred';
-                setError(errorMessage);
-                options.onError?.(errorMessage);
-                break;
-            }
-        }
-    }, [options]);
+        },
+        [options]
+    );
 
     /**
      * Handle connection state changes
@@ -78,65 +82,66 @@ export function useSSEChat(options: UseSSEChatOptions = {}): UseSSEChatReturn {
         setIsStreaming(false);
     }, []);
 
-    const handleError = useCallback((error: Error) => {
-        setConnectionState(SSEState.ERROR);
-        setIsStreaming(false);
-        const errorMessage = error.message || 'Connection error';
-        setError(errorMessage);
-        options.onError?.(errorMessage);
-    }, [options]);
+    const handleError = useCallback(
+        (error: Error) => {
+            setConnectionState(SSEState.ERROR);
+            setIsStreaming(false);
+            const errorMessage = error.message || 'Connection error';
+            setError(errorMessage);
+            options.onError?.(errorMessage);
+        },
+        [options]
+    );
 
     /**
      * Send a message to the chat endpoint
      */
-    const sendMessage = useCallback((
-        message: string,
-        clientId: string,
-        clientMessageId: string,
-        sessionId?: string
-    ) => {
-        // Clean up previous connection
-        if (sseClientRef.current) {
-            sseClientRef.current.close();
-            sseClientRef.current = null;
-        }
+    const sendMessage = useCallback(
+        (message: string, clientId: string, clientMessageId: string, sessionId?: string) => {
+            // Clean up previous connection
+            if (sseClientRef.current) {
+                sseClientRef.current.close();
+                sseClientRef.current = null;
+            }
 
-        // Reset state
-        setError(null);
-        setIsStreaming(true);
-        setCurrentResponse('');
-        responseBufferRef.current = '';
+            // Reset state
+            setError(null);
+            setIsStreaming(true);
+            setCurrentResponse('');
+            responseBufferRef.current = '';
 
-        // Create new SSE client
-        const params: Record<string, string> = {
-            message,
-            clientId,
-            clientMessageId,
-        };
+            // Create new SSE client
+            const params: Record<string, string> = {
+                message,
+                clientId,
+                clientMessageId
+            };
 
-        if (sessionId) {
-            params.sessionId = sessionId;
-        }
+            if (sessionId) {
+                params.sessionId = sessionId;
+            }
 
-        sseClientRef.current = createSSEClient({
-            url: '/api/chat/stream',
-            params,
-            onMessage: handleMessage,
-            onConnect: handleConnect,
-            onDisconnect: handleDisconnect,
-            onError: handleError,
-            maxRetries: options.maxRetries ?? 3,
-            retryDelay: options.retryDelay ?? 1000,
-            retryBackoff: 2,
-        });
+            sseClientRef.current = createSSEClient({
+                url: '/api/chat/stream',
+                params,
+                onMessage: handleMessage,
+                onConnect: handleConnect,
+                onDisconnect: handleDisconnect,
+                onError: handleError,
+                maxRetries: options.maxRetries ?? 3,
+                retryDelay: options.retryDelay ?? 1000,
+                retryBackoff: 2
+            });
 
-        // Start connection
-        if (sseClientRef.current instanceof Promise) {
-            void (sseClientRef.current as any).connect();
-        } else {
-            sseClientRef.current.connect();
-        }
-    }, [handleMessage, handleConnect, handleDisconnect, handleError, options.maxRetries, options.retryDelay]);
+            // Start connection
+            if (sseClientRef.current instanceof Promise) {
+                void (sseClientRef.current as any).connect();
+            } else {
+                sseClientRef.current.connect();
+            }
+        },
+        [handleMessage, handleConnect, handleDisconnect, handleError, options.maxRetries, options.retryDelay]
+    );
 
     /**
      * Abort the current streaming
@@ -168,7 +173,7 @@ export function useSSEChat(options: UseSSEChatOptions = {}): UseSSEChatReturn {
         connectionState,
         error,
         currentResponse,
-        abort,
+        abort
     };
 }
 
@@ -180,129 +185,126 @@ export function useSSEChatPost(options: UseSSEChatOptions = {}): UseSSEChatRetur
     const [connectionState, setConnectionState] = useState<SSEState>(SSEState.DISCONNECTED);
     const [error, setError] = useState<string | null>(null);
     const [currentResponse, setCurrentResponse] = useState('');
-    
+
     const abortControllerRef = useRef<AbortController | null>(null);
     const responseBufferRef = useRef<string>('');
 
     /**
      * Send a message using POST with streaming response
      */
-    const sendMessage = useCallback(async (
-        message: string,
-        clientId: string,
-        clientMessageId: string,
-        sessionId?: string
-    ) => {
-        // Abort previous request
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
-        }
-
-        // Reset state
-        setError(null);
-        setIsStreaming(true);
-        setCurrentResponse('');
-        setConnectionState(SSEState.CONNECTING);
-        responseBufferRef.current = '';
-
-        // Create new abort controller
-        abortControllerRef.current = new AbortController();
-
-        try {
-            const response = await fetch('/api/chat/stream', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'text/event-stream',
-                },
-                body: JSON.stringify({
-                    message,
-                    clientId,
-                    clientMessageId,
-                    sessionId,
-                }),
-                signal: abortControllerRef.current.signal,
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+    const sendMessage = useCallback(
+        async (message: string, clientId: string, clientMessageId: string, sessionId?: string) => {
+            // Abort previous request
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
             }
 
-            if (!response.body) {
-                throw new Error('Response body is empty');
-            }
+            // Reset state
+            setError(null);
+            setIsStreaming(true);
+            setCurrentResponse('');
+            setConnectionState(SSEState.CONNECTING);
+            responseBufferRef.current = '';
 
-            setConnectionState(SSEState.CONNECTED);
+            // Create new abort controller
+            abortControllerRef.current = new AbortController();
 
-            // Read the stream
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let buffer = '';
+            try {
+                const response = await fetch('/api/chat/stream', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Accept: 'text/event-stream'
+                    },
+                    body: JSON.stringify({
+                        message,
+                        clientId,
+                        clientMessageId,
+                        sessionId
+                    }),
+                    signal: abortControllerRef.current.signal
+                });
 
-            while (true) {
-                const { done, value } = await reader.read();
-                
-                if (done) {
-                    break;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                buffer += decoder.decode(value, { stream: true });
-                
-                // Process complete messages
-                const lines = buffer.split('\n');
-                buffer = lines.pop() || '';
+                if (!response.body) {
+                    throw new Error('Response body is empty');
+                }
 
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const event: ChatStreamEvent = JSON.parse(line.slice(6));
-                            
-                            switch (event.type) {
-                                case 'token': {
-                                    if (event.content) {
-                                        responseBufferRef.current += event.content;
-                                        setCurrentResponse(responseBufferRef.current);
-                                        options.onToken?.(event.content);
+                setConnectionState(SSEState.CONNECTED);
+
+                // Read the stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+
+                    if (done) {
+                        break;
+                    }
+
+                    buffer += decoder.decode(value, { stream: true });
+
+                    // Process complete messages
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const event: ChatStreamEvent = JSON.parse(line.slice(6));
+
+                                switch (event.type) {
+                                    case 'token': {
+                                        if (event.content) {
+                                            responseBufferRef.current += event.content;
+                                            setCurrentResponse(responseBufferRef.current);
+                                            options.onToken?.(event.content);
+                                        }
+                                        break;
                                     }
-                                    break;
+
+                                    case 'done': {
+                                        setIsStreaming(false);
+                                        setConnectionState(SSEState.DISCONNECTED);
+                                        const completeMessage = responseBufferRef.current;
+                                        options.onComplete?.(completeMessage);
+
+                                        return;
+                                    }
+
+                                    case 'error': {
+                                        throw new Error(event.error || 'Stream error');
+                                    }
                                 }
-                                    
-                                case 'done': {
-                                    setIsStreaming(false);
-                                    setConnectionState(SSEState.DISCONNECTED);
-                                    const completeMessage = responseBufferRef.current;
-                                    options.onComplete?.(completeMessage);
-                                    
-                                    return;
-                                }
-                                    
-                                case 'error': {
-                                    throw new Error(event.error || 'Stream error');
-                                }
+                            } catch (error) {
+                                console.error('Failed to parse SSE message:', error);
                             }
-                        } catch (error) {
-                            console.error('Failed to parse SSE message:', error);
                         }
                     }
                 }
+
+                setIsStreaming(false);
+                setConnectionState(SSEState.DISCONNECTED);
+            } catch (error) {
+                if (error instanceof Error && error.name === 'AbortError') {
+                    // Request was aborted
+                    return;
+                }
+
+                setIsStreaming(false);
+                setConnectionState(SSEState.ERROR);
+                const errorMessage = error instanceof Error ? error.message : 'Connection failed';
+                setError(errorMessage);
+                options.onError?.(errorMessage);
             }
-
-            setIsStreaming(false);
-            setConnectionState(SSEState.DISCONNECTED);
-
-        } catch (error) {
-            if (error instanceof Error && error.name === 'AbortError') {
-                // Request was aborted
-                return;
-            }
-
-            setIsStreaming(false);
-            setConnectionState(SSEState.ERROR);
-            const errorMessage = error instanceof Error ? error.message : 'Connection failed';
-            setError(errorMessage);
-            options.onError?.(errorMessage);
-        }
-    }, [options]);
+        },
+        [options]
+    );
 
     /**
      * Abort the current streaming
@@ -334,6 +336,6 @@ export function useSSEChatPost(options: UseSSEChatOptions = {}): UseSSEChatRetur
         connectionState,
         error,
         currentResponse,
-        abort,
+        abort
     };
 }

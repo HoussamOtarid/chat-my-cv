@@ -101,7 +101,7 @@ export function getDefaultRateLimiter(): Ratelimit | null {
     if (!defaultRateLimiter) {
         defaultRateLimiter = createRateLimiter();
     }
-    
+
     return defaultRateLimiter;
 }
 
@@ -133,7 +133,7 @@ export async function checkRateLimit(request: NextRequest, config?: RateLimitCon
         };
     } catch (error) {
         console.error('Rate limit check failed:', error);
-        
+
         // On error, allow the request but log it
         return {
             success: true,

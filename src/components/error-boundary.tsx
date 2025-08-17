@@ -1,10 +1,12 @@
 'use client';
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertCircle, RefreshCw, Home } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/registry/new-york-v4/ui/alert';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '@/registry/new-york-v4/ui/alert';
+
+import { AlertCircle, Home, RefreshCw } from 'lucide-react';
 
 interface Props {
     children: ReactNode;
@@ -56,7 +58,7 @@ class ErrorBoundary extends Component<Props, State> {
         }
 
         // Update state with error details
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             errorInfo,
             errorCount: prevState.errorCount + 1
         }));
@@ -79,9 +81,7 @@ class ErrorBoundary extends Component<Props, State> {
 
         // Reset error boundary when resetKeys change
         if (hasError && resetKeys && prevProps.resetKeys) {
-            const hasResetKeyChanged = resetKeys.some(
-                (key, index) => key !== prevProps.resetKeys![index]
-            );
+            const hasResetKeyChanged = resetKeys.some((key, index) => key !== prevProps.resetKeys![index]);
 
             if (hasResetKeyChanged) {
                 this.resetErrorBoundary();
@@ -138,11 +138,11 @@ class ErrorBoundary extends Component<Props, State> {
             // Different UI based on error boundary level
             if (level === 'page') {
                 return (
-                    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-                        <Card className="w-full max-w-md">
+                    <div className='bg-background flex min-h-screen items-center justify-center p-4'>
+                        <Card className='w-full max-w-md'>
                             <CardHeader>
-                                <div className="flex items-center gap-2">
-                                    <AlertCircle className="h-5 w-5 text-destructive" />
+                                <div className='flex items-center gap-2'>
+                                    <AlertCircle className='text-destructive h-5 w-5' />
                                     <CardTitle>Something went wrong</CardTitle>
                                 </div>
                                 <CardDescription>
@@ -151,9 +151,9 @@ class ErrorBoundary extends Component<Props, State> {
                             </CardHeader>
                             <CardContent>
                                 {showDetails && (
-                                    <Alert variant="destructive" className="mb-4">
+                                    <Alert variant='destructive' className='mb-4'>
                                         <AlertTitle>Error Details</AlertTitle>
-                                        <AlertDescription className="mt-2 font-mono text-xs">
+                                        <AlertDescription className='mt-2 font-mono text-xs'>
                                             {error.message}
                                         </AlertDescription>
                                     </Alert>
@@ -166,16 +166,13 @@ class ErrorBoundary extends Component<Props, State> {
                                     </Alert>
                                 )}
                             </CardContent>
-                            <CardFooter className="flex gap-2">
-                                <Button onClick={this.handleReset} variant="default">
-                                    <RefreshCw className="mr-2 h-4 w-4" />
+                            <CardFooter className='flex gap-2'>
+                                <Button onClick={this.handleReset} variant='default'>
+                                    <RefreshCw className='mr-2 h-4 w-4' />
                                     Try Again
                                 </Button>
-                                <Button
-                                    onClick={() => window.location.href = '/'}
-                                    variant="outline"
-                                >
-                                    <Home className="mr-2 h-4 w-4" />
+                                <Button onClick={() => (window.location.href = '/')} variant='outline'>
+                                    <Home className='mr-2 h-4 w-4' />
                                     Go Home
                                 </Button>
                             </CardFooter>
@@ -186,26 +183,19 @@ class ErrorBoundary extends Component<Props, State> {
 
             if (level === 'section') {
                 return (
-                    <div className="rounded-lg border border-destructive/50 bg-destructive/5 p-6">
-                        <div className="flex items-start gap-3">
-                            <AlertCircle className="h-5 w-5 text-destructive mt-0.5" />
-                            <div className="flex-1">
-                                <h3 className="font-semibold">Section Error</h3>
-                                <p className="text-sm text-muted-foreground mt-1">
+                    <div className='border-destructive/50 bg-destructive/5 rounded-lg border p-6'>
+                        <div className='flex items-start gap-3'>
+                            <AlertCircle className='text-destructive mt-0.5 h-5 w-5' />
+                            <div className='flex-1'>
+                                <h3 className='font-semibold'>Section Error</h3>
+                                <p className='text-muted-foreground mt-1 text-sm'>
                                     This section failed to load properly.
                                 </p>
                                 {showDetails && (
-                                    <p className="text-xs font-mono mt-2 text-destructive">
-                                        {error.message}
-                                    </p>
+                                    <p className='text-destructive mt-2 font-mono text-xs'>{error.message}</p>
                                 )}
-                                <Button
-                                    onClick={this.handleReset}
-                                    variant="outline"
-                                    size="sm"
-                                    className="mt-3"
-                                >
-                                    <RefreshCw className="mr-1 h-3 w-3" />
+                                <Button onClick={this.handleReset} variant='outline' size='sm' className='mt-3'>
+                                    <RefreshCw className='mr-1 h-3 w-3' />
                                     Retry
                                 </Button>
                             </div>
@@ -216,20 +206,13 @@ class ErrorBoundary extends Component<Props, State> {
 
             // Component level error (default)
             return (
-                <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
+                <Alert variant='destructive'>
+                    <AlertCircle className='h-4 w-4' />
                     <AlertTitle>Component Error</AlertTitle>
                     <AlertDescription>
                         <p>Failed to render this component.</p>
-                        {showDetails && (
-                            <p className="mt-2 font-mono text-xs">{error.message}</p>
-                        )}
-                        <Button
-                            onClick={this.handleReset}
-                            variant="outline"
-                            size="sm"
-                            className="mt-2"
-                        >
+                        {showDetails && <p className='mt-2 font-mono text-xs'>{error.message}</p>}
+                        <Button onClick={this.handleReset} variant='outline' size='sm' className='mt-2'>
                             Retry
                         </Button>
                     </AlertDescription>
@@ -243,10 +226,8 @@ class ErrorBoundary extends Component<Props, State> {
                 return <>{children}</>;
             } catch (error) {
                 return (
-                    <Alert variant="destructive">
-                        <AlertDescription>
-                            Failed to render content. Please refresh the page.
-                        </AlertDescription>
+                    <Alert variant='destructive'>
+                        <AlertDescription>Failed to render content. Please refresh the page.</AlertDescription>
                     </Alert>
                 );
             }

@@ -1,4 +1,5 @@
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
+
 import { Document } from 'langchain/document';
 
 export interface PDFExtractionResult {
@@ -27,7 +28,7 @@ export interface PDFExtractionResult {
 export async function extractTextFromPDF(input: string | Buffer): Promise<PDFExtractionResult> {
     try {
         let loader: PDFLoader;
-        
+
         if (typeof input === 'string') {
             // Input is a file path
             loader = new PDFLoader(input, {
@@ -44,7 +45,7 @@ export async function extractTextFromPDF(input: string | Buffer): Promise<PDFExt
 
         // Load and parse the PDF
         const docs: Document[] = await loader.load();
-        
+
         if (!docs || docs.length === 0) {
             return {
                 success: false,
@@ -55,15 +56,15 @@ export async function extractTextFromPDF(input: string | Buffer): Promise<PDFExt
         }
 
         // Combine all document content
-        const content = docs.map(doc => doc.pageContent).join('\n\n');
-        
+        const content = docs.map((doc) => doc.pageContent).join('\n\n');
+
         // Extract metadata if available
         const metadata = docs[0]?.metadata || {};
-        
+
         // Clean up the content - remove excessive whitespace
         const cleanedContent = content
             .replace(/\n{3,}/g, '\n\n') // Replace multiple newlines with double newline
-            .replace(/[ \t]+/g, ' ')    // Replace multiple spaces/tabs with single space
+            .replace(/[ \t]+/g, ' ') // Replace multiple spaces/tabs with single space
             .trim();
 
         return {
@@ -81,10 +82,10 @@ export async function extractTextFromPDF(input: string | Buffer): Promise<PDFExt
         };
     } catch (error) {
         console.error('PDF extraction error:', error);
-        
+
         // Handle specific error types
         let errorMessage = 'Failed to extract text from PDF';
-        
+
         if (error instanceof Error) {
             if (error.message.includes('encrypted') || error.message.includes('password')) {
                 errorMessage = 'PDF is password protected and cannot be processed';
@@ -94,7 +95,7 @@ export async function extractTextFromPDF(input: string | Buffer): Promise<PDFExt
                 errorMessage = error.message;
             }
         }
-        
+
         return {
             success: false,
             error: {
@@ -112,7 +113,7 @@ export async function extractTextFromPDF(input: string | Buffer): Promise<PDFExt
 export async function extractTextFromPDFByPages(input: string | Buffer): Promise<PDFExtractionResult> {
     try {
         let loader: PDFLoader;
-        
+
         if (typeof input === 'string') {
             loader = new PDFLoader(input, {
                 splitPages: true // Split content by pages
@@ -126,7 +127,7 @@ export async function extractTextFromPDFByPages(input: string | Buffer): Promise
         }
 
         const docs: Document[] = await loader.load();
-        
+
         if (!docs || docs.length === 0) {
             return {
                 success: false,
@@ -139,12 +140,12 @@ export async function extractTextFromPDFByPages(input: string | Buffer): Promise
         // Process each page and combine
         const pages = docs.map((doc, index) => {
             const pageContent = doc.pageContent.trim();
-            
-return pageContent ? `--- Page ${index + 1} ---\n${pageContent}` : '';
+
+            return pageContent ? `--- Page ${index + 1} ---\n${pageContent}` : '';
         });
 
-        const content = pages.filter(page => page.length > 0).join('\n\n');
-        
+        const content = pages.filter((page) => page.length > 0).join('\n\n');
+
         // Extract metadata from first document
         const metadata = docs[0]?.metadata || {};
 
@@ -163,7 +164,7 @@ return pageContent ? `--- Page ${index + 1} ---\n${pageContent}` : '';
         };
     } catch (error) {
         console.error('PDF extraction error:', error);
-        
+
         return {
             success: false,
             error: {
@@ -183,13 +184,13 @@ export function isValidPDF(buffer: Buffer): boolean {
     if (!buffer || buffer.length < 4) {
         return false;
     }
-    
+
     // Check for PDF magic number (%PDF)
     const pdfMagicNumber = buffer.slice(0, 4).toString('ascii');
-    
-return pdfMagicNumber === '%PDF';
+
+    return pdfMagicNumber === '%PDF';
 }
- 
+
 /**
  * Get estimated token count for text
  * Rough estimation: ~4 characters per token for English text
@@ -197,7 +198,7 @@ return pdfMagicNumber === '%PDF';
  */
 export function estimateTokenCount(text: string): number {
     if (!text) return 0;
-    
+
     // Rough estimation: ~4 characters per token
     // This is a simple heuristic and may vary based on the actual tokenizer
     return Math.ceil(text.length / 4);
@@ -211,14 +212,14 @@ export function estimateTokenCount(text: string): number {
  */
 export function truncateToTokenLimit(text: string, maxTokens: number): string {
     const estimatedTokens = estimateTokenCount(text);
-    
+
     if (estimatedTokens <= maxTokens) {
         return text;
     }
-    
+
     // Calculate approximate character limit
     const charLimit = maxTokens * 4;
-    
+
     // Truncate and add ellipsis
     return text.slice(0, charLimit - 3) + '...';
 }

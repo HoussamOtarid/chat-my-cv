@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
 import { cn } from '@/lib/utils';
-import { MessageBubble } from './MessageBubble';
-import { ScrollArea } from '@/registry/new-york-v4/ui/scroll-area';
 import { Button } from '@/registry/new-york-v4/ui/button';
-import { ArrowDown } from 'lucide-react';
+import { ScrollArea } from '@/registry/new-york-v4/ui/scroll-area';
 import type { ChatMessage } from '@/types';
+
+import { MessageBubble } from './MessageBubble';
+import { ArrowDown } from 'lucide-react';
 
 interface MessageListProps {
     messages: ChatMessage[];
@@ -16,9 +18,9 @@ interface MessageListProps {
     autoScroll?: boolean;
 }
 
-export function MessageList({ 
-    messages, 
-    isLoading = false, 
+export function MessageList({
+    messages,
+    isLoading = false,
     streamingMessageId,
     className,
     autoScroll = true
@@ -32,7 +34,7 @@ export function MessageList({
     // Scroll to bottom function
     const scrollToBottom = useCallback((smooth = true) => {
         if (bottomRef.current) {
-            bottomRef.current.scrollIntoView({ 
+            bottomRef.current.scrollIntoView({
                 behavior: smooth ? 'smooth' : 'auto',
                 block: 'end'
             });
@@ -42,45 +44,48 @@ export function MessageList({
     // Check if user is near bottom
     const isNearBottom = useCallback(() => {
         if (!scrollAreaRef.current) return true;
-        
+
         const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
         if (!scrollContainer) return true;
 
         const threshold = 100; // pixels from bottom
         const { scrollTop, scrollHeight, clientHeight } = scrollContainer;
-        
+
         return scrollHeight - scrollTop - clientHeight < threshold;
     }, []);
 
     // Handle scroll events to detect user scrolling
-    const handleScroll = useCallback((e: Event) => {
-        const target = e.target as HTMLElement;
-        const currentScrollTop = target.scrollTop;
-        
-        // Detect if user is scrolling up
-        if (currentScrollTop < lastScrollTop.current && !isNearBottom()) {
-            setIsUserScrolling(true);
-            setShowScrollButton(true);
-        } else if (isNearBottom()) {
-            setIsUserScrolling(false);
-            setShowScrollButton(false);
-        }
-        
-        lastScrollTop.current = currentScrollTop;
-    }, [isNearBottom]);
+    const handleScroll = useCallback(
+        (e: Event) => {
+            const target = e.target as HTMLElement;
+            const currentScrollTop = target.scrollTop;
+
+            // Detect if user is scrolling up
+            if (currentScrollTop < lastScrollTop.current && !isNearBottom()) {
+                setIsUserScrolling(true);
+                setShowScrollButton(true);
+            } else if (isNearBottom()) {
+                setIsUserScrolling(false);
+                setShowScrollButton(false);
+            }
+
+            lastScrollTop.current = currentScrollTop;
+        },
+        [isNearBottom]
+    );
 
     // Set up scroll event listener
     useEffect(() => {
         const scrollContainer = scrollAreaRef.current?.querySelector('[data-radix-scroll-area-viewport]');
-        
+
         if (scrollContainer) {
             scrollContainer.addEventListener('scroll', handleScroll);
-            
+
             return () => {
                 scrollContainer.removeEventListener('scroll', handleScroll);
             };
         }
-        
+
         return undefined;
     }, [handleScroll]);
 
@@ -91,10 +96,10 @@ export function MessageList({
             const timer = setTimeout(() => {
                 scrollToBottom();
             }, 100);
-            
+
             return () => clearTimeout(timer);
         }
-        
+
         return undefined;
     }, [messages, autoScroll, isUserScrolling, scrollToBottom]);
 
@@ -108,12 +113,10 @@ export function MessageList({
     // Empty state
     if (messages.length === 0 && !isLoading) {
         return (
-            <div className={cn('flex items-center justify-center h-full', className)}>
-                <div className="text-center space-y-2">
-                    <p className="text-muted-foreground">No messages yet</p>
-                    <p className="text-sm text-muted-foreground">
-                        Start a conversation by typing a message below
-                    </p>
+            <div className={cn('flex h-full items-center justify-center', className)}>
+                <div className='space-y-2 text-center'>
+                    <p className='text-muted-foreground'>No messages yet</p>
+                    <p className='text-muted-foreground text-sm'>Start a conversation by typing a message below</p>
                 </div>
             </div>
         );
@@ -121,15 +124,14 @@ export function MessageList({
 
     return (
         <div className={cn('relative h-full', className)}>
-            <ScrollArea 
+            <ScrollArea
                 ref={scrollAreaRef}
-                className="h-full px-3 sm:px-4 py-3 sm:py-4 -webkit-overflow-scrolling-touch"
-            >
+                className='-webkit-overflow-scrolling-touch h-full px-3 py-3 sm:px-4 sm:py-4'>
                 {/* Virtual scrolling implementation */}
                 {/* For large message lists, we could use react-window or react-virtualized */}
                 {/* For MVP, we'll render all messages but limit history in localStorage */}
-                
-                <div className="space-y-2 sm:space-y-3">
+
+                <div className='space-y-2 sm:space-y-3'>
                     {messages.map((message) => (
                         <MessageBubble
                             key={message.id}
@@ -140,24 +142,23 @@ export function MessageList({
                 </div>
 
                 {/* Scroll anchor */}
-                <div ref={bottomRef} className="h-1" />
+                <div ref={bottomRef} className='h-1' />
             </ScrollArea>
 
             {/* Scroll to bottom button */}
             {showScrollButton && (
                 <Button
-                    variant="secondary"
-                    size="icon"
+                    variant='secondary'
+                    size='icon'
                     className={cn(
-                        'absolute bottom-3 right-3 sm:bottom-4 sm:right-4 rounded-full shadow-lg',
+                        'absolute right-3 bottom-3 rounded-full shadow-lg sm:right-4 sm:bottom-4',
                         'transition-all duration-200 ease-in-out',
                         'hover:scale-110',
-                        'h-9 w-9 sm:h-10 sm:w-10 touch-manipulation'
+                        'h-9 w-9 touch-manipulation sm:h-10 sm:w-10'
                     )}
-                    onClick={handleScrollButtonClick}
-                >
-                    <ArrowDown className="h-4 w-4" />
-                    <span className="sr-only">Scroll to bottom</span>
+                    onClick={handleScrollButtonClick}>
+                    <ArrowDown className='h-4 w-4' />
+                    <span className='sr-only'>Scroll to bottom</span>
                 </Button>
             )}
         </div>

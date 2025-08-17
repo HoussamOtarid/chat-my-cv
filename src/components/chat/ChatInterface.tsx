@@ -2,6 +2,8 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
+import ErrorBoundary from '@/components/error-boundary';
+import { ChatErrorFallback } from '@/components/fallback-ui';
 // Import hooks
 import { useChatSession } from '@/hooks/use-chat-session';
 import { useSSEChat } from '@/hooks/use-sse-chat';
@@ -20,8 +22,6 @@ import { ChatInput } from './ChatInput';
 import { MessageList } from './MessageList';
 import { SuggestedQuestions } from './SuggestedQuestions';
 import { AlertCircle, Loader2, RefreshCw, Sparkles, WifiOff } from 'lucide-react';
-import ErrorBoundary from '@/components/error-boundary';
-import { ChatErrorFallback } from '@/components/fallback-ui';
 
 /**
  * Props for ChatInterface component
@@ -103,7 +103,7 @@ function ChatEmptyState({
     onSelectQuestion: (question: string) => void;
 }) {
     return (
-        <div className='flex h-full min-h-[400px] flex-col items-center justify-center p-4 sm:p-8 text-center'>
+        <div className='flex h-full min-h-[400px] flex-col items-center justify-center p-4 text-center sm:p-8'>
             <div className='w-full max-w-md space-y-4 sm:space-y-6'>
                 {/* Icon */}
                 <div className='flex justify-center'>
@@ -114,8 +114,10 @@ function ChatEmptyState({
 
                 {/* Welcome message */}
                 <div className='space-y-2'>
-                    <h3 className='text-base sm:text-lg font-semibold'>{welcomeMessage || 'Start a Conversation'}</h3>
-                    <p className='text-muted-foreground text-xs sm:text-sm px-2 sm:px-0'>Ask me anything about this person's qualifications and experience.</p>
+                    <h3 className='text-base font-semibold sm:text-lg'>{welcomeMessage || 'Start a Conversation'}</h3>
+                    <p className='text-muted-foreground px-2 text-xs sm:px-0 sm:text-sm'>
+                        Ask me anything about this person's qualifications and experience.
+                    </p>
                 </div>
 
                 {/* Suggested questions */}
@@ -301,7 +303,7 @@ export function ChatInterface({
     }
 
     return (
-        <div className={cn('flex h-full flex-col bg-background', className)}>
+        <div className={cn('bg-background flex h-full flex-col', className)}>
             {/* Connection status banner */}
             {isOffline && (
                 <Alert className='rounded-none border-x-0 border-t-0'>
@@ -313,12 +315,12 @@ export function ChatInterface({
             )}
 
             {/* Chat header */}
-            <div className='bg-muted/30 flex items-center justify-between border-b px-3 sm:px-4 py-2 sm:py-3'>
+            <div className='bg-muted/30 flex items-center justify-between border-b px-3 py-2 sm:px-4 sm:py-3'>
                 <div className='flex items-center gap-1.5 sm:gap-2'>
                     <Sparkles className='text-primary h-4 w-4 sm:h-5 sm:w-5' />
-                    <span className='font-semibold text-sm sm:text-base'>AI Resume Chat</span>
+                    <span className='text-sm font-semibold sm:text-base'>AI Resume Chat</span>
                     {isStreaming && (
-                        <span className='text-muted-foreground hidden sm:flex items-center gap-1 text-xs'>
+                        <span className='text-muted-foreground hidden items-center gap-1 text-xs sm:flex'>
                             <Loader2 className='h-3 w-3 animate-spin' />
                             Responding...
                         </span>
@@ -326,8 +328,8 @@ export function ChatInterface({
                 </div>
 
                 {hasMessages && (
-                    <Button variant='ghost' size='sm' onClick={handleClearSession} className='text-xs px-2 sm:px-3'>
-                        <RefreshCw className='mr-0.5 sm:mr-1 h-3 w-3' />
+                    <Button variant='ghost' size='sm' onClick={handleClearSession} className='px-2 text-xs sm:px-3'>
+                        <RefreshCw className='mr-0.5 h-3 w-3 sm:mr-1' />
                         <span className='hidden sm:inline'>Clear</span>
                         <span className='sm:hidden'>Clear</span>
                     </Button>
@@ -336,11 +338,10 @@ export function ChatInterface({
 
             {/* Main chat area */}
             <div className='flex-1 overflow-hidden'>
-                <ErrorBoundary 
-                    level="section" 
+                <ErrorBoundary
+                    level='section'
                     fallback={<ChatErrorFallback retry={handleRetry} />}
-                    resetKeys={[messages.length]}
-                >
+                    resetKeys={[messages.length]}>
                     {showEmptyState ? (
                         <ChatEmptyState
                             welcomeMessage={welcomeMessage}
@@ -348,11 +349,11 @@ export function ChatInterface({
                             onSelectQuestion={handleSelectQuestion}
                         />
                     ) : (
-                        <MessageList 
-                            messages={messages} 
-                            isLoading={isStreaming} 
+                        <MessageList
+                            messages={messages}
+                            isLoading={isStreaming}
                             streamingMessageId={currentAssistantId.current || undefined}
-                            className='h-full' 
+                            className='h-full'
                         />
                     )}
                 </ErrorBoundary>
@@ -360,10 +361,10 @@ export function ChatInterface({
 
             {/* Suggested questions (when there are messages) - now as a compact inline strip */}
             {showSuggestedQuestions && hasMessages && !isStreaming && (
-                <div className='border-t px-3 sm:px-4 py-2 bg-muted/10'>
-                    <div className='flex items-start sm:items-center gap-2'>
-                        <Sparkles className='text-muted-foreground h-3.5 w-3.5 flex-shrink-0 mt-0.5 sm:mt-0' />
-                        <div className='flex gap-1.5 sm:gap-2 flex-wrap'>
+                <div className='bg-muted/10 border-t px-3 py-2 sm:px-4'>
+                    <div className='flex items-start gap-2 sm:items-center'>
+                        <Sparkles className='text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0 sm:mt-0' />
+                        <div className='flex flex-wrap gap-1.5 sm:gap-2'>
                             <SuggestedQuestions
                                 onSelectQuestion={handleSelectQuestion}
                                 isLoading={isStreaming}

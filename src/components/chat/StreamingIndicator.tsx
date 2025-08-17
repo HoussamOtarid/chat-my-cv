@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/registry/new-york-v4/ui/avatar';
+
 import { Bot } from 'lucide-react';
 
 interface StreamingIndicatorProps {
@@ -23,7 +25,7 @@ export function StreamingIndicator({
     isStreaming = false,
     showTypingAnimation = true,
     className,
-    onComplete,
+    onComplete
 }: StreamingIndicatorProps) {
     const [displayedText, setDisplayedText] = useState('');
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -44,7 +46,7 @@ export function StreamingIndicator({
             if (!isStreaming && displayedText && completeCallbackRef.current) {
                 completeCallbackRef.current();
             }
-            
+
             return;
         }
 
@@ -62,11 +64,8 @@ export function StreamingIndicator({
             if (timestamp - lastUpdateRef.current >= msPerChar) {
                 if (currentIndex < streamingText.length) {
                     // Add next character(s)
-                    const nextIndex = Math.min(
-                        currentIndex + 1,
-                        streamingText.length
-                    );
-                    
+                    const nextIndex = Math.min(currentIndex + 1, streamingText.length);
+
                     setDisplayedText(streamingText.slice(0, nextIndex));
                     setCurrentIndex(nextIndex);
                     lastUpdateRef.current = timestamp;
@@ -93,12 +92,12 @@ export function StreamingIndicator({
         if (textRef.current) {
             const element = textRef.current;
             const parent = element.parentElement;
-            
+
             if (parent) {
                 // Smooth scroll to show new content
                 parent.scrollTo({
                     top: element.scrollHeight,
-                    behavior: 'smooth',
+                    behavior: 'smooth'
                 });
             }
         }
@@ -110,25 +109,23 @@ export function StreamingIndicator({
 
         // Split by code blocks (```...```)
         const parts = content.split(/(```[\s\S]*?```)/g);
-        
+
         return parts.map((part, index) => {
             if (part.startsWith('```')) {
                 // Code block
                 const codeContent = part.slice(3, -3);
                 const [language, ...codeLines] = codeContent.split('\n');
                 const code = codeLines.join('\n');
-                
+
                 return (
-                    <pre key={index} className="bg-muted p-4 rounded-md overflow-x-auto my-2">
-                        <code className={`language-${language || 'plaintext'}`}>
-                            {code || codeContent}
-                        </code>
+                    <pre key={index} className='bg-muted my-2 overflow-x-auto rounded-md p-4'>
+                        <code className={`language-${language || 'plaintext'}`}>{code || codeContent}</code>
                     </pre>
                 );
             } else {
                 // Regular text - preserve line breaks
                 return (
-                    <span key={index} className="whitespace-pre-wrap break-words">
+                    <span key={index} className='break-words whitespace-pre-wrap'>
                         {part}
                     </span>
                 );
@@ -138,13 +135,13 @@ export function StreamingIndicator({
 
     // Typing dots animation
     const TypingDots = () => (
-        <div className="flex items-center space-x-2 p-3">
-            <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
-                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
-                <div className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce" />
+        <div className='flex items-center space-x-2 p-3'>
+            <div className='flex space-x-1'>
+                <div className='bg-foreground/40 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.3s]' />
+                <div className='bg-foreground/40 h-2 w-2 animate-bounce rounded-full [animation-delay:-0.15s]' />
+                <div className='bg-foreground/40 h-2 w-2 animate-bounce rounded-full' />
             </div>
-            <span className="text-sm text-muted-foreground ml-2">AI is thinking...</span>
+            <span className='text-muted-foreground ml-2 text-sm'>AI is thinking...</span>
         </div>
     );
 
@@ -154,35 +151,34 @@ export function StreamingIndicator({
     }
 
     return (
-        <div className={cn('flex gap-3 mb-4', className)}>
+        <div className={cn('mb-4 flex gap-3', className)}>
             {/* Avatar */}
-            <Avatar className="h-8 w-8 shrink-0">
-                <AvatarImage src="/ai-avatar.png" alt="AI Assistant" />
+            <Avatar className='h-8 w-8 shrink-0'>
+                <AvatarImage src='/ai-avatar.png' alt='AI Assistant' />
                 <AvatarFallback>
-                    <Bot className="h-4 w-4" />
+                    <Bot className='h-4 w-4' />
                 </AvatarFallback>
             </Avatar>
 
             {/* Message bubble */}
-            <div className="flex-1 max-w-[70%] md:max-w-[60%]">
+            <div className='max-w-[70%] flex-1 md:max-w-[60%]'>
                 <div
                     className={cn(
-                        'rounded-lg bg-muted border border-border',
+                        'bg-muted border-border rounded-lg border',
                         'transition-all duration-200 ease-in-out',
                         isStreaming && 'shadow-sm'
-                    )}
-                >
+                    )}>
                     {/* Show typing animation if no text yet */}
                     {isStreaming && !displayedText && showTypingAnimation ? (
                         <TypingDots />
                     ) : (
-                        <div className="px-4 py-2.5 text-sm">
-                            <div ref={textRef} className="relative">
+                        <div className='px-4 py-2.5 text-sm'>
+                            <div ref={textRef} className='relative'>
                                 {formatContent(displayedText)}
-                                
+
                                 {/* Cursor for active streaming */}
                                 {isStreaming && displayedText && (
-                                    <span className="inline-block w-0.5 h-4 bg-foreground animate-blink ml-0.5 -mb-0.5" />
+                                    <span className='bg-foreground animate-blink -mb-0.5 ml-0.5 inline-block h-4 w-0.5' />
                                 )}
                             </div>
                         </div>
@@ -191,15 +187,13 @@ export function StreamingIndicator({
 
                 {/* Streaming status */}
                 {isStreaming && (
-                    <div className="flex items-center gap-2 mt-1 px-1">
-                        <div className="flex space-x-1">
-                            <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse" />
-                            <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse [animation-delay:0.2s]" />
-                            <div className="w-1 h-1 bg-green-500 rounded-full animate-pulse [animation-delay:0.4s]" />
+                    <div className='mt-1 flex items-center gap-2 px-1'>
+                        <div className='flex space-x-1'>
+                            <div className='h-1 w-1 animate-pulse rounded-full bg-green-500' />
+                            <div className='h-1 w-1 animate-pulse rounded-full bg-green-500 [animation-delay:0.2s]' />
+                            <div className='h-1 w-1 animate-pulse rounded-full bg-green-500 [animation-delay:0.4s]' />
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                            Streaming response...
-                        </span>
+                        <span className='text-muted-foreground text-xs'>Streaming response...</span>
                     </div>
                 )}
             </div>
@@ -211,7 +205,7 @@ export function StreamingIndicator({
 export function StreamingText({
     text,
     isComplete = false,
-    className,
+    className
 }: {
     text: string;
     isComplete?: boolean;
@@ -226,7 +220,7 @@ export function StreamingText({
             // Show all text immediately when complete
             setDisplayedText(text);
             indexRef.current = text.length;
-            
+
             return;
         }
 
@@ -253,7 +247,7 @@ export function StreamingText({
         <span className={className}>
             {displayedText}
             {!isComplete && displayedText && (
-                <span className="inline-block w-0.5 h-4 bg-current animate-blink ml-0.5" />
+                <span className='animate-blink ml-0.5 inline-block h-4 w-0.5 bg-current' />
             )}
         </span>
     );

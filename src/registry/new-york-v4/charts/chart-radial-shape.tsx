@@ -63,8 +63,8 @@ export function ChartRadialShape() {
                                             </text>
                                         );
                                     }
-                                    
-return null;
+
+                                    return null;
                                 }}
                             />
                         </PolarRadiusAxis>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Alert, AlertDescription } from '@/registry/new-york-v4/ui/alert';
 import { Button } from '@/registry/new-york-v4/ui/button';
@@ -58,7 +58,7 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
     const handleProviderChange = (newProvider: string) => {
         setProvider(newProvider);
         setMessage(null);
-        
+
         // Reset config for new provider
         const baseConfig = {
             provider: newProvider,
@@ -74,7 +74,7 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
                     model: 'gpt-4o'
                 });
                 break;
-            
+
             case 'anthropic':
                 setConfig({
                     ...baseConfig,
@@ -82,7 +82,7 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
                     model: 'claude-3-5-sonnet-latest'
                 });
                 break;
-            
+
             case 'azure-openai':
                 setConfig({
                     ...baseConfig,
@@ -92,7 +92,7 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
                     azureApiVersion: '2024-10-01-preview'
                 });
                 break;
-            
+
             case 'bedrock-anthropic':
                 setConfig({
                     ...baseConfig,
@@ -102,7 +102,7 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
                     model: 'anthropic.claude-3-sonnet-20240229-v1:0'
                 });
                 break;
-            
+
             case 'openai-compatible':
                 setConfig({
                     ...baseConfig,
@@ -126,7 +126,7 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
             });
 
             const result = await response.json();
-            
+
             setMessage({
                 type: result.success ? 'success' : 'error',
                 text: result.message || result.error || 'Connection test failed'
@@ -167,31 +167,34 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
             case 'openai':
                 return (
                     <>
-                        <div className="space-y-2">
-                            <Label htmlFor="api-key">API Key</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='api-key'>API Key</Label>
                             <Input
-                                id="api-key"
-                                type="password"
-                                placeholder="sk-..."
+                                id='api-key'
+                                type='password'
+                                placeholder='sk-...'
                                 value={config.apiKey || ''}
                                 onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
                             />
-                            <p className="text-sm text-muted-foreground">
+                            <p className='text-muted-foreground text-sm'>
                                 Get your API key from{' '}
-                                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="underline">
+                                <a
+                                    href='https://platform.openai.com/api-keys'
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='underline'>
                                     OpenAI Platform
                                 </a>
                             </p>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="model">Model</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='model'>Model</Label>
                             <Select
                                 value={config.model || ''}
                                 onValueChange={(value) => setConfig({ ...config, model: value })}
-                                disabled={loadingModels}
-                            >
-                                <SelectTrigger id="model">
-                                    <SelectValue placeholder={loadingModels ? "Loading models..." : "Select a model"} />
+                                disabled={loadingModels}>
+                                <SelectTrigger id='model'>
+                                    <SelectValue placeholder={loadingModels ? 'Loading models...' : 'Select a model'} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {models.map((model) => (
@@ -208,31 +211,34 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
             case 'anthropic':
                 return (
                     <>
-                        <div className="space-y-2">
-                            <Label htmlFor="api-key">API Key</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='api-key'>API Key</Label>
                             <Input
-                                id="api-key"
-                                type="password"
-                                placeholder="sk-ant-..."
+                                id='api-key'
+                                type='password'
+                                placeholder='sk-ant-...'
                                 value={config.apiKey || ''}
                                 onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
                             />
-                            <p className="text-sm text-muted-foreground">
+                            <p className='text-muted-foreground text-sm'>
                                 Get your API key from{' '}
-                                <a href="https://console.anthropic.com/" target="_blank" rel="noopener noreferrer" className="underline">
+                                <a
+                                    href='https://console.anthropic.com/'
+                                    target='_blank'
+                                    rel='noopener noreferrer'
+                                    className='underline'>
                                     Anthropic Console
                                 </a>
                             </p>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="model">Model</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='model'>Model</Label>
                             <Select
                                 value={config.model || ''}
                                 onValueChange={(value) => setConfig({ ...config, model: value })}
-                                disabled={loadingModels}
-                            >
-                                <SelectTrigger id="model">
-                                    <SelectValue placeholder={loadingModels ? "Loading models..." : "Select a model"} />
+                                disabled={loadingModels}>
+                                <SelectTrigger id='model'>
+                                    <SelectValue placeholder={loadingModels ? 'Loading models...' : 'Select a model'} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {models.map((model) => (
@@ -249,45 +255,43 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
             case 'azure-openai':
                 return (
                     <>
-                        <div className="space-y-2">
-                            <Label htmlFor="azure-endpoint">Azure Endpoint</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='azure-endpoint'>Azure Endpoint</Label>
                             <Input
-                                id="azure-endpoint"
-                                type="url"
-                                placeholder="https://your-resource.openai.azure.com"
+                                id='azure-endpoint'
+                                type='url'
+                                placeholder='https://your-resource.openai.azure.com'
                                 value={config.azureEndpoint || ''}
                                 onChange={(e) => setConfig({ ...config, azureEndpoint: e.target.value })}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="azure-key">API Key</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='azure-key'>API Key</Label>
                             <Input
-                                id="azure-key"
-                                type="password"
-                                placeholder="Your Azure OpenAI API key"
+                                id='azure-key'
+                                type='password'
+                                placeholder='Your Azure OpenAI API key'
                                 value={config.azureApiKey || ''}
                                 onChange={(e) => setConfig({ ...config, azureApiKey: e.target.value })}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="deployment">Deployment Name</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='deployment'>Deployment Name</Label>
                             <Input
-                                id="deployment"
-                                type="text"
-                                placeholder="gpt-4-deployment"
+                                id='deployment'
+                                type='text'
+                                placeholder='gpt-4-deployment'
                                 value={config.azureDeploymentName || ''}
                                 onChange={(e) => setConfig({ ...config, azureDeploymentName: e.target.value })}
                             />
-                            <p className="text-sm text-muted-foreground">
-                                The name of your Azure OpenAI deployment
-                            </p>
+                            <p className='text-muted-foreground text-sm'>The name of your Azure OpenAI deployment</p>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="api-version">API Version (Optional)</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='api-version'>API Version (Optional)</Label>
                             <Input
-                                id="api-version"
-                                type="text"
-                                placeholder="2024-10-01-preview"
+                                id='api-version'
+                                type='text'
+                                placeholder='2024-10-01-preview'
                                 value={config.azureApiVersion || ''}
                                 onChange={(e) => setConfig({ ...config, azureApiVersion: e.target.value })}
                             />
@@ -298,64 +302,62 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
             case 'bedrock-anthropic':
                 return (
                     <>
-                        <div className="space-y-2">
-                            <Label htmlFor="aws-region">AWS Region</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='aws-region'>AWS Region</Label>
                             <Select
                                 value={config.awsRegion || 'us-east-1'}
-                                onValueChange={(value) => setConfig({ ...config, awsRegion: value })}
-                            >
-                                <SelectTrigger id="aws-region">
+                                onValueChange={(value) => setConfig({ ...config, awsRegion: value })}>
+                                <SelectTrigger id='aws-region'>
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="us-east-1">US East (N. Virginia)</SelectItem>
-                                    <SelectItem value="us-west-2">US West (Oregon)</SelectItem>
-                                    <SelectItem value="eu-west-1">Europe (Ireland)</SelectItem>
-                                    <SelectItem value="eu-central-1">Europe (Frankfurt)</SelectItem>
-                                    <SelectItem value="ap-southeast-1">Asia Pacific (Singapore)</SelectItem>
-                                    <SelectItem value="ap-northeast-1">Asia Pacific (Tokyo)</SelectItem>
+                                    <SelectItem value='us-east-1'>US East (N. Virginia)</SelectItem>
+                                    <SelectItem value='us-west-2'>US West (Oregon)</SelectItem>
+                                    <SelectItem value='eu-west-1'>Europe (Ireland)</SelectItem>
+                                    <SelectItem value='eu-central-1'>Europe (Frankfurt)</SelectItem>
+                                    <SelectItem value='ap-southeast-1'>Asia Pacific (Singapore)</SelectItem>
+                                    <SelectItem value='ap-northeast-1'>Asia Pacific (Tokyo)</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="access-key">Access Key ID</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='access-key'>Access Key ID</Label>
                             <Input
-                                id="access-key"
-                                type="password"
-                                placeholder="AKIA..."
+                                id='access-key'
+                                type='password'
+                                placeholder='AKIA...'
                                 value={config.awsAccessKeyId || ''}
                                 onChange={(e) => setConfig({ ...config, awsAccessKeyId: e.target.value })}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="secret-key">Secret Access Key</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='secret-key'>Secret Access Key</Label>
                             <Input
-                                id="secret-key"
-                                type="password"
-                                placeholder="Your AWS secret key"
+                                id='secret-key'
+                                type='password'
+                                placeholder='Your AWS secret key'
                                 value={config.awsSecretAccessKey || ''}
                                 onChange={(e) => setConfig({ ...config, awsSecretAccessKey: e.target.value })}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="session-token">Session Token (Optional)</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='session-token'>Session Token (Optional)</Label>
                             <Input
-                                id="session-token"
-                                type="password"
-                                placeholder="For temporary credentials"
+                                id='session-token'
+                                type='password'
+                                placeholder='For temporary credentials'
                                 value={config.awsSessionToken || ''}
                                 onChange={(e) => setConfig({ ...config, awsSessionToken: e.target.value })}
                             />
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="model">Model</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='model'>Model</Label>
                             <Select
                                 value={config.model || ''}
                                 onValueChange={(value) => setConfig({ ...config, model: value })}
-                                disabled={loadingModels}
-                            >
-                                <SelectTrigger id="model">
-                                    <SelectValue placeholder={loadingModels ? "Loading models..." : "Select a model"} />
+                                disabled={loadingModels}>
+                                <SelectTrigger id='model'>
+                                    <SelectValue placeholder={loadingModels ? 'Loading models...' : 'Select a model'} />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {models.map((model) => (
@@ -372,42 +374,42 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
             case 'openai-compatible':
                 return (
                     <>
-                        <div className="space-y-2">
-                            <Label htmlFor="base-url">Base URL</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='base-url'>Base URL</Label>
                             <Input
-                                id="base-url"
-                                type="url"
-                                placeholder="http://localhost:11434/v1"
+                                id='base-url'
+                                type='url'
+                                placeholder='http://localhost:11434/v1'
                                 value={config.baseUrl || ''}
                                 onChange={(e) => setConfig({ ...config, baseUrl: e.target.value })}
                             />
-                            <p className="text-sm text-muted-foreground">
+                            <p className='text-muted-foreground text-sm'>
                                 The endpoint URL for your OpenAI-compatible service
                             </p>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="api-key">API Key (Optional)</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='api-key'>API Key (Optional)</Label>
                             <Input
-                                id="api-key"
-                                type="password"
-                                placeholder="Leave empty for local services"
+                                id='api-key'
+                                type='password'
+                                placeholder='Leave empty for local services'
                                 value={config.apiKey || ''}
                                 onChange={(e) => setConfig({ ...config, apiKey: e.target.value })}
                             />
-                            <p className="text-sm text-muted-foreground">
+                            <p className='text-muted-foreground text-sm'>
                                 Some services like Ollama don't require authentication
                             </p>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="model">Model Name</Label>
+                        <div className='space-y-2'>
+                            <Label htmlFor='model'>Model Name</Label>
                             <Input
-                                id="model"
-                                type="text"
-                                placeholder="llama2, mistral, or custom model name"
+                                id='model'
+                                type='text'
+                                placeholder='llama2, mistral, or custom model name'
                                 value={config.model || ''}
                                 onChange={(e) => setConfig({ ...config, model: e.target.value })}
                             />
-                            <p className="text-sm text-muted-foreground">
+                            <p className='text-muted-foreground text-sm'>
                                 Common models: llama2, mistral, mixtral, codellama
                             </p>
                         </div>
@@ -420,13 +422,13 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
     };
 
     return (
-        <div className="space-y-6">
+        <div className='space-y-6'>
             {message && (
                 <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
                     {message.type === 'error' ? (
-                        <AlertCircle className="h-4 w-4" />
+                        <AlertCircle className='h-4 w-4' />
                     ) : (
-                        <CheckCircle2 className="h-4 w-4" />
+                        <CheckCircle2 className='h-4 w-4' />
                     )}
                     <AlertDescription>{message.text}</AlertDescription>
                 </Alert>
@@ -435,23 +437,23 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
             <Card>
                 <CardHeader>
                     <CardTitle>LLM Provider Configuration</CardTitle>
-                    <CardDescription>
-                        Choose and configure your language model provider
-                    </CardDescription>
+                    <CardDescription>Choose and configure your language model provider</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="provider">Provider</Label>
+                <CardContent className='space-y-4'>
+                    <div className='space-y-2'>
+                        <Label htmlFor='provider'>Provider</Label>
                         <Select value={provider} onValueChange={handleProviderChange}>
-                            <SelectTrigger id="provider">
-                                <SelectValue placeholder="Select a provider" />
+                            <SelectTrigger id='provider'>
+                                <SelectValue placeholder='Select a provider' />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="openai">OpenAI</SelectItem>
-                                <SelectItem value="anthropic">Anthropic</SelectItem>
-                                <SelectItem value="azure-openai">Azure OpenAI</SelectItem>
-                                <SelectItem value="bedrock-anthropic">AWS Bedrock (Claude)</SelectItem>
-                                <SelectItem value="openai-compatible">OpenAI Compatible (Ollama, LM Studio, etc.)</SelectItem>
+                                <SelectItem value='openai'>OpenAI</SelectItem>
+                                <SelectItem value='anthropic'>Anthropic</SelectItem>
+                                <SelectItem value='azure-openai'>Azure OpenAI</SelectItem>
+                                <SelectItem value='bedrock-anthropic'>AWS Bedrock (Claude)</SelectItem>
+                                <SelectItem value='openai-compatible'>
+                                    OpenAI Compatible (Ollama, LM Studio, etc.)
+                                </SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -460,52 +462,53 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
 
                     {provider && (
                         <>
-                            <div className="border-t pt-4">
-                                <h4 className="text-sm font-medium mb-4">Advanced Settings</h4>
-                                <div className="grid gap-4 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="temperature">Temperature</Label>
+                            <div className='border-t pt-4'>
+                                <h4 className='mb-4 text-sm font-medium'>Advanced Settings</h4>
+                                <div className='grid gap-4 md:grid-cols-2'>
+                                    <div className='space-y-2'>
+                                        <Label htmlFor='temperature'>Temperature</Label>
                                         <Input
-                                            id="temperature"
-                                            type="number"
-                                            min="0"
-                                            max="2"
-                                            step="0.1"
+                                            id='temperature'
+                                            type='number'
+                                            min='0'
+                                            max='2'
+                                            step='0.1'
                                             value={config.temperature || 0.7}
-                                            onChange={(e) => setConfig({ ...config, temperature: parseFloat(e.target.value) })}
+                                            onChange={(e) =>
+                                                setConfig({ ...config, temperature: parseFloat(e.target.value) })
+                                            }
                                         />
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className='text-muted-foreground text-xs'>
                                             Controls randomness (0 = deterministic, 2 = very random)
                                         </p>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="max-tokens">Max Tokens</Label>
+                                    <div className='space-y-2'>
+                                        <Label htmlFor='max-tokens'>Max Tokens</Label>
                                         <Input
-                                            id="max-tokens"
-                                            type="number"
-                                            min="100"
-                                            max="100000"
-                                            step="100"
+                                            id='max-tokens'
+                                            type='number'
+                                            min='100'
+                                            max='100000'
+                                            step='100'
                                             value={config.maxTokens || 4000}
-                                            onChange={(e) => setConfig({ ...config, maxTokens: parseInt(e.target.value) })}
+                                            onChange={(e) =>
+                                                setConfig({ ...config, maxTokens: parseInt(e.target.value) })
+                                            }
                                         />
-                                        <p className="text-xs text-muted-foreground">
-                                            Maximum length of the response
-                                        </p>
+                                        <p className='text-muted-foreground text-xs'>Maximum length of the response</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex gap-2 pt-4">
+                            <div className='flex gap-2 pt-4'>
                                 <Button
-                                    type="button"
-                                    variant="outline"
+                                    type='button'
+                                    variant='outline'
                                     onClick={handleTestConnection}
-                                    disabled={testing}
-                                >
+                                    disabled={testing}>
                                     {testing ? (
                                         <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                                             Testing...
                                         </>
                                     ) : (
@@ -513,14 +516,10 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
                                     )}
                                 </Button>
                                 {onSave && (
-                                    <Button
-                                        type="button"
-                                        onClick={handleSave}
-                                        disabled={saving || !provider}
-                                    >
+                                    <Button type='button' onClick={handleSave} disabled={saving || !provider}>
                                         {saving ? (
                                             <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                                                 Saving...
                                             </>
                                         ) : (

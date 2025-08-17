@@ -69,7 +69,7 @@ export function MobileNav({ open, onOpenChange, className }: MobileNavProps) {
             <SheetContent side='left' className={cn('w-[300px] sm:w-[400px]', className)}>
                 <SheetHeader>
                     <SheetTitle className='flex items-center space-x-2'>
-                        <Sparkles className='h-6 w-6 text-primary' />
+                        <Sparkles className='text-primary h-6 w-6' />
                         <span>Chat My CV</span>
                     </SheetTitle>
                 </SheetHeader>
@@ -85,7 +85,7 @@ export function MobileNav({ open, onOpenChange, className }: MobileNavProps) {
                                 <div className='flex flex-col items-start'>
                                     <span className='font-medium'>{item.label}</span>
                                     {item.description && (
-                                        <span className='text-xs text-muted-foreground'>{item.description}</span>
+                                        <span className='text-muted-foreground text-xs'>{item.description}</span>
                                     )}
                                 </div>
                             </Button>
@@ -93,9 +93,9 @@ export function MobileNav({ open, onOpenChange, className }: MobileNavProps) {
                     ))}
                 </nav>
 
-                <div className='absolute bottom-8 left-0 right-0 px-6'>
-                    <div className='rounded-lg bg-muted p-4'>
-                        <p className='text-sm text-muted-foreground'>
+                <div className='absolute right-0 bottom-8 left-0 px-6'>
+                    <div className='bg-muted rounded-lg p-4'>
+                        <p className='text-muted-foreground text-sm'>
                             <strong>Tip:</strong> You can ask the AI anything about the resume, including experience,
                             skills, and qualifications.
                         </p>

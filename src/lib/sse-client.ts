@@ -47,7 +47,7 @@ export class SSEClient {
             onDisconnect: config.onDisconnect || (() => {}),
             maxRetries: config.maxRetries ?? 5,
             retryDelay: config.retryDelay ?? 1000,
-            retryBackoff: config.retryBackoff ?? 2,
+            retryBackoff: config.retryBackoff ?? 2
         };
     }
 
@@ -99,12 +99,11 @@ export class SSEClient {
             this.eventSource.onerror = (event) => {
                 console.error('SSE error:', event);
                 this.state = SSEState.ERROR;
-                
+
                 if (this.eventSource?.readyState === EventSource.CLOSED) {
                     this.handleDisconnect();
                 }
             };
-
         } catch (error) {
             console.error('Failed to create EventSource:', error);
             this.state = SSEState.ERROR;
@@ -118,7 +117,7 @@ export class SSEClient {
      */
     disconnect(): void {
         this.clearRetryTimer();
-        
+
         if (this.eventSource) {
             this.eventSource.close();
             this.eventSource = null;
@@ -153,7 +152,7 @@ export class SSEClient {
         if (this.state === SSEState.CLOSED || this.retryCount >= this.config.maxRetries) {
             this.state = SSEState.CLOSED;
             this.config.onError(new Error('Connection lost. Max retries exceeded.'));
-            
+
             return;
         }
 
@@ -214,7 +213,7 @@ export class FetchSSEClient {
             onDisconnect: config.onDisconnect || (() => {}),
             maxRetries: config.maxRetries ?? 5,
             retryDelay: config.retryDelay ?? 1000,
-            retryBackoff: config.retryBackoff ?? 2,
+            retryBackoff: config.retryBackoff ?? 2
         };
     }
 
@@ -240,9 +239,9 @@ export class FetchSSEClient {
             const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
-                    'Accept': 'text/event-stream',
+                    Accept: 'text/event-stream'
                 },
-                signal: this.abortController.signal,
+                signal: this.abortController.signal
             });
 
             if (!response.ok) {
@@ -264,13 +263,13 @@ export class FetchSSEClient {
 
             while (true) {
                 const { done, value } = await reader.read();
-                
+
                 if (done) {
                     break;
                 }
 
                 buffer += decoder.decode(value, { stream: true });
-                
+
                 // Process complete messages
                 const lines = buffer.split('\n');
                 buffer = lines.pop() || '';
@@ -284,7 +283,7 @@ export class FetchSSEClient {
                             // Close connection on 'done' or 'error' events
                             if (data.type === 'done' || data.type === 'error') {
                                 this.disconnect();
-                                
+
                                 return;
                             }
                         } catch (error) {
@@ -295,11 +294,10 @@ export class FetchSSEClient {
             }
 
             this.handleDisconnect();
-
         } catch (error) {
             if (error instanceof Error && error.name === 'AbortError') {
                 // Connection was aborted manually
-                
+
                 return;
             }
 
@@ -345,7 +343,7 @@ export class FetchSSEClient {
         if (this.state === SSEState.CLOSED || this.retryCount >= this.config.maxRetries) {
             this.state = SSEState.CLOSED;
             this.config.onError(new Error('Connection lost. Max retries exceeded.'));
-            
+
             return;
         }
 
@@ -393,7 +391,7 @@ export function createSSEClient(config: SSEClientConfig): SSEClient | FetchSSECl
     if (typeof EventSource !== 'undefined') {
         return new SSEClient(config);
     }
-    
+
     // Fallback to fetch-based implementation
     return new FetchSSEClient(config);
 }

@@ -48,7 +48,7 @@ export function Footer({ className, showSocial = false, showLinks = false, minim
         return (
             <footer className={cn('border-t py-4 text-center', className)}>
                 <div className='container'>
-                    <p className='text-sm text-muted-foreground'>
+                    <p className='text-muted-foreground text-sm'>
                         <span className='hidden sm:inline'>
                             © {currentYear} Chat My CV. Powered by AI. All rights reserved.
                         </span>
@@ -66,7 +66,7 @@ export function Footer({ className, showSocial = false, showLinks = false, minim
                     {/* Brand Section */}
                     <div className='space-y-3'>
                         <h3 className='text-lg font-semibold'>Chat My CV</h3>
-                        <p className='text-sm text-muted-foreground'>
+                        <p className='text-muted-foreground text-sm'>
                             Intelligent conversational interface for your professional resume. Powered by advanced AI
                             technology.
                         </p>
@@ -83,7 +83,7 @@ export function Footer({ className, showSocial = false, showLinks = false, minim
                                             href={link.href}
                                             target={link.external ? '_blank' : undefined}
                                             rel={link.external ? 'noopener noreferrer' : undefined}
-                                            className='text-sm text-muted-foreground transition-colors hover:text-foreground'>
+                                            className='text-muted-foreground hover:text-foreground text-sm transition-colors'>
                                             {link.label}
                                         </Link>
                                     </li>
@@ -103,7 +103,7 @@ export function Footer({ className, showSocial = false, showLinks = false, minim
                                         href={link.href}
                                         target='_blank'
                                         rel='noopener noreferrer'
-                                        className='text-muted-foreground transition-colors hover:text-foreground'
+                                        className='text-muted-foreground hover:text-foreground transition-colors'
                                         aria-label={link.label}>
                                         {link.icon}
                                     </Link>
@@ -115,7 +115,7 @@ export function Footer({ className, showSocial = false, showLinks = false, minim
                     {/* Legal Section */}
                     <div className='space-y-3'>
                         <h4 className='text-sm font-semibold'>Legal</h4>
-                        <p className='text-sm text-muted-foreground'>
+                        <p className='text-muted-foreground text-sm'>
                             This is an AI-powered application. Responses are generated automatically and may not always
                             be accurate.
                         </p>
@@ -125,10 +125,10 @@ export function Footer({ className, showSocial = false, showLinks = false, minim
                 {/* Bottom Bar */}
                 <div className='mt-8 border-t pt-8'>
                     <div className='flex flex-col items-center justify-between gap-4 sm:flex-row'>
-                        <p className='text-sm text-muted-foreground'>
+                        <p className='text-muted-foreground text-sm'>
                             © {currentYear} Chat My CV. All rights reserved.
                         </p>
-                        <p className='text-sm text-muted-foreground'>
+                        <p className='text-muted-foreground text-sm'>
                             Built with Next.js • Powered by AI • Open Source
                         </p>
                     </div>

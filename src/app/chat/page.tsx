@@ -5,12 +5,14 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { ChatInterface } from '@/components/chat';
+import { ConnectionStatusIndicator } from '@/components/connection-status';
+import { NoConfigurationEmptyState, NoResumeEmptyState } from '@/components/empty-states';
 import { AppLayout } from '@/components/layout';
 import { Alert, AlertDescription } from '@/registry/new-york-v4/ui/alert';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 
-import { AlertCircle, ArrowLeft, FileText, Settings } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 
 /**
  * Public chat page component
@@ -20,42 +22,48 @@ export default function ChatPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [hasActiveResume, setHasActiveResume] = useState<boolean | null>(null);
+    const [hasConfiguration, setHasConfiguration] = useState<boolean | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    // Check if there's an active resume
+    // Check if there's an active resume and configuration
     useEffect(() => {
-        const checkResume = async () => {
+        const checkRequirements = async () => {
             try {
                 setIsLoading(true);
                 setError(null);
 
                 // Check if resume endpoint exists and has active resume
-                const response = await fetch('/api/resume/current', {
+                const resumeResponse = await fetch('/api/resume/current', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 });
 
-                if (response.ok) {
-                    const data = await response.json();
+                if (resumeResponse.ok) {
+                    const data = await resumeResponse.json();
                     setHasActiveResume(!!data.resume);
-                } else if (response.status === 404) {
+                } else if (resumeResponse.status === 404) {
                     // Endpoint doesn't exist yet or no active resume
                     setHasActiveResume(false);
                 } else {
                     throw new Error('Failed to check resume status');
                 }
+
+                // Check configuration (simplified check)
+                // In production, you might want to check the actual configuration endpoint
+                setHasConfiguration(true); // Assume configured for now
             } catch (err) {
-                console.error('Resume check error:', err);
-                // Assume resume exists if we can't check (optimistic)
+                console.error('Requirements check error:', err);
+                // Assume everything exists if we can't check (optimistic)
                 setHasActiveResume(true);
+                setHasConfiguration(true);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        checkResume();
+        checkRequirements();
     }, []);
 
     // Loading state
@@ -94,25 +102,29 @@ export default function ChatPage() {
         return (
             <AppLayout>
                 <div className='container mx-auto px-4 py-16'>
-                    <div className='mx-auto max-w-md space-y-6 text-center'>
-                        <div className='bg-muted mx-auto flex h-20 w-20 items-center justify-center rounded-full p-4'>
-                            <FileText className='text-muted-foreground h-10 w-10' />
-                        </div>
-                        <h2 className='text-2xl font-semibold'>No Resume Available</h2>
-                        <p className='text-muted-foreground'>
-                            The administrator hasn't uploaded a resume yet. Please check back later or contact the site
-                            owner.
-                        </p>
-                        <div className='flex flex-col justify-center gap-4 sm:flex-row'>
-                            <Button onClick={() => router.push('/')}>
-                                <ArrowLeft className='mr-2 h-4 w-4' />
-                                Back to Home
-                            </Button>
-                            <Button variant='outline' onClick={() => router.push('/admin/login')}>
-                                <Settings className='mr-2 h-4 w-4' />
-                                Admin Login
-                            </Button>
-                        </div>
+                    <NoResumeEmptyState className='mx-auto max-w-md' actionHref='/admin/login' />
+                    <div className='mt-4 flex justify-center'>
+                        <Button onClick={() => router.push('/')} variant='outline'>
+                            <ArrowLeft className='mr-2 h-4 w-4' />
+                            Back to Home
+                        </Button>
+                    </div>
+                </div>
+            </AppLayout>
+        );
+    }
+
+    // No configuration state
+    if (hasConfiguration === false) {
+        return (
+            <AppLayout>
+                <div className='container mx-auto px-4 py-16'>
+                    <NoConfigurationEmptyState className='mx-auto max-w-md' actionHref='/admin' />
+                    <div className='mt-4 flex justify-center'>
+                        <Button onClick={() => router.push('/')} variant='outline'>
+                            <ArrowLeft className='mr-2 h-4 w-4' />
+                            Back to Home
+                        </Button>
                     </div>
                 </div>
             </AppLayout>
@@ -121,12 +133,13 @@ export default function ChatPage() {
 
     return (
         <AppLayout>
+            <ConnectionStatusIndicator showBanner position='top' />
             <div className='container mx-auto max-w-4xl px-4 py-4'>
-                <div className='h-[calc(100vh-8rem)] overflow-hidden rounded-lg border bg-background shadow-sm'>
+                <div className='bg-background h-[calc(100vh-8rem)] overflow-hidden rounded-lg border shadow-sm'>
                     <ChatInterface
                         className='h-full'
                         welcomeMessage="Welcome! Ask me anything about this person's background, skills, or experience."
-                        placeholder="Ask a question about their experience..."
+                        placeholder='Ask a question about their experience...'
                         showSuggestedQuestions={true}
                         onMessageSent={(message) => {
                             console.log('Message sent:', message);

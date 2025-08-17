@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+
 import { authOptions } from '@/lib/auth';
-import { createSupabaseAdmin } from '@/lib/supabase';
-import { uploadResume, initializeStorageBucket } from '@/lib/storage';
 import { extractTextFromPDF } from '@/lib/langchain';
+import { initializeStorageBucket, uploadResume } from '@/lib/storage';
+import { createSupabaseAdmin } from '@/lib/supabase';
+
+import { getServerSession } from 'next-auth';
 
 export const runtime = 'nodejs';
 
@@ -14,10 +16,7 @@ export async function POST(request: NextRequest) {
         // Check authentication
         const session = await getServerSession(authOptions);
         if (!session) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Parse multipart form data
@@ -25,28 +24,19 @@ export async function POST(request: NextRequest) {
         const file = formData.get('file') as File | null;
 
         if (!file) {
-            return NextResponse.json(
-                { error: 'No file provided' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'No file provided' }, { status: 400 });
         }
 
         // Validate file type (must be PDF)
         if (file.type !== 'application/pdf') {
-            return NextResponse.json(
-                { error: 'Only PDF files are allowed' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Only PDF files are allowed' }, { status: 400 });
         }
 
         // Validate file size
         if (file.size > MAX_FILE_SIZE) {
             const maxSizeMB = MAX_FILE_SIZE / (1024 * 1024);
-            
-            return NextResponse.json(
-                { error: `File size must be less than ${maxSizeMB}MB` },
-                { status: 400 }
-            );
+
+            return NextResponse.json({ error: `File size must be less than ${maxSizeMB}MB` }, { status: 400 });
         }
 
         // Initialize storage bucket if needed
@@ -77,10 +67,10 @@ export async function POST(request: NextRequest) {
         // Extract text content from PDF
         let extractedContent = '';
         let extractionError: string | null = null;
-        
+
         try {
             const extractionResult = await extractTextFromPDF(buffer);
-            
+
             if (extractionResult.success && extractionResult.content) {
                 extractedContent = extractionResult.content;
                 console.log(`Successfully extracted ${extractedContent.length} characters from PDF`);
@@ -117,19 +107,12 @@ export async function POST(request: NextRequest) {
             is_active: true
         };
 
-        const { data: resume, error: insertError } = await supabase
-            .from('resume')
-            .insert(resumeData)
-            .select()
-            .single();
+        const { data: resume, error: insertError } = await supabase.from('resume').insert(resumeData).select().single();
 
         if (insertError) {
             console.error('Database insert error:', insertError);
-            
-return NextResponse.json(
-                { error: 'Failed to save resume metadata' },
-                { status: 500 }
-            );
+
+            return NextResponse.json({ error: 'Failed to save resume metadata' }, { status: 500 });
         }
 
         return NextResponse.json({
@@ -150,13 +133,9 @@ return NextResponse.json(
                 charactersExtracted: extractedContent.length
             }
         });
-
     } catch (error) {
         console.error('Upload error:', error);
-        
-return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+
 import { authOptions } from '@/lib/auth';
-import { createSupabaseAdmin } from '@/lib/supabase';
 import { deleteResume, getSignedUrl } from '@/lib/storage';
+import { createSupabaseAdmin } from '@/lib/supabase';
+
+import { getServerSession } from 'next-auth';
 
 export const runtime = 'nodejs';
 
@@ -12,10 +14,7 @@ export async function GET(request: NextRequest) {
         // Check authentication
         const session = await getServerSession(authOptions);
         if (!session) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const supabase = await createSupabaseAdmin();
@@ -24,10 +23,7 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const all = searchParams.get('all') === 'true';
 
-        let query = supabase
-            .from('resume')
-            .select('*')
-            .order('uploaded_at', { ascending: false });
+        let query = supabase.from('resume').select('*').order('uploaded_at', { ascending: false });
 
         if (!all) {
             query = query.eq('is_active', true).limit(1);
@@ -37,11 +33,8 @@ export async function GET(request: NextRequest) {
 
         if (error) {
             console.error('Database query error:', error);
-            
-return NextResponse.json(
-                { error: 'Failed to fetch resumes' },
-                { status: 500 }
-            );
+
+            return NextResponse.json({ error: 'Failed to fetch resumes' }, { status: 500 });
         }
 
         // Generate signed URLs for file access if needed
@@ -52,7 +45,7 @@ return NextResponse.json(
                     const urlResult = await getSignedUrl(resume.file_url);
                     signedUrl = urlResult.success ? urlResult.url : null;
                 }
-                
+
                 return {
                     id: resume.id,
                     filename: resume.filename,
@@ -77,14 +70,10 @@ return NextResponse.json(
             success: true,
             resumes: resumesWithUrls
         });
-
     } catch (error) {
         console.error('Get resume error:', error);
-        
-return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
 
@@ -94,10 +83,7 @@ export async function DELETE(request: NextRequest) {
         // Check authentication
         const session = await getServerSession(authOptions);
         if (!session) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Get resume ID from request body
@@ -105,26 +91,16 @@ export async function DELETE(request: NextRequest) {
         const { id } = body;
 
         if (!id) {
-            return NextResponse.json(
-                { error: 'Resume ID is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Resume ID is required' }, { status: 400 });
         }
 
         const supabase = await createSupabaseAdmin();
 
         // Get resume details first
-        const { data: resume, error: fetchError } = await supabase
-            .from('resume')
-            .select('*')
-            .eq('id', id)
-            .single();
+        const { data: resume, error: fetchError } = await supabase.from('resume').select('*').eq('id', id).single();
 
         if (fetchError || !resume) {
-            return NextResponse.json(
-                { error: 'Resume not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
         }
 
         // Delete from storage if file exists
@@ -137,32 +113,22 @@ export async function DELETE(request: NextRequest) {
         }
 
         // Delete from database
-        const { error: deleteError } = await supabase
-            .from('resume')
-            .delete()
-            .eq('id', id);
+        const { error: deleteError } = await supabase.from('resume').delete().eq('id', id);
 
         if (deleteError) {
             console.error('Database deletion error:', deleteError);
-            
-return NextResponse.json(
-                { error: 'Failed to delete resume' },
-                { status: 500 }
-            );
+
+            return NextResponse.json({ error: 'Failed to delete resume' }, { status: 500 });
         }
 
         return NextResponse.json({
             success: true,
             message: 'Resume deleted successfully'
         });
-
     } catch (error) {
         console.error('Delete resume error:', error);
-        
-return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }
 
@@ -172,20 +138,14 @@ export async function PUT(request: NextRequest) {
         // Check authentication
         const session = await getServerSession(authOptions);
         if (!session) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         const body = await request.json();
         const { id, isActive } = body;
 
         if (!id) {
-            return NextResponse.json(
-                { error: 'Resume ID is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Resume ID is required' }, { status: 400 });
         }
 
         const supabase = await createSupabaseAdmin();
@@ -212,11 +172,8 @@ export async function PUT(request: NextRequest) {
 
         if (updateError) {
             console.error('Database update error:', updateError);
-            
-return NextResponse.json(
-                { error: 'Failed to update resume' },
-                { status: 500 }
-            );
+
+            return NextResponse.json({ error: 'Failed to update resume' }, { status: 500 });
         }
 
         return NextResponse.json({
@@ -228,13 +185,9 @@ return NextResponse.json(
                 isActive: resume.is_active
             }
         });
-
     } catch (error) {
         console.error('Update resume error:', error);
-        
-return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

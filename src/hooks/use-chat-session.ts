@@ -36,7 +36,7 @@ export function useChatSession() {
         (content: string): ChatMessage => {
             const message = addUserMessageBase(content);
             queueMessage(message, clientId, sessionId);
-            
+
             return message;
         },
         [addUserMessageBase, queueMessage, clientId, sessionId]
@@ -46,7 +46,7 @@ export function useChatSession() {
         (content: string): ChatMessage => {
             const message = addAssistantMessageBase(content);
             queueMessage(message, clientId, sessionId);
-            
+
             return message;
         },
         [addAssistantMessageBase, queueMessage, clientId, sessionId]
@@ -55,8 +55,8 @@ export function useChatSession() {
     const addSystemMessage = useCallback(
         (content: string): ChatMessage => {
             const message = addSystemMessageBase(content);
-            queueMessage(message, clientId, sessionId); 
-            
+            queueMessage(message, clientId, sessionId);
+
             return message;
         },
         [addSystemMessageBase, queueMessage, clientId, sessionId]

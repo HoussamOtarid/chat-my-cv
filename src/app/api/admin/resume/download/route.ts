@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+
 import { authOptions } from '@/lib/auth';
-import { createSupabaseAdmin } from '@/lib/supabase';
 import { getSignedUrl } from '@/lib/storage';
+import { createSupabaseAdmin } from '@/lib/supabase';
+
+import { getServerSession } from 'next-auth';
 
 export const runtime = 'nodejs';
 
@@ -12,10 +14,7 @@ export async function GET(request: NextRequest) {
         // Check authentication
         const session = await getServerSession(authOptions);
         if (!session) {
-            return NextResponse.json(
-                { error: 'Unauthorized' },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
         // Get resume ID from query params
@@ -23,54 +22,34 @@ export async function GET(request: NextRequest) {
         const id = searchParams.get('id');
 
         if (!id) {
-            return NextResponse.json(
-                { error: 'Resume ID is required' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Resume ID is required' }, { status: 400 });
         }
 
         const supabase = await createSupabaseAdmin();
 
         // Get resume from database
-        const { data: resume, error: fetchError } = await supabase
-            .from('resume')
-            .select('*')
-            .eq('id', id)
-            .single();
+        const { data: resume, error: fetchError } = await supabase.from('resume').select('*').eq('id', id).single();
 
         if (fetchError || !resume) {
-            return NextResponse.json(
-                { error: 'Resume not found' },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: 'Resume not found' }, { status: 404 });
         }
 
         if (!resume.file_url) {
-            return NextResponse.json(
-                { error: 'Resume has no associated file' },
-                { status: 400 }
-            );
+            return NextResponse.json({ error: 'Resume has no associated file' }, { status: 400 });
         }
 
         // Generate a signed URL for download
         const signedUrlResult = await getSignedUrl(resume.file_url);
-        
+
         if (!signedUrlResult.success || !signedUrlResult.url) {
-            return NextResponse.json(
-                { error: 'Failed to generate download URL' },
-                { status: 500 }
-            );
+            return NextResponse.json({ error: 'Failed to generate download URL' }, { status: 500 });
         }
 
         // Redirect to the signed URL
         return NextResponse.redirect(signedUrlResult.url);
-
     } catch (error) {
         console.error('Download resume error:', error);
-        
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+
+        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState, useEffect, ReactNode } from 'react';
-import { AlertCircle, RefreshCw, WifiOff } from 'lucide-react';
+import React, { ReactNode, useEffect, useState } from 'react';
+
 import { Alert, AlertDescription, AlertTitle } from '@/registry/new-york-v4/ui/alert';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
+
+import { AlertCircle, RefreshCw, WifiOff } from 'lucide-react';
 
 interface AsyncErrorBoundaryProps {
     children: ReactNode;
@@ -77,7 +79,7 @@ export function AsyncErrorBoundary({
             return;
         }
 
-        setErrorState(prev => ({
+        setErrorState((prev) => ({
             ...prev,
             isRetrying: true,
             retryCount: prev.retryCount + 1
@@ -85,7 +87,7 @@ export function AsyncErrorBoundary({
 
         // Exponential backoff
         const delay = retryDelay * Math.pow(2, retryCount);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
 
         resetError();
     };
@@ -93,9 +95,7 @@ export function AsyncErrorBoundary({
     // Handle unhandled promise rejections
     useEffect(() => {
         const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-            const error = new Error(
-                event.reason?.message || 'Unhandled promise rejection'
-            );
+            const error = new Error(event.reason?.message || 'Unhandled promise rejection');
 
             setErrorState({
                 hasError: true,
@@ -125,26 +125,25 @@ export function AsyncErrorBoundary({
         }
 
         // Check if it's a network error
-        const isNetworkError = errorState.error.message.toLowerCase().includes('network') ||
-                             errorState.error.message.toLowerCase().includes('fetch');
+        const isNetworkError =
+            errorState.error.message.toLowerCase().includes('network') ||
+            errorState.error.message.toLowerCase().includes('fetch');
 
         if (!showError) {
             return null;
         }
 
         return (
-            <div className="flex items-center justify-center p-4">
-                <Card className="w-full max-w-md">
+            <div className='flex items-center justify-center p-4'>
+                <Card className='w-full max-w-md'>
                     <CardHeader>
-                        <div className="flex items-center gap-2">
+                        <div className='flex items-center gap-2'>
                             {isNetworkError ? (
-                                <WifiOff className="h-5 w-5 text-destructive" />
+                                <WifiOff className='text-destructive h-5 w-5' />
                             ) : (
-                                <AlertCircle className="h-5 w-5 text-destructive" />
+                                <AlertCircle className='text-destructive h-5 w-5' />
                             )}
-                            <CardTitle>
-                                {isNetworkError ? 'Connection Error' : 'Operation Failed'}
-                            </CardTitle>
+                            <CardTitle>{isNetworkError ? 'Connection Error' : 'Operation Failed'}</CardTitle>
                         </div>
                         <CardDescription>
                             {isNetworkError
@@ -154,37 +153,36 @@ export function AsyncErrorBoundary({
                     </CardHeader>
                     <CardContent>
                         {process.env.NODE_ENV === 'development' && (
-                            <Alert variant="destructive" className="mb-4">
+                            <Alert variant='destructive' className='mb-4'>
                                 <AlertTitle>Error Details</AlertTitle>
-                                <AlertDescription className="mt-2 font-mono text-xs">
+                                <AlertDescription className='mt-2 font-mono text-xs'>
                                     {errorState.error.message}
                                 </AlertDescription>
                             </Alert>
                         )}
                         {errorState.retryCount > 0 && (
-                            <p className="text-sm text-muted-foreground mb-4">
+                            <p className='text-muted-foreground mb-4 text-sm'>
                                 Retry attempt {errorState.retryCount} of {maxRetries}
                             </p>
                         )}
-                        <div className="flex gap-2">
+                        <div className='flex gap-2'>
                             <Button
                                 onClick={retry}
                                 disabled={errorState.isRetrying || errorState.retryCount >= maxRetries}
-                                variant="default"
-                            >
+                                variant='default'>
                                 {errorState.isRetrying ? (
                                     <>
-                                        <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                                        <RefreshCw className='mr-2 h-4 w-4 animate-spin' />
                                         Retrying...
                                     </>
                                 ) : (
                                     <>
-                                        <RefreshCw className="mr-2 h-4 w-4" />
+                                        <RefreshCw className='mr-2 h-4 w-4' />
                                         Try Again
                                     </>
                                 )}
                             </Button>
-                            <Button onClick={resetError} variant="outline">
+                            <Button onClick={resetError} variant='outline'>
                                 Cancel
                             </Button>
                         </div>
@@ -209,12 +207,7 @@ export async function withRetry<T>(
         onRetry?: (attempt: number, error: Error) => void;
     } = {}
 ): Promise<T> {
-    const {
-        maxRetries = 3,
-        retryDelay = 1000,
-        shouldRetry = () => true,
-        onRetry
-    } = options;
+    const { maxRetries = 3, retryDelay = 1000, shouldRetry = () => true, onRetry } = options;
 
     let lastError: Error;
 
@@ -234,7 +227,7 @@ export async function withRetry<T>(
 
             // Exponential backoff
             const delay = retryDelay * Math.pow(2, attempt);
-            await new Promise(resolve => setTimeout(resolve, delay));
+            await new Promise((resolve) => setTimeout(resolve, delay));
         }
     }
 

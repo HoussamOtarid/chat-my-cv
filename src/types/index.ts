@@ -47,14 +47,14 @@ interface BedrockAnthropicConfig extends BaseLLMConfig {
 interface OpenAICompatibleConfig extends BaseLLMConfig {
     provider: 'openai-compatible';
     baseUrl: string;
-    apiKey?: string;  // Optional as some local services don't require auth
+    apiKey?: string; // Optional as some local services don't require auth
     defaultHeaders?: Record<string, string>;
 }
 
-export type LLMConfig = 
-    | DirectOpenAIConfig 
-    | DirectAnthropicConfig 
-    | AzureOpenAIConfig 
+export type LLMConfig =
+    | DirectOpenAIConfig
+    | DirectAnthropicConfig
+    | AzureOpenAIConfig
     | BedrockAnthropicConfig
     | OpenAICompatibleConfig;
 

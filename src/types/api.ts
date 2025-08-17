@@ -29,6 +29,7 @@ export interface ChatStreamEvent {
     type: 'token' | 'done' | 'error';
     content?: string;
     error?: string;
+    errorType?: 'auth' | 'rate_limit' | 'quota' | 'network' | 'model' | 'timeout' | 'service' | 'api' | 'unknown';
 }
 
 export interface ChatSuggestion {

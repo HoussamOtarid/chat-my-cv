@@ -9,7 +9,7 @@ const STORAGE_KEYS = {
     CLIENT_ID: 'chat_client_id',
     SESSION: 'chat_session',
     MESSAGE_HISTORY: 'chat_messages',
-    LAST_ACTIVITY: 'chat_last_activity',
+    LAST_ACTIVITY: 'chat_last_activity'
 } as const;
 
 /**
@@ -20,12 +20,12 @@ export function generateUUID(): string {
     if (typeof crypto !== 'undefined' && crypto.randomUUID) {
         return crypto.randomUUID();
     }
-    
+
     // Fallback to manual UUID v4 generation
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-        const r = Math.random() * 16 | 0;
-        const v = c === 'x' ? r : (r & 0x3 | 0x8);
-        
+        const r = (Math.random() * 16) | 0;
+        const v = c === 'x' ? r : (r & 0x3) | 0x8;
+
         return v.toString(16);
     });
 }
@@ -41,16 +41,16 @@ export function getClientId(): string {
 
     try {
         let clientId = localStorage.getItem(STORAGE_KEYS.CLIENT_ID);
-        
+
         if (!clientId) {
             clientId = generateUUID();
             localStorage.setItem(STORAGE_KEYS.CLIENT_ID, clientId);
         }
-        
+
         return clientId;
     } catch (error) {
         console.error('Failed to access localStorage for client ID:', error);
-        
+
         // Return a session-based ID if localStorage fails
         return generateUUID();
     }
@@ -85,8 +85,8 @@ export class SessionStorage {
         if (!SessionStorage.instance) {
             SessionStorage.instance = new SessionStorage();
         }
-        
-return SessionStorage.instance;
+
+        return SessionStorage.instance;
     }
 
     /**
@@ -115,7 +115,7 @@ return SessionStorage.instance;
                 // Convert timestamp strings back to Date objects
                 this.messageHistory = messages.map((msg: any) => ({
                     ...msg,
-                    timestamp: new Date(msg.timestamp),
+                    timestamp: new Date(msg.timestamp)
                 }));
             }
         } catch (error) {
@@ -146,11 +146,11 @@ return SessionStorage.instance;
             localStorage.setItem(STORAGE_KEYS.LAST_ACTIVITY, new Date().toISOString());
         } catch (error) {
             console.error('Failed to save session to localStorage:', error);
-            
+
             // If localStorage is full, try to clear old messages
             if (error instanceof Error && error.name === 'QuotaExceededError') {
                 this.trimMessageHistory();
-                
+
                 // Try again with trimmed history
                 try {
                     const messagesToSave = this.messageHistory.slice(-Math.floor(this.maxMessages / 2));
@@ -178,12 +178,12 @@ return SessionStorage.instance;
                 id: generateUUID(),
                 clientId: this.clientId,
                 messages: [],
-                createdAt: new Date(),
+                createdAt: new Date()
             };
             this.saveSession();
         }
-        
-return this.session;
+
+        return this.session;
     }
 
     /**
@@ -199,19 +199,19 @@ return this.session;
     addMessage(message: Omit<ChatMessage, 'id'>): ChatMessage {
         const fullMessage: ChatMessage = {
             ...message,
-            id: generateMessageId(),
+            id: generateMessageId()
         };
 
         this.messageHistory.push(fullMessage);
-        
+
         // Update session messages
         if (this.session) {
             this.session.messages = this.messageHistory;
         }
 
         this.saveSession();
-        
-return fullMessage;
+
+        return fullMessage;
     }
 
     /**
@@ -232,12 +232,12 @@ return fullMessage;
      * Clear specific message
      */
     removeMessage(messageId: string): void {
-        this.messageHistory = this.messageHistory.filter(msg => msg.id !== messageId);
-        
+        this.messageHistory = this.messageHistory.filter((msg) => msg.id !== messageId);
+
         if (this.session) {
             this.session.messages = this.messageHistory;
         }
-        
+
         this.saveSession();
     }
 
@@ -245,7 +245,7 @@ return fullMessage;
      * Update message content (e.g., for streaming)
      */
     updateMessage(messageId: string, content: string): void {
-        const message = this.messageHistory.find(msg => msg.id === messageId);
+        const message = this.messageHistory.find((msg) => msg.id === messageId);
         if (message) {
             message.content = content;
             this.saveSession();
@@ -258,11 +258,11 @@ return fullMessage;
     trimMessageHistory(keepCount?: number): void {
         const limit = keepCount || Math.floor(this.maxMessages / 2);
         this.messageHistory = this.messageHistory.slice(-limit);
-        
+
         if (this.session) {
             this.session.messages = this.messageHistory;
         }
-        
+
         this.saveSession();
     }
 
@@ -272,7 +272,7 @@ return fullMessage;
     clearSession(): void {
         this.session = null;
         this.messageHistory = [];
-        
+
         if (typeof window !== 'undefined') {
             try {
                 localStorage.removeItem(STORAGE_KEYS.SESSION);
@@ -295,12 +295,12 @@ return fullMessage;
 
         try {
             const lastActivity = localStorage.getItem(STORAGE_KEYS.LAST_ACTIVITY);
-            
-return lastActivity ? new Date(lastActivity) : null;
+
+            return lastActivity ? new Date(lastActivity) : null;
         } catch (error) {
             console.error('Failed to get last activity:', error);
-            
-return null;
+
+            return null;
         }
     }
 
@@ -315,20 +315,24 @@ return null;
 
         const now = new Date();
         const hoursSinceActivity = (now.getTime() - lastActivity.getTime()) / (1000 * 60 * 60);
-        
-return hoursSinceActivity > maxInactivityHours;
+
+        return hoursSinceActivity > maxInactivityHours;
     }
 
     /**
      * Export session data (for debugging or backup)
      */
     exportSession(): string {
-        return JSON.stringify({
-            clientId: this.clientId,
-            session: this.session,
-            messages: this.messageHistory,
-            lastActivity: this.getLastActivity(),
-        }, null, 2);
+        return JSON.stringify(
+            {
+                clientId: this.clientId,
+                session: this.session,
+                messages: this.messageHistory,
+                lastActivity: this.getLastActivity()
+            },
+            null,
+            2
+        );
     }
 
     /**
@@ -337,7 +341,7 @@ return hoursSinceActivity > maxInactivityHours;
     importSession(jsonData: string): boolean {
         try {
             const data = JSON.parse(jsonData);
-            
+
             if (data.clientId) {
                 this.clientId = data.clientId;
                 if (typeof window !== 'undefined') {
@@ -348,24 +352,24 @@ return hoursSinceActivity > maxInactivityHours;
             if (data.session) {
                 this.session = {
                     ...data.session,
-                    createdAt: new Date(data.session.createdAt),
+                    createdAt: new Date(data.session.createdAt)
                 };
             }
 
             if (data.messages) {
                 this.messageHistory = data.messages.map((msg: any) => ({
                     ...msg,
-                    timestamp: new Date(msg.timestamp),
+                    timestamp: new Date(msg.timestamp)
                 }));
             }
 
             this.saveSession();
-            
-return true;
+
+            return true;
         } catch (error) {
             console.error('Failed to import session:', error);
-            
-return false;
+
+            return false;
         }
     }
 
@@ -385,12 +389,12 @@ return false;
                     size += value.length + key.length;
                 }
             }
-            
-return size;
+
+            return size;
         } catch (error) {
             console.error('Failed to calculate storage size:', error);
-            
-return 0;
+
+            return 0;
         }
     }
 }
@@ -398,9 +402,7 @@ return 0;
 /**
  * Default session storage instance
  */
-export const sessionStorage = typeof window !== 'undefined' 
-    ? SessionStorage.getInstance() 
-    : null;
+export const sessionStorage = typeof window !== 'undefined' ? SessionStorage.getInstance() : null;
 
 /**
  * React hook for session storage
@@ -412,17 +414,17 @@ export function useSessionStorage() {
             clientId: '',
             sessionId: undefined as string | undefined,
             messages: [] as ChatMessage[],
-            addMessage: () => ({} as ChatMessage),
+            addMessage: () => ({}) as ChatMessage,
             updateMessage: () => {},
             removeMessage: () => {},
             getRecentMessages: () => [] as ChatMessage[],
             clearSession: () => {},
-            isSessionExpired: () => false,
+            isSessionExpired: () => false
         };
     }
 
     const storage = SessionStorage.getInstance();
-    
+
     return {
         clientId: storage.getClientId(),
         sessionId: storage.getSessionId(),
@@ -432,6 +434,6 @@ export function useSessionStorage() {
         removeMessage: storage.removeMessage.bind(storage),
         getRecentMessages: storage.getRecentMessages.bind(storage),
         clearSession: storage.clearSession.bind(storage),
-        isSessionExpired: storage.isSessionExpired.bind(storage),
+        isSessionExpired: storage.isSessionExpired.bind(storage)
     };
 }

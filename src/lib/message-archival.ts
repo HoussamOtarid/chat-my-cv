@@ -57,7 +57,7 @@ export class MessageArchival {
         if (!MessageArchival.instance) {
             MessageArchival.instance = new MessageArchival(config);
         }
-        
+
         return MessageArchival.instance;
     }
 

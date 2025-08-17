@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
     const handleSaveChatSettings = async () => {
         setMessage(null);
-        
+
         try {
             const response = await fetch('/api/admin/config', {
                 method: 'PUT',
@@ -107,10 +107,7 @@ export default function AdminDashboard() {
             )}
 
             {/* LLM Configuration */}
-            <LLMConfiguration 
-                initialConfig={config.llm}
-                onSave={handleSaveLLMConfig}
-            />
+            <LLMConfiguration initialConfig={config.llm} onSave={handleSaveLLMConfig} />
 
             {/* Chat Settings */}
             <Card>
@@ -129,7 +126,7 @@ export default function AdminDashboard() {
                             rows={4}
                             className='font-mono text-sm'
                         />
-                        <p className='text-sm text-muted-foreground'>
+                        <p className='text-muted-foreground text-sm'>
                             Override the default system prompt to customize AI behavior
                         </p>
                     </div>
@@ -143,7 +140,7 @@ export default function AdminDashboard() {
                             onChange={(e) => setConfig({ ...config, welcome_message: e.target.value })}
                             rows={2}
                         />
-                        <p className='text-sm text-muted-foreground'>
+                        <p className='text-muted-foreground text-sm'>
                             The first message users see in the chat interface
                         </p>
                     </div>
@@ -152,8 +149,7 @@ export default function AdminDashboard() {
                         <button
                             type='button'
                             onClick={handleSaveChatSettings}
-                            className='inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2'
-                        >
+                            className='ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50'>
                             Save Chat Settings
                         </button>
                     </div>

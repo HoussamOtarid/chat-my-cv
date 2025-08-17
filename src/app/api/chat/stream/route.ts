@@ -88,26 +88,36 @@ async function handleGET(request: NextRequest) {
 
             // 3. Decrypt credentials if needed
             const config = llmConfigRow.value as LLMConfig;
-            
+
             // Decrypt encrypted fields if the config is marked as encrypted
             if (llmConfigRow.encrypted) {
                 const { decrypt } = await import('@/lib/encryption');
-                
+
                 // Type-safe decryption based on provider
-                if ((config.provider === 'openai' || config.provider === 'anthropic' || config.provider === 'openai-compatible') && 'apiKey' in config && config.apiKey) {
+                if (
+                    (config.provider === 'openai' ||
+                        config.provider === 'anthropic' ||
+                        config.provider === 'openai-compatible') &&
+                    'apiKey' in config &&
+                    config.apiKey
+                ) {
                     config.apiKey = await decrypt(config.apiKey);
                 }
                 if (config.provider === 'azure-openai' && 'azureApiKey' in config && config.azureApiKey) {
                     config.azureApiKey = await decrypt(config.azureApiKey);
                 }
-                if (config.provider === 'bedrock-anthropic' && 'awsSecretAccessKey' in config && config.awsSecretAccessKey) {
+                if (
+                    config.provider === 'bedrock-anthropic' &&
+                    'awsSecretAccessKey' in config &&
+                    config.awsSecretAccessKey
+                ) {
                     config.awsSecretAccessKey = await decrypt(config.awsSecretAccessKey);
                 }
                 if (config.provider === 'bedrock-anthropic' && 'awsSessionToken' in config && config.awsSessionToken) {
                     config.awsSessionToken = await decrypt(config.awsSessionToken);
                 }
             }
-            
+
             // Check if credentials are configured based on provider type
             let credentialsConfigured = false;
             switch (config.provider) {
@@ -115,15 +125,17 @@ async function handleGET(request: NextRequest) {
                 case 'anthropic':
                     credentialsConfigured = 'apiKey' in config && !!config.apiKey;
                     break;
-                    
+
                 case 'azure-openai':
-                    credentialsConfigured = !!config.azureApiKey && !!config.azureEndpoint && !!config.azureDeploymentName;
+                    credentialsConfigured =
+                        !!config.azureApiKey && !!config.azureEndpoint && !!config.azureDeploymentName;
                     break;
-                    
+
                 case 'bedrock-anthropic':
-                    credentialsConfigured = !!config.awsAccessKeyId && !!config.awsSecretAccessKey && !!config.awsRegion;
+                    credentialsConfigured =
+                        !!config.awsAccessKeyId && !!config.awsSecretAccessKey && !!config.awsRegion;
                     break;
-                    
+
                 case 'openai-compatible':
                     credentialsConfigured = !!config.baseUrl;
                     break;
@@ -229,12 +241,59 @@ async function handleGET(request: NextRequest) {
             }
         } catch (error) {
             console.error('Streaming error:', error);
-            const errorMessage = error instanceof Error ? error.message : 'An error occurred';
 
-            // Send error event
+            // Determine error type and provide helpful message
+            let errorMessage = 'An error occurred while processing your request';
+            let errorType: ChatStreamEvent['errorType'] = 'unknown';
+
+            if (error instanceof Error) {
+                const message = error.message.toLowerCase();
+
+                // API key issues
+                if (message.includes('401') || message.includes('unauthorized') || message.includes('api key')) {
+                    errorMessage = 'Authentication failed. Please check the API key configuration.';
+                    errorType = 'auth';
+                }
+                // Rate limiting
+                else if (message.includes('429') || message.includes('rate limit')) {
+                    errorMessage = 'Rate limit exceeded. Please wait a moment before trying again.';
+                    errorType = 'rate_limit';
+                }
+                // Quota issues
+                else if (message.includes('quota') || message.includes('exceeded')) {
+                    errorMessage = 'API quota exceeded. Please contact the administrator.';
+                    errorType = 'quota';
+                }
+                // Network issues
+                else if (message.includes('network') || message.includes('fetch') || message.includes('econnrefused')) {
+                    errorMessage = 'Connection error. Please check your internet connection and try again.';
+                    errorType = 'network';
+                }
+                // Model issues
+                else if (message.includes('model') || message.includes('not found')) {
+                    errorMessage = 'The specified model is not available. Please check the configuration.';
+                    errorType = 'model';
+                }
+                // Timeout
+                else if (message.includes('timeout')) {
+                    errorMessage = 'Request timed out. Please try again with a shorter message.';
+                    errorType = 'timeout';
+                }
+                // Generic API error
+                else if (message.includes('500') || message.includes('internal')) {
+                    errorMessage = 'The AI service is temporarily unavailable. Please try again later.';
+                    errorType = 'service';
+                } else {
+                    errorMessage = error.message;
+                    errorType = 'api';
+                }
+            }
+
+            // Send detailed error event
             await sendEvent({
                 type: 'error',
-                error: errorMessage
+                error: errorMessage,
+                errorType
             });
         } finally {
             // Close the stream

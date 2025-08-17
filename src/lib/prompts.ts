@@ -1,5 +1,5 @@
-import { SystemMessage, HumanMessage, AIMessage, BaseMessage } from '@langchain/core/messages';
 import type { ChatMessage, Resume } from '@/types';
+import { AIMessage, BaseMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 
 /**
  * Create the system prompt that includes the full resume content
@@ -76,7 +76,7 @@ Before answering each question:
  * Converts our ChatMessage format to LangChain message format
  */
 export function formatConversationHistory(messages: ChatMessage[]): BaseMessage[] {
-    return messages.map(msg => {
+    return messages.map((msg) => {
         switch (msg.role) {
             case 'user':
                 return new HumanMessage(msg.content);
@@ -101,18 +101,18 @@ export function createChatPrompt(
     currentMessage: string
 ): BaseMessage[] {
     const messages: BaseMessage[] = [];
-    
+
     // 1. System prompt with full resume
     messages.push(createSystemPrompt(resume));
-    
+
     // 2. Conversation history (from localStorage on client)
     // Keep it simple - no server-side memory optimization in MVP
     const historyMessages = formatConversationHistory(conversationHistory);
     messages.push(...historyMessages);
-    
+
     // 3. Current user message
     messages.push(new HumanMessage(currentMessage));
-    
+
     return messages;
 }
 
@@ -123,11 +123,11 @@ export function createChatPrompt(
 export function generateSuggestedQuestions(resume: Resume | null): string[] {
     if (!resume || !resume.content) {
         return [
-            "When will the resume be available?",
-            "What kind of questions can I ask once the resume is uploaded?",
-            "How does this AI resume assistant work?",
-            "What features does this chat interface offer?",
-            "Can I upload my own resume?"
+            'When will the resume be available?',
+            'What kind of questions can I ask once the resume is uploaded?',
+            'How does this AI resume assistant work?',
+            'What features does this chat interface offer?',
+            'Can I upload my own resume?'
         ];
     }
 
@@ -139,33 +139,33 @@ export function generateSuggestedQuestions(resume: Resume | null): string[] {
         technical: {
             keywords: ['software', 'engineer', 'developer', 'programmer', 'coding', 'technical'],
             questions: [
-                "What programming languages and frameworks are you most proficient in?",
-                "Can you describe your most challenging technical project?",
-                "What is your experience with cloud technologies and DevOps?"
+                'What programming languages and frameworks are you most proficient in?',
+                'Can you describe your most challenging technical project?',
+                'What is your experience with cloud technologies and DevOps?'
             ]
         },
         leadership: {
             keywords: ['manager', 'lead', 'director', 'head', 'supervisor', 'team'],
             questions: [
-                "Can you describe your leadership style and management experience?",
-                "What size teams have you managed and what were the outcomes?",
-                "How do you approach team building and conflict resolution?"
+                'Can you describe your leadership style and management experience?',
+                'What size teams have you managed and what were the outcomes?',
+                'How do you approach team building and conflict resolution?'
             ]
         },
         creative: {
             keywords: ['designer', 'creative', 'artist', 'ux', 'ui', 'graphic'],
             questions: [
-                "What design tools and methodologies do you specialize in?",
-                "Can you describe your design process and philosophy?",
-                "What types of design projects have you worked on?"
+                'What design tools and methodologies do you specialize in?',
+                'Can you describe your design process and philosophy?',
+                'What types of design projects have you worked on?'
             ]
         },
         analytical: {
             keywords: ['analyst', 'data', 'research', 'scientist', 'analytics'],
             questions: [
-                "What analytical tools and methodologies do you use?",
+                'What analytical tools and methodologies do you use?',
                 "Can you describe a complex analysis you've conducted?",
-                "How do you approach data-driven decision making?"
+                'How do you approach data-driven decision making?'
             ]
         }
     };
@@ -173,7 +173,7 @@ export function generateSuggestedQuestions(resume: Resume | null): string[] {
     // Check which pattern matches best
     let matchedPattern = false;
     for (const [, config] of Object.entries(patterns)) {
-        if (config.keywords.some(keyword => resumeLower.includes(keyword))) {
+        if (config.keywords.some((keyword) => resumeLower.includes(keyword))) {
             suggestions.push(...config.questions.slice(0, 2));
             matchedPattern = true;
             break;
@@ -182,26 +182,30 @@ export function generateSuggestedQuestions(resume: Resume | null): string[] {
 
     // Always include these universal questions
     const universalQuestions = [
-        "Can you provide a summary of your professional experience?",
-        "What are your top three professional achievements?",
-        "What are your key skills and areas of expertise?"
+        'Can you provide a summary of your professional experience?',
+        'What are your top three professional achievements?',
+        'What are your key skills and areas of expertise?'
     ];
 
     if (!matchedPattern) {
-        suggestions.push("What is your current role and primary responsibilities?");
+        suggestions.push('What is your current role and primary responsibilities?');
     }
 
     suggestions.push(...universalQuestions);
 
     // Add education question if relevant
-    if (resumeLower.includes('education') || resumeLower.includes('degree') || 
-        resumeLower.includes('university') || resumeLower.includes('college')) {
-        suggestions.push("What is your educational background and key qualifications?");
+    if (
+        resumeLower.includes('education') ||
+        resumeLower.includes('degree') ||
+        resumeLower.includes('university') ||
+        resumeLower.includes('college')
+    ) {
+        suggestions.push('What is your educational background and key qualifications?');
     }
 
     // Add certification question if relevant
     if (resumeLower.includes('certifi') || resumeLower.includes('license')) {
-        suggestions.push("What professional certifications or licenses do you hold?");
+        suggestions.push('What professional certifications or licenses do you hold?');
     }
 
     // Return unique questions, max 5
@@ -216,8 +220,8 @@ export const ERROR_RESPONSES = {
     RATE_LIMIT: "You've sent too many messages. Please wait a moment before sending another.",
     API_ERROR: "I'm having trouble processing your request. Please try again in a moment.",
     INVALID_MESSAGE: "I couldn't understand your message. Please try rephrasing it.",
-    TOKEN_LIMIT: "Your message is too long. Please try sending a shorter message.",
-    CONTEXT_TOO_LONG: "The conversation has become too long. Please start a new conversation.",
+    TOKEN_LIMIT: 'Your message is too long. Please try sending a shorter message.',
+    CONTEXT_TOO_LONG: 'The conversation has become too long. Please start a new conversation.'
 } as const;
 
 /**
@@ -247,16 +251,16 @@ Please check back soon or contact your administrator to upload a resume. Once av
 
     // Analyze resume briefly for personalized welcome
     const resumeLower = resume.content.toLowerCase();
-    let roleDescription = "professional";
-    
+    let roleDescription = 'professional';
+
     if (resumeLower.includes('software') || resumeLower.includes('developer')) {
-        roleDescription = "software engineering professional";
+        roleDescription = 'software engineering professional';
     } else if (resumeLower.includes('manager') || resumeLower.includes('director')) {
-        roleDescription = "management professional";
+        roleDescription = 'management professional';
     } else if (resumeLower.includes('designer')) {
-        roleDescription = "design professional";
+        roleDescription = 'design professional';
     } else if (resumeLower.includes('analyst')) {
-        roleDescription = "analytical professional";
+        roleDescription = 'analytical professional';
     }
 
     return `Welcome! I'm your AI assistant with full access to the resume on file.
@@ -283,13 +287,13 @@ What aspect of their professional background would you like to explore first?`;
  */
 export function getPrefillForResponse(messageType: 'analysis' | 'summary' | 'skills' | 'experience'): string {
     const prefills = {
-        analysis: "Based on the resume, I can see that",
+        analysis: 'Based on the resume, I can see that',
         summary: "Here's a comprehensive summary of the professional background:\n\n",
-        skills: "The key skills and competencies listed in the resume include:\n\n",
-        experience: "Regarding the professional experience:\n\n"
+        skills: 'The key skills and competencies listed in the resume include:\n\n',
+        experience: 'Regarding the professional experience:\n\n'
     };
-    
-    return prefills[messageType] || "";
+
+    return prefills[messageType] || '';
 }
 
 /**
@@ -298,10 +302,10 @@ export function getPrefillForResponse(messageType: 'analysis' | 'summary' | 'ski
  */
 export function createExampleDrivenPrompt(queryType: string): BaseMessage[] {
     const examples: BaseMessage[] = [];
-    
+
     if (queryType === 'technical_depth') {
         examples.push(
-            new HumanMessage("What technologies does this person work with?"),
+            new HumanMessage('What technologies does this person work with?'),
             new AIMessage(`<technical_analysis>
 Based on the resume, this person works with the following technologies:
 
@@ -322,7 +326,7 @@ Based on the resume, this person works with the following technologies:
 </technical_analysis>`)
         );
     }
-    
+
     return examples;
 }
 
@@ -337,19 +341,19 @@ export function isMessageAppropriate(message: string): boolean {
         /joke/i,
         /story/i,
         /game/i,
-        
+
         // Potentially harmful
         /password/i,
         /credit card/i,
         /social security/i,
         /ssn/i,
-        
+
         // Spam patterns
-        /(.)\1{20,}/,  // Same character repeated 20+ times
-        /^\s*$/,        // Empty or whitespace only
+        /(.)\1{20,}/, // Same character repeated 20+ times
+        /^\s*$/ // Empty or whitespace only
     ];
 
-    return !inappropriate.some(pattern => pattern.test(message));
+    return !inappropriate.some((pattern) => pattern.test(message));
 }
 
 /**
