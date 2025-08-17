@@ -1,0 +1,14 @@
+# Robots.txt for Chat My CV
+# https://www.robotstxt.org/robotstxt.html
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/admin/
+Disallow: /api/auth/
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://chatmycv.com/sitemap.xml
