@@ -1,13 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 
-import { ResumePreview, ResumeUploader } from '@/components/admin';
 import { Alert, AlertDescription, AlertTitle } from '@/registry/new-york-v4/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
+import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/registry/new-york-v4/ui/tabs';
 
 import { FileText, InfoIcon, Settings, Upload } from 'lucide-react';
+
+// Lazy load heavy components
+const ResumePreview = lazy(() => import('@/components/admin').then((mod) => ({ default: mod.ResumePreview })));
+const ResumeUploader = lazy(() => import('@/components/admin').then((mod) => ({ default: mod.ResumeUploader })));
 
 export default function ResumeManagementPage() {
     const [refreshKey, setRefreshKey] = useState(0);
@@ -62,15 +66,19 @@ export default function ResumeManagementPage() {
 
                     {/* Manage Tab - Show current resume */}
                     <TabsContent value='manage' className='space-y-4'>
-                        <ResumePreview key={`preview-${refreshKey}`} onResumeChange={handleResumeChange} />
+                        <Suspense fallback={<Skeleton className='h-96 w-full' />}>
+                            <ResumePreview key={`preview-${refreshKey}`} onResumeChange={handleResumeChange} />
+                        </Suspense>
                     </TabsContent>
 
                     {/* Upload Tab - Upload new resume */}
                     <TabsContent value='upload' className='space-y-4'>
-                        <ResumeUploader
-                            onUploadSuccess={handleUploadSuccess}
-                            onUploadError={(error) => console.error('Upload error:', error)}
-                        />
+                        <Suspense fallback={<Skeleton className='h-64 w-full' />}>
+                            <ResumeUploader
+                                onUploadSuccess={handleUploadSuccess}
+                                onUploadError={(error) => console.error('Upload error:', error)}
+                            />
+                        </Suspense>
 
                         {/* Upload Guidelines */}
                         <Card>

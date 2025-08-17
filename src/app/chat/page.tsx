@@ -1,18 +1,27 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { ChatInterface } from '@/components/chat';
-import { ConnectionStatusIndicator } from '@/components/connection-status';
-import { NoConfigurationEmptyState, NoResumeEmptyState } from '@/components/empty-states';
 import { AppLayout } from '@/components/layout';
 import { Alert, AlertDescription } from '@/registry/new-york-v4/ui/alert';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 
 import { AlertCircle, ArrowLeft } from 'lucide-react';
+
+// Lazy load heavy components
+const ChatInterface = lazy(() => import('@/components/chat').then((mod) => ({ default: mod.ChatInterface })));
+const ConnectionStatusIndicator = lazy(() =>
+    import('@/components/connection-status').then((mod) => ({ default: mod.ConnectionStatusIndicator }))
+);
+const NoResumeEmptyState = lazy(() =>
+    import('@/components/empty-states').then((mod) => ({ default: mod.NoResumeEmptyState }))
+);
+const NoConfigurationEmptyState = lazy(() =>
+    import('@/components/empty-states').then((mod) => ({ default: mod.NoConfigurationEmptyState }))
+);
 
 /**
  * Public chat page component
@@ -102,7 +111,9 @@ export default function ChatPage() {
         return (
             <AppLayout>
                 <div className='container mx-auto px-4 py-16'>
-                    <NoResumeEmptyState className='mx-auto max-w-md' actionHref='/admin/login' />
+                    <Suspense fallback={<Skeleton className='mx-auto h-64 max-w-md' />}>
+                        <NoResumeEmptyState className='mx-auto max-w-md' actionHref='/admin/login' />
+                    </Suspense>
                     <div className='mt-4 flex justify-center'>
                         <Button onClick={() => router.push('/')} variant='outline'>
                             <ArrowLeft className='mr-2 h-4 w-4' />
@@ -119,7 +130,9 @@ export default function ChatPage() {
         return (
             <AppLayout>
                 <div className='container mx-auto px-4 py-16'>
-                    <NoConfigurationEmptyState className='mx-auto max-w-md' actionHref='/admin' />
+                    <Suspense fallback={<Skeleton className='mx-auto h-64 max-w-md' />}>
+                        <NoConfigurationEmptyState className='mx-auto max-w-md' actionHref='/admin' />
+                    </Suspense>
                     <div className='mt-4 flex justify-center'>
                         <Button onClick={() => router.push('/')} variant='outline'>
                             <ArrowLeft className='mr-2 h-4 w-4' />
@@ -133,21 +146,25 @@ export default function ChatPage() {
 
     return (
         <AppLayout>
-            <ConnectionStatusIndicator showBanner position='top' />
+            <Suspense fallback={null}>
+                <ConnectionStatusIndicator showBanner position='top' />
+            </Suspense>
             <div className='container mx-auto max-w-4xl px-4 py-4'>
                 <div className='bg-background h-[calc(100vh-8rem)] overflow-hidden rounded-lg border shadow-sm'>
-                    <ChatInterface
-                        className='h-full'
-                        welcomeMessage="Welcome! Ask me anything about this person's background, skills, or experience."
-                        placeholder='Ask a question about their experience...'
-                        showSuggestedQuestions={true}
-                        onMessageSent={(message) => {
-                            console.log('Message sent:', message);
-                        }}
-                        onMessageReceived={(message) => {
-                            console.log('Message received:', message);
-                        }}
-                    />
+                    <Suspense fallback={<Skeleton className='h-full' />}>
+                        <ChatInterface
+                            className='h-full'
+                            welcomeMessage="Welcome! Ask me anything about this person's background, skills, or experience."
+                            placeholder='Ask a question about their experience...'
+                            showSuggestedQuestions={true}
+                            onMessageSent={(message) => {
+                                console.log('Message sent:', message);
+                            }}
+                            onMessageReceived={(message) => {
+                                console.log('Message received:', message);
+                            }}
+                        />
+                    </Suspense>
                 </div>
             </div>
         </AppLayout>

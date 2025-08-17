@@ -1,15 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, lazy, useEffect, useState } from 'react';
 
-import { LLMConfiguration } from '@/components/admin/LLMConfiguration';
 import { Alert, AlertDescription } from '@/registry/new-york-v4/ui/alert';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
 import { Label } from '@/registry/new-york-v4/ui/label';
+import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 import { Textarea } from '@/registry/new-york-v4/ui/textarea';
 import type { LLMConfig } from '@/types';
 
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+
+// Lazy load heavy components
+const LLMConfiguration = lazy(() =>
+    import('@/components/admin/LLMConfiguration').then((mod) => ({ default: mod.LLMConfiguration }))
+);
 
 interface AppConfiguration {
     llm?: LLMConfig;
@@ -107,7 +112,9 @@ export default function AdminDashboard() {
             )}
 
             {/* LLM Configuration */}
-            <LLMConfiguration initialConfig={config.llm} onSave={handleSaveLLMConfig} />
+            <Suspense fallback={<Skeleton className='h-96 w-full' />}>
+                <LLMConfiguration initialConfig={config.llm} onSave={handleSaveLLMConfig} />
+            </Suspense>
 
             {/* Chat Settings */}
             <Card>
