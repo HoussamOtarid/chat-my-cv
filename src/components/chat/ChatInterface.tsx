@@ -20,6 +20,8 @@ import { ChatInput } from './ChatInput';
 import { MessageList } from './MessageList';
 import { SuggestedQuestions } from './SuggestedQuestions';
 import { AlertCircle, Loader2, RefreshCw, Sparkles, WifiOff } from 'lucide-react';
+import ErrorBoundary from '@/components/error-boundary';
+import { ChatErrorFallback } from '@/components/fallback-ui';
 
 /**
  * Props for ChatInterface component
@@ -156,8 +158,7 @@ export function ChatInterface({
         sendMessage,
         isStreaming,
         connectionState,
-        error: streamError,
-        currentResponse
+        error: streamError
     } = useSSEChat({
         onToken: (token) => {
             // Update the current assistant message with new token
@@ -221,22 +222,31 @@ export function ChatInterface({
             // Clear any previous errors
             setError(null);
 
-            // Add user message
-            const userMessage = addUserMessage(content);
-            const userMessageId = userMessage.id; // Use the message ID
+            try {
+                // Add user message
+                const userMessage = addUserMessage(content);
+                const userMessageId = userMessage.id; // Use the message ID
 
-            // Callback
-            if (onMessageSent) {
-                onMessageSent(userMessage);
+                // Callback
+                if (onMessageSent) {
+                    onMessageSent(userMessage);
+                }
+
+                // Create placeholder for assistant message
+                const assistantMessage = addAssistantMessage('');
+                currentAssistantId.current = assistantMessage.id;
+                currentAssistantResponse.current = '';
+
+                // Send message via SSE
+                sendMessage(content, clientId, userMessageId, sessionId);
+            } catch (error) {
+                setError((error as Error).message);
+                toast({
+                    title: 'Failed to send message',
+                    description: (error as Error).message,
+                    variant: 'destructive'
+                });
             }
-
-            // Create placeholder for assistant message
-            const assistantMessage = addAssistantMessage('');
-            currentAssistantId.current = assistantMessage.id;
-            currentAssistantResponse.current = '';
-
-            // Send message via SSE
-            sendMessage(content, clientId, userMessageId, sessionId);
         },
         [addUserMessage, addAssistantMessage, updateMessage, sendMessage, clientId, sessionId, onMessageSent]
     );
@@ -326,20 +336,26 @@ export function ChatInterface({
 
             {/* Main chat area */}
             <div className='flex-1 overflow-hidden'>
-                {showEmptyState ? (
-                    <ChatEmptyState
-                        welcomeMessage={welcomeMessage}
-                        showSuggestedQuestions={showSuggestions}
-                        onSelectQuestion={handleSelectQuestion}
-                    />
-                ) : (
-                    <MessageList 
-                        messages={messages} 
-                        isLoading={isStreaming} 
-                        streamingMessageId={currentAssistantId.current || undefined}
-                        className='h-full' 
-                    />
-                )}
+                <ErrorBoundary 
+                    level="section" 
+                    fallback={<ChatErrorFallback retry={handleRetry} />}
+                    resetKeys={[messages.length]}
+                >
+                    {showEmptyState ? (
+                        <ChatEmptyState
+                            welcomeMessage={welcomeMessage}
+                            showSuggestedQuestions={showSuggestions}
+                            onSelectQuestion={handleSelectQuestion}
+                        />
+                    ) : (
+                        <MessageList 
+                            messages={messages} 
+                            isLoading={isStreaming} 
+                            streamingMessageId={currentAssistantId.current || undefined}
+                            className='h-full' 
+                        />
+                    )}
+                </ErrorBoundary>
             </div>
 
             {/* Suggested questions (when there are messages) - now as a compact inline strip */}

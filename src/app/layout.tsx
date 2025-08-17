@@ -6,6 +6,7 @@ import localFont from 'next/font/local';
 import '@/app/globals.css';
 import { Providers } from '@/app/providers';
 import { Toaster } from '@/registry/new-york-v4/ui/sonner';
+import ErrorBoundary from '@/components/error-boundary';
 
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',
@@ -49,7 +50,9 @@ const Layout = ({ children }: Readonly<{ children: ReactNode }>) => {
             <body
                 className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground overscroll-none antialiased`}>
                 <Providers>
-                    {children}
+                    <ErrorBoundary level="page" showDetails={process.env.NODE_ENV === 'development'}>
+                        {children}
+                    </ErrorBoundary>
                     <Toaster />
                 </Providers>
             </body>

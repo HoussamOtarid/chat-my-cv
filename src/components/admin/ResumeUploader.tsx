@@ -5,8 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/reg
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Progress } from '@/registry/new-york-v4/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/registry/new-york-v4/ui/alert';
-import { Upload, FileText, CheckCircle2, XCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { UploadErrorFallback } from '@/components/fallback-ui';
+import { withRetry } from '@/components/async-error-boundary';
 
 interface UploadResponse {
     success: boolean;
@@ -181,7 +183,22 @@ return;
                 xhr.send(formData);
             });
 
-            const response = await uploadPromise;
+            // Use retry logic for network failures
+            const response = await withRetry(
+                () => uploadPromise,
+                {
+                    maxRetries: 2,
+                    retryDelay: 2000,
+                    shouldRetry: (error) => {
+                        // Only retry on network errors
+                        return error.message.includes('Network') || 
+                               error.message.includes('network');
+                    },
+                    onRetry: (attempt) => {
+                        setStatusMessage(`Retrying upload (attempt ${attempt})...`);
+                    }
+                }
+            );
 
             if (response.success) {
                 setUploadStatus('success');
@@ -349,11 +366,16 @@ return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
                 )}
 
                 {uploadStatus === 'error' && (
-                    <Alert variant="destructive">
-                        <XCircle className="h-4 w-4" />
-                        <AlertTitle>Error</AlertTitle>
-                        <AlertDescription>{statusMessage}</AlertDescription>
-                    </Alert>
+                    <UploadErrorFallback 
+                        error={new Error(statusMessage)}
+                        retry={() => handleUpload()}
+                        reset={() => {
+                            setSelectedFile(null);
+                            setUploadStatus('idle');
+                            setStatusMessage('');
+                            setUploadProgress(0);
+                        }}
+                    />
                 )}
 
                 {uploadStatus === 'uploading' && statusMessage && (
