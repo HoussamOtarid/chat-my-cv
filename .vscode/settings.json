@@ -30,5 +30,5 @@
         "typescriptreact"
     ],
     "eslint.format.enable": true,
-    "npm.packageManager": "npm",
+    "npm.packageManager": "pnpm",
 }

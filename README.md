@@ -1,6 +1,11 @@
 # Chat My CV
 
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://chat-my-cv.vercel.app)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/HoussamOtarid/chat-my-cv)
+
 An intelligent chat interface that allows visitors to interact with your resume through natural conversation, powered by AI.
+
+🚀 **[Live Demo](https://chat-my-cv.vercel.app)**
 
 ## Features
 
