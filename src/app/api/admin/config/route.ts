@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { handleApiError } from '@/lib/api-error-handler';
 import { authOptions } from '@/lib/auth';
 import { decrypt, encrypt } from '@/lib/encryption';
 import { createSupabaseAdmin } from '@/lib/supabase';
@@ -72,9 +73,11 @@ export async function GET() {
 
         return NextResponse.json(config);
     } catch (error) {
-        console.error('Failed to fetch configuration:', error);
-
-        return NextResponse.json({ error: 'Failed to fetch configuration' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/config',
+            method: 'GET',
+            errorMessage: 'Failed to fetch configuration'
+        });
     }
 }
 
@@ -191,8 +194,10 @@ export async function PUT(request: NextRequest) {
             theme_color: theme_color || '#0ea5e9'
         });
     } catch (error) {
-        console.error('Failed to update configuration:', error);
-
-        return NextResponse.json({ error: 'Failed to update configuration' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/config',
+            method: 'PUT',
+            errorMessage: 'Failed to update configuration'
+        });
     }
 }

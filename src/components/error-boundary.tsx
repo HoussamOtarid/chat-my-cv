@@ -2,6 +2,8 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 
+import { captureException } from '@sentry/nextjs';
+
 import { Alert, AlertDescription, AlertTitle } from '@/registry/new-york-v4/ui/alert';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
@@ -68,10 +70,19 @@ class ErrorBoundary extends Component<Props, State> {
             this.props.onError(error, errorInfo);
         }
 
-        // Log to error reporting service (e.g., Sentry) in production
-        if (process.env.NODE_ENV === 'production') {
-            // TODO: Add error reporting service integration
-            console.error('Production error:', error.message);
+        if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+            captureException(error, {
+                contexts: {
+                    react: {
+                        componentStack: errorInfo.componentStack
+                    }
+                },
+                level: 'error',
+                tags: {
+                    component: 'ErrorBoundary',
+                    level: this.props.level || 'component'
+                }
+            });
         }
     }
 

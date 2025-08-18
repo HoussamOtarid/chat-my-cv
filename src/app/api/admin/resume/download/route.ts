@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authOptions } from '@/lib/auth';
+import { handleApiError } from '@/lib/api-error-handler';
 import { getSignedUrl } from '@/lib/storage';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
@@ -48,8 +49,10 @@ export async function GET(request: NextRequest) {
         // Redirect to the signed URL
         return NextResponse.redirect(signedUrlResult.url);
     } catch (error) {
-        console.error('Download resume error:', error);
-
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/resume/download',
+            method: 'GET',
+            errorMessage: 'Internal server error'
+        });
     }
 }

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { handleApiError } from '@/lib/api-error-handler';
+
 /**
  * Health check endpoint for monitoring
  * Used by Docker, Kubernetes, and monitoring services
@@ -24,13 +26,11 @@ export async function GET() {
             { status: 200 }
         );
     } catch (error) {
-        // Service is unhealthy
-        return NextResponse.json(
-            {
-                status: 'unhealthy',
-                error: 'Health check failed'
-            },
-            { status: 503 }
-        );
+        return handleApiError(error, {
+            apiRoute: '/api/health',
+            method: 'GET',
+            statusCode: 503,
+            errorMessage: 'Health check failed'
+        });
     }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authOptions } from '@/lib/auth';
+import { handleApiError } from '@/lib/api-error-handler';
 import { deleteResume, getSignedUrl } from '@/lib/storage';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
@@ -71,9 +72,11 @@ export async function GET(request: NextRequest) {
             resumes: resumesWithUrls
         });
     } catch (error) {
-        console.error('Get resume error:', error);
-
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/resume',
+            method: 'GET',
+            errorMessage: 'Internal server error'
+        });
     }
 }
 
@@ -126,9 +129,11 @@ export async function DELETE(request: NextRequest) {
             message: 'Resume deleted successfully'
         });
     } catch (error) {
-        console.error('Delete resume error:', error);
-
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/resume',
+            method: 'DELETE',
+            errorMessage: 'Internal server error'
+        });
     }
 }
 
@@ -186,8 +191,10 @@ export async function PUT(request: NextRequest) {
             }
         });
     } catch (error) {
-        console.error('Update resume error:', error);
-
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/resume',
+            method: 'PUT',
+            errorMessage: 'Internal server error'
+        });
     }
 }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authOptions } from '@/lib/auth';
+import { handleApiError } from '@/lib/api-error-handler';
 
 import { getServerSession } from 'next-auth/next';
 
@@ -82,8 +83,10 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({ valid: isValid });
     } catch (error) {
-        console.error('Failed to validate API key:', error);
-
-        return NextResponse.json({ error: 'Failed to validate API key' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/config/validate',
+            method: 'POST',
+            errorMessage: 'Failed to validate API key'
+        });
     }
 }

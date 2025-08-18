@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { handleApiError } from '@/lib/api-error-handler';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
 import crypto from 'crypto';
@@ -209,9 +210,11 @@ export async function POST(request: NextRequest) {
 
         return response;
     } catch (error) {
-        console.error('Ingest endpoint error:', error);
-
-        return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/ingest/messages',
+            method: 'POST',
+            errorMessage: 'Failed to process request'
+        });
     }
 }
 

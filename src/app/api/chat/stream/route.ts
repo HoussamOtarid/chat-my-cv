@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 
+import { handleApiError } from '@/lib/api-error-handler';
 import { createChatModel } from '@/lib/llm';
 import { createChatPrompt } from '@/lib/prompts';
 import { withRateLimit } from '@/lib/rate-limit-middleware';
@@ -241,6 +242,17 @@ async function handleGET(request: NextRequest) {
             }
         } catch (error) {
             console.error('Streaming error:', error);
+            
+            // Send to Sentry
+            const { captureException } = await import('@sentry/nextjs');
+            captureException(error, {
+                tags: {
+                    api_route: '/api/chat/stream',
+                    method: 'GET',
+                    type: 'streaming_error'
+                },
+                level: 'error'
+            });
 
             // Determine error type and provide helpful message
             let errorMessage = 'An error occurred while processing your request';
@@ -335,9 +347,12 @@ async function handlePOST(request: NextRequest) {
 
         return handleGET(newRequest);
     } catch (error) {
-        console.error('POST error:', error);
-
-        return new Response('Invalid request body', { status: 400 });
+        return handleApiError(error, {
+            apiRoute: '/api/chat/stream',
+            method: 'POST',
+            errorMessage: 'Invalid request body',
+            statusCode: 400
+        });
     }
 }
 

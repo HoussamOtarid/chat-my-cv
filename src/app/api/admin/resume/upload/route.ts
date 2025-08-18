@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authOptions } from '@/lib/auth';
+import { handleApiError } from '@/lib/api-error-handler';
 import { extractTextFromPDF } from '@/lib/langchain';
 import { initializeStorageBucket, uploadResume } from '@/lib/storage';
 import { createSupabaseAdmin } from '@/lib/supabase';
@@ -134,8 +135,10 @@ export async function POST(request: NextRequest) {
             }
         });
     } catch (error) {
-        console.error('Upload error:', error);
-
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/resume/upload',
+            method: 'POST',
+            errorMessage: 'Internal server error'
+        });
     }
 }

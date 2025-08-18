@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { handleApiError } from '@/lib/api-error-handler';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
 export const runtime = 'nodejs';
@@ -299,10 +300,16 @@ export async function GET(request: Request) {
             }
         );
     } catch (error) {
-        console.error('Get suggestions error:', error);
-
+        // For this endpoint, we want to return fallback questions instead of a full error
         // Return default questions on error
         const fallbackQuestions = BASE_QUESTIONS.slice(0, 6).sort(() => Math.random() - 0.5);
+
+        // Still log the error to Sentry
+        handleApiError(error, {
+            apiRoute: '/api/chat/suggestions',
+            method: 'GET',
+            errorMessage: 'Failed to generate suggestions, using defaults'
+        });
 
         return NextResponse.json(
             {

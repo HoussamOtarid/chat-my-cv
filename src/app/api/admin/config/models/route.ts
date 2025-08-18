@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authOptions } from '@/lib/auth';
+import { handleApiError } from '@/lib/api-error-handler';
 import { getAvailableModels, getModelDisplayName } from '@/lib/llm';
 
 import { getServerSession } from 'next-auth/next';
@@ -30,8 +31,10 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({ models: modelOptions });
     } catch (error) {
-        console.error('Get models error:', error);
-
-        return NextResponse.json({ error: 'Failed to get models' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/config/models',
+            method: 'GET',
+            errorMessage: 'Failed to get models'
+        });
     }
 }

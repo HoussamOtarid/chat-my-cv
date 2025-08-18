@@ -40,3 +40,7 @@ next-env.d.ts
 # Supabase local development
 supabase/.temp
 supabase/.branches
+
+# Sentry
+.sentryclirc
+sentry.properties

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 
+import { handleApiError } from '@/lib/api-error-handler';
 import { createSupabaseAdmin } from '@/lib/supabase';
 
 export const runtime = 'nodejs';
@@ -93,20 +94,11 @@ export async function GET() {
             }
         );
     } catch (error) {
-        console.error('Get current resume error:', error);
-
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'Internal server error'
-            },
-            {
-                status: 500,
-                headers: {
-                    'Cache-Control': 'no-cache, no-store, must-revalidate'
-                }
-            }
-        );
+        return handleApiError(error, {
+            apiRoute: '/api/resume/current',
+            method: 'GET',
+            errorMessage: 'Internal server error'
+        });
     }
 }
 
@@ -154,13 +146,10 @@ export async function HEAD() {
             }
         });
     } catch (error) {
-        console.error('Head current resume error:', error);
-
-        return new NextResponse(null, {
-            status: 500,
-            headers: {
-                'Cache-Control': 'no-cache, no-store, must-revalidate'
-            }
+        return handleApiError(error, {
+            apiRoute: '/api/resume/current',
+            method: 'HEAD',
+            errorMessage: 'Internal server error'
         });
     }
 }

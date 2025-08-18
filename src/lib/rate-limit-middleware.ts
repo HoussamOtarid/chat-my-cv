@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 
 import { addRateLimitHeaders, checkRateLimit, rateLimitResponse } from './rate-limit';
+import { getToken } from 'next-auth/jwt';
 
 /**
  * Rate limiting middleware configuration
@@ -121,16 +122,8 @@ export const skipConditions = {
 
     // Skip for authenticated admin requests
     isAdmin: async (request: NextRequest) => {
-        // Check for admin session or API key
-        const authHeader = request.headers.get('authorization');
-        if (authHeader?.startsWith('Bearer ')) {
-            const token = authHeader.slice(7);
-
-            // Validate admin token (implement your validation logic)
-            return validateAdminToken(token);
-        }
-
-        return false;
+        // Validate admin token directly from the request
+        return validateAdminToken(request);
     },
 
     // Skip for health checks
@@ -140,12 +133,23 @@ export const skipConditions = {
 };
 
 /**
- * Validate admin token (placeholder - implement your logic)
+ * Validate admin JWT token from NextAuth
  */
-async function validateAdminToken(token: string): Promise<boolean> {
-    // TODO: Implement actual token validation
-    // This could check against NextAuth session, JWT, or API key
-    return token === process.env.ADMIN_API_KEY;
+async function validateAdminToken(request: NextRequest): Promise<boolean> {
+    try {
+        // Get the JWT token directly from the request
+        const token = await getToken({
+            req: request,
+            secret: process.env.NEXTAUTH_SECRET
+        });
+
+        // Check if token is valid and has admin role
+        return token !== null && token.role === 'admin';
+    } catch (error) {
+        console.error('Token validation error:', error);
+        
+        return false;
+    }
 }
 
 /**

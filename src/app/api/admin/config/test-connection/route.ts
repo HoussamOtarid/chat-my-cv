@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authOptions } from '@/lib/auth';
+import { handleApiError } from '@/lib/api-error-handler';
 import { testLLMConnection, validateLLMConfig } from '@/lib/llm';
 import type { LLMConfig } from '@/types';
 
@@ -39,14 +40,10 @@ export async function POST(request: NextRequest) {
             error: result.error
         });
     } catch (error) {
-        console.error('Test connection error:', error);
-
-        return NextResponse.json(
-            {
-                success: false,
-                error: error instanceof Error ? error.message : 'Failed to test connection'
-            },
-            { status: 500 }
-        );
+        return handleApiError(error, {
+            apiRoute: '/api/admin/config/test-connection',
+            method: 'POST',
+            errorMessage: error instanceof Error ? error.message : 'Failed to test connection'
+        });
     }
 }

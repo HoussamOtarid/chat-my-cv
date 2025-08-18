@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { authOptions } from '@/lib/auth';
+import { handleApiError } from '@/lib/api-error-handler';
 import { extractTextFromPDF } from '@/lib/langchain';
 import { downloadResume } from '@/lib/storage';
 import { createSupabaseAdmin } from '@/lib/supabase';
@@ -106,9 +107,11 @@ export async function POST(request: NextRequest) {
             }
         });
     } catch (error) {
-        console.error('Process resume error:', error);
-
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/resume/process',
+            method: 'POST',
+            errorMessage: 'Internal server error'
+        });
     }
 }
 
@@ -159,8 +162,10 @@ export async function GET(_request: NextRequest) {
             resumes: processedResumes
         });
     } catch (error) {
-        console.error('Get processing status error:', error);
-
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+        return handleApiError(error, {
+            apiRoute: '/api/admin/resume/process',
+            method: 'GET',
+            errorMessage: 'Internal server error'
+        });
     }
 }

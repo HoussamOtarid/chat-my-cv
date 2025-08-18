@@ -1,13 +1,12 @@
 import type { NextConfig } from 'next';
 
 import initializeBundleAnalyzer from '@next/bundle-analyzer';
+import { withSentryConfig } from '@sentry/nextjs';
 
-// https://www.npmjs.com/package/@next/bundle-analyzer
 const withBundleAnalyzer = initializeBundleAnalyzer({
     enabled: process.env.BUNDLE_ANALYZER_ENABLED === 'true'
 });
 
-// https://nextjs.org/docs/pages/api-reference/next-config-js
 const nextConfig: NextConfig = {
     output: 'standalone',
     outputFileTracingIncludes: {
@@ -25,7 +24,6 @@ const nextConfig: NextConfig = {
             },
         ],
     },
-    // Performance optimizations
     experimental: {
         optimizePackageImports: [
             'lucide-react',
@@ -44,15 +42,13 @@ const nextConfig: NextConfig = {
             '@radix-ui/react-tooltip',
         ],
     },
-    // Optimize production builds
     compiler: {
         removeConsole: process.env.NODE_ENV === 'production' ? {
             exclude: ['error', 'warn'],
         } : false,
     },
-    // Optimize for production
     productionBrowserSourceMaps: false,
     poweredByHeader: false,
 };
 
-export default withBundleAnalyzer(nextConfig);
+export default withSentryConfig(withBundleAnalyzer(nextConfig));
