@@ -2,11 +2,10 @@
 
 import { lazy, Suspense, useEffect, useState } from 'react';
 
-import { Alert, AlertDescription } from '@/registry/new-york-v4/ui/alert';
 import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 import type { LLMConfig } from '@/types';
 
-import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 // Lazy load heavy components
 const LLMConfiguration = lazy(() =>
@@ -20,7 +19,6 @@ interface AppConfiguration {
 export default function AdminSettingsPage() {
     const [config, setConfig] = useState<AppConfiguration>({});
     const [loading, setLoading] = useState(true);
-    const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     useEffect(() => {
         fetchConfiguration();
@@ -35,7 +33,6 @@ export default function AdminSettingsPage() {
             }
         } catch (error) {
             console.error('Failed to fetch configuration:', error);
-            setMessage({ type: 'error', text: 'Failed to load configuration' });
         } finally {
             setLoading(false);
         }
@@ -52,8 +49,6 @@ export default function AdminSettingsPage() {
 
         if (response.ok) {
             setConfig({ llm: llmConfig });
-            setMessage({ type: 'success', text: 'LLM configuration saved successfully' });
-            setTimeout(() => setMessage(null), 5000);
         } else {
             throw new Error('Failed to save configuration');
         }
@@ -73,17 +68,6 @@ export default function AdminSettingsPage() {
                 <h1 className='text-3xl font-bold'>Settings</h1>
                 <p className='text-muted-foreground'>Configure your LLM provider and API settings</p>
             </div>
-
-            {message && (
-                <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
-                    {message.type === 'error' ? (
-                        <AlertCircle className='h-4 w-4' />
-                    ) : (
-                        <CheckCircle2 className='h-4 w-4' />
-                    )}
-                    <AlertDescription>{message.text}</AlertDescription>
-                </Alert>
-            )}
 
             {/* LLM Configuration */}
             <Suspense fallback={<Skeleton className='h-96 w-full' />}>

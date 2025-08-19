@@ -115,12 +115,14 @@ export async function PUT(request: NextRequest) {
         // Upsert LLM config
         const { error } = await supabase
             .from('configuration')
-            .upsert({
-                key: 'llm_config',
-                value: llmConfigToStore,
-                encrypted: encrypted
-            })
-            .eq('key', 'llm_config');
+            .upsert(
+                {
+                    key: 'llm_config',
+                    value: llmConfigToStore,
+                    encrypted: encrypted
+                },
+                { onConflict: 'key' }
+            );
 
         if (error) {
             throw error;
