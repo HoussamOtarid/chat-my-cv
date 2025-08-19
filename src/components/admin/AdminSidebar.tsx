@@ -6,10 +6,11 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
 import { SignOutButton } from './SignOutButton';
-import { FileText, LayoutDashboard, Settings } from 'lucide-react';
+import { FileText, LayoutDashboard, MessageSquare, Settings } from 'lucide-react';
 
 const navigation = [
     { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+    { name: 'Sessions', href: '/admin/sessions', icon: MessageSquare },
     { name: 'Resume', href: '/admin/resume', icon: FileText },
     { name: 'Settings', href: '/admin/settings', icon: Settings }
 ];

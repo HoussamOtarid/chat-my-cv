@@ -190,8 +190,7 @@ async function handleGET(request: NextRequest) {
                         session_id: sessionIdToUse,
                         client_message_id: clientMessageId,
                         role: 'user',
-                        content: message,
-                        seq: 0 // Could be incremented based on conversation
+                        content: message
                     })
                     .then(({ error }) => {
                         if (error) console.error('Failed to log user message:', error);
@@ -231,7 +230,6 @@ async function handleGET(request: NextRequest) {
                         client_message_id: `${clientMessageId}-response`,
                         role: 'assistant',
                         content: fullResponse,
-                        seq: 1, // Could be incremented
                         model: config.model || config.provider
                     })
                     .then(({ error }) => {
