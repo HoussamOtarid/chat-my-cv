@@ -43,3 +43,19 @@ export const LLM = {
         ANTHROPIC: 'claude-sonnet-4-20250514'
     }
 } as const;
+
+// LLM Provider Display Names
+export const LLM_PROVIDER_NAMES = {
+    openai: 'OpenAI',
+    anthropic: 'Anthropic',
+    'azure-openai': 'Azure OpenAI',
+    'bedrock-anthropic': 'AWS Bedrock (Anthropic)',
+    'openai-compatible': 'OpenAI Compatible'
+} as const;
+
+export type LLMProviderKey = keyof typeof LLM_PROVIDER_NAMES;
+
+// Helper function to get display name for a provider
+export const getLLMProviderDisplayName = (provider: string): string => {
+    return LLM_PROVIDER_NAMES[provider as LLMProviderKey] || 'OpenAI Compatible';
+};

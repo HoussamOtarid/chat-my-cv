@@ -23,7 +23,7 @@ export async function GET() {
         const { data: configRows, error } = await supabase
             .from('configuration')
             .select('key, value, encrypted')
-            .in('key', ['llm_config', 'system_prompt', 'welcome_message', 'theme_color']);
+            .in('key', ['llm_config']);
 
         if (error) {
             throw error;
@@ -31,10 +31,7 @@ export async function GET() {
 
         // Convert array of key-value pairs to object
         const config: any = {
-            llm: null,
-            system_prompt: '',
-            welcome_message: 'Hello! Upload your resume to get started.',
-            theme_color: '#0ea5e9'
+            llm: null
         };
 
         if (configRows) {
@@ -61,12 +58,6 @@ export async function GET() {
                     } catch (e) {
                         console.error('Failed to parse LLM config:', e);
                     }
-                } else if (row.key === 'system_prompt') {
-                    config.system_prompt = row.value;
-                } else if (row.key === 'welcome_message') {
-                    config.welcome_message = row.value;
-                } else if (row.key === 'theme_color') {
-                    config.theme_color = row.value;
                 }
             }
         }
@@ -90,7 +81,7 @@ export async function PUT(request: NextRequest) {
 
     try {
         const body = await request.json();
-        const { llm, system_prompt, welcome_message, theme_color } = body;
+        const { llm } = body;
 
         // Handle the nested LLM config
         if (!llm || !llm.provider) {
@@ -121,77 +112,23 @@ export async function PUT(request: NextRequest) {
             encrypted = true;
         }
 
-        // Prepare upsert operations for each configuration key
-        const upsertPromises = [];
-
         // Upsert LLM config
-        upsertPromises.push(
-            supabase
-                .from('configuration')
-                .upsert({
-                    key: 'llm_config',
-                    value: llmConfigToStore,
-                    encrypted: encrypted
-                })
-                .eq('key', 'llm_config')
-        );
+        const { error } = await supabase
+            .from('configuration')
+            .upsert({
+                key: 'llm_config',
+                value: llmConfigToStore,
+                encrypted: encrypted
+            })
+            .eq('key', 'llm_config');
 
-        // Upsert other settings if provided
-        if (system_prompt !== undefined) {
-            upsertPromises.push(
-                supabase
-                    .from('configuration')
-                    .upsert({
-                        key: 'system_prompt',
-                        value: system_prompt,
-                        encrypted: false
-                    })
-                    .eq('key', 'system_prompt')
-            );
-        }
-
-        if (welcome_message !== undefined) {
-            upsertPromises.push(
-                supabase
-                    .from('configuration')
-                    .upsert({
-                        key: 'welcome_message',
-                        value: welcome_message,
-                        encrypted: false
-                    })
-                    .eq('key', 'welcome_message')
-            );
-        }
-
-        if (theme_color !== undefined) {
-            upsertPromises.push(
-                supabase
-                    .from('configuration')
-                    .upsert({
-                        key: 'theme_color',
-                        value: theme_color,
-                        encrypted: false
-                    })
-                    .eq('key', 'theme_color')
-            );
-        }
-
-        // Execute all upserts
-        const results = await Promise.all(upsertPromises);
-
-        // Check for errors
-        for (const result of results) {
-            if (result.error) {
-                throw result.error;
-            }
+        if (error) {
+            throw error;
         }
 
         // Return the saved configuration (with unencrypted values for display)
         return NextResponse.json({
-            llm: llm, // Return the original unencrypted config
-            system_prompt: system_prompt || '',
-            welcome_message: welcome_message || 'Hello! Upload your resume to get started.',
-            theme_color: theme_color || '#0ea5e9'
+            llm: llm // Return the original unencrypted config
         });
     } catch (error) {
         return handleApiError(error, {

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 
+import { LLM_PROVIDER_NAMES } from '@/constants';
 import { Alert, AlertDescription } from '@/registry/new-york-v4/ui/alert';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
@@ -447,12 +448,12 @@ export function LLMConfiguration({ onSave, initialConfig }: LLMConfigurationProp
                                 <SelectValue placeholder='Select a provider' />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value='openai'>OpenAI</SelectItem>
-                                <SelectItem value='anthropic'>Anthropic</SelectItem>
-                                <SelectItem value='azure-openai'>Azure OpenAI</SelectItem>
-                                <SelectItem value='bedrock-anthropic'>AWS Bedrock (Claude)</SelectItem>
+                                <SelectItem value='openai'>{LLM_PROVIDER_NAMES.openai}</SelectItem>
+                                <SelectItem value='anthropic'>{LLM_PROVIDER_NAMES.anthropic}</SelectItem>
+                                <SelectItem value='azure-openai'>{LLM_PROVIDER_NAMES['azure-openai']}</SelectItem>
+                                <SelectItem value='bedrock-anthropic'>{LLM_PROVIDER_NAMES['bedrock-anthropic']}</SelectItem>
                                 <SelectItem value='openai-compatible'>
-                                    OpenAI Compatible (Ollama, LM Studio, etc.)
+                                    {LLM_PROVIDER_NAMES['openai-compatible']}
                                 </SelectItem>
                             </SelectContent>
                         </Select>

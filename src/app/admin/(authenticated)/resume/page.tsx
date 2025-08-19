@@ -30,15 +30,14 @@ export default function ResumeManagementPage() {
     };
 
     return (
-        <div className='container mx-auto max-w-6xl px-4 py-8'>
-            <div className='space-y-6'>
-                {/* Page Header */}
-                <div>
-                    <h1 className='text-3xl font-bold tracking-tight'>Resume Management</h1>
-                    <p className='text-muted-foreground mt-2'>
-                        Upload and manage your resume for the AI chat interface
-                    </p>
-                </div>
+        <div className='container mx-auto max-w-6xl space-y-6 px-4 py-8'>
+            {/* Page Header */}
+            <div>
+                <h1 className='text-3xl font-bold'>Resume Management</h1>
+                <p className='text-muted-foreground'>
+                    Upload and manage your resume for the AI chat interface
+                </p>
+            </div>
 
                 {/* Information Alert */}
                 <Alert>
@@ -115,32 +114,7 @@ export default function ResumeManagementPage() {
                             </CardContent>
                         </Card>
                     </TabsContent>
-                </Tabs>
-
-                {/* Status Information */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Resume Processing Status</CardTitle>
-                        <CardDescription>Information about resume text extraction and AI readiness</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className='space-y-3 text-sm'>
-                            <div className='flex items-center justify-between'>
-                                <span className='text-muted-foreground'>Text Extraction</span>
-                                <span className='font-medium'>Automatic on upload • Manual reprocess available</span>
-                            </div>
-                            <div className='flex items-center justify-between'>
-                                <span className='text-muted-foreground'>AI Context</span>
-                                <span className='font-medium'>Full resume content used • No chunking in MVP</span>
-                            </div>
-                            <div className='flex items-center justify-between'>
-                                <span className='text-muted-foreground'>Active Resume</span>
-                                <span className='font-medium'>Toggle in the Manage tab to activate/deactivate</span>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+            </Tabs>
         </div>
     );
 }
