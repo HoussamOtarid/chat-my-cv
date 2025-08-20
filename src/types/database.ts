@@ -83,24 +83,27 @@ export interface Database {
                     id: string;
                     session_id: string;
                     client_message_id: string;
-                    role: 'user' | 'assistant';
+                    role: 'user' | 'assistant' | 'system';
                     content: string;
+                    model: string | null;
                     created_at: string;
                 };
                 Insert: {
                     id?: string;
                     session_id: string;
                     client_message_id: string;
-                    role: 'user' | 'assistant';
+                    role: 'user' | 'assistant' | 'system';
                     content: string;
+                    model?: string | null;
                     created_at?: string;
                 };
                 Update: {
                     id?: string;
                     session_id?: string;
                     client_message_id?: string;
-                    role?: 'user' | 'assistant';
+                    role?: 'user' | 'assistant' | 'system';
                     content?: string;
+                    model?: string | null;
                     created_at?: string;
                 };
             };
