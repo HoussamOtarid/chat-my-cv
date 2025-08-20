@@ -16,9 +16,8 @@ export const config = {
 
     // NextAuth
     auth: {
-        // Support Auth.js v5 envs with fallback to legacy NEXTAUTH_* names
-        url: process.env.AUTH_URL || process.env.NEXTAUTH_URL!,
-        secret: (process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET)!,
+        url: process.env.NEXTAUTH_URL!,
+        secret: process.env.NEXTAUTH_SECRET!,
         adminEmail: process.env.ADMIN_EMAIL!,
         adminPassword: process.env.ADMIN_PASSWORD!
     },
@@ -53,10 +52,7 @@ export function validateConfig() {
     ];
 
     const missing = required.filter((key) => !process.env[key]);
-    // AUTH secret can be provided by either AUTH_SECRET (v5) or NEXTAUTH_SECRET (legacy)
-    const hasAuthSecret = Boolean(process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET);
-    if (!hasAuthSecret) missing.push('AUTH_SECRET');
-    // URL is optional in v5; do not require it
+    if (!process.env.NEXTAUTH_SECRET) missing.push('NEXTAUTH_SECRET');
 
     if (missing.length > 0) {
         throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
