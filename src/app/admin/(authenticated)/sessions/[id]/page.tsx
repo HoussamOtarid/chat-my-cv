@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/reg
 import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 import { Separator } from '@/registry/new-york-v4/ui/separator';
 
-import { ArrowLeft, Bot, Copy, Loader2, User } from 'lucide-react';
+import { ArrowLeft, Bot, Copy, User } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface Message {

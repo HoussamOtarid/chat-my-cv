@@ -9,8 +9,8 @@ import { getServerSession } from 'next-auth/next';
 export const runtime = 'nodejs';
 
 export async function GET(
-    request: NextRequest,
-    { params }: { params: { id: string } }
+    _request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await getServerSession(authOptions);
 
@@ -19,7 +19,7 @@ export async function GET(
     }
 
     try {
-        const sessionId = params.id;
+        const { id: sessionId } = await params;
         const supabase = await createSupabaseAdmin();
 
         // Get session details
@@ -65,8 +65,10 @@ export async function GET(
 
         return NextResponse.json(formattedSession);
     } catch (error) {
+        const { id } = await params;
+        
         return handleApiError(error, {
-            apiRoute: `/api/admin/sessions/${params.id}`,
+            apiRoute: `/api/admin/sessions/${id}`,
             method: 'GET',
             errorMessage: 'Failed to fetch session details'
         });
