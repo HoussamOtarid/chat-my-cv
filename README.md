@@ -12,56 +12,56 @@
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/HoussamOtarid/chat-my-cv)
 
 <!-- Version & License -->
-![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
 <!-- Core Technologies -->
 **🏗️ Framework & Runtime**
 
-![Next.js](https://img.shields.io/badge/Next.js-black?style=flat-square&logo=next.js&logoColor=white)
-![React](https://img.shields.io/badge/React-61dafb?style=flat-square&logo=react&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178c6?style=flat-square&logo=typescript&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js&logoColor=white)
+![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=fff)
+![NodeJS](https://img.shields.io/badge/Node.js-6DA55F?logo=node.js&logoColor=white)
 
 **🎨 UI & Styling**
 
-![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-38b2ac?style=flat-square&logo=tailwind-css&logoColor=white)
-![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?style=flat-square&logo=shadcnui&logoColor=white)
-![Radix UI](https://img.shields.io/badge/Radix%20UI-161618?style=flat-square&logo=radix-ui&logoColor=white)
-![Lucide](https://img.shields.io/badge/Lucide-f56565?style=flat-square&logo=lucide&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)
+![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=fff)
+![Radix UI](https://img.shields.io/badge/Radix%20UI-161618?logo=radix-ui&logoColor=white)
+![Lucide](https://img.shields.io/badge/Lucide-f56565?logo=lucide&logoColor=white)
 
 **🤖 AI & Backend**
 
-![LangChain](https://img.shields.io/badge/LangChain-1c3c3c?style=flat-square&logo=chainlink&logoColor=white)
-![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white)
-![Anthropic](https://img.shields.io/badge/Anthropic-d4a574?style=flat-square&logo=anthropic&logoColor=white)
+![LangChain](https://img.shields.io/badge/LangChain-1D3C3E?logo=langchain&logoColor=white)
+![OpenAI](https://img.shields.io/badge/OpenAI-412991?logo=openai&logoColor=white)
+![Anthropic](https://img.shields.io/badge/Anthropic-d4a574?logo=anthropic&logoColor=white)
 
 **🗄️ Database & Storage**
 
-![Supabase](https://img.shields.io/badge/Supabase-3ecf8e?style=flat-square&logo=supabase&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=flat-square&logo=postgresql&logoColor=white)
-![Upstash Redis](https://img.shields.io/badge/Upstash%20Redis-dc382d?style=flat-square&logo=redis&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&logoColor=fff)
+![Postgres](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)
+![Upstash Redis](https://img.shields.io/badge/Upstash%20Redis-dc382d?logo=redis&logoColor=white)
 
 **🔐 Auth & Security**
 
-![NextAuth.js](https://img.shields.io/badge/NextAuth.js-purple?style=flat-square&logo=next.js&logoColor=white)
+![NextAuth.js](https://img.shields.io/badge/NextAuth.js-purple?logo=next.js&logoColor=white)
 
 **🚀 Deployment & DevOps**
 
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ed?style=flat-square&logo=docker&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-%23000000.svg?logo=vercel&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)
 
 **📊 Monitoring & Analytics**
 
-![Sentry](https://img.shields.io/badge/Sentry-362d59?style=flat-square&logo=sentry&logoColor=white)
+![Sentry](https://img.shields.io/badge/Sentry-362d59?logo=sentry&logoColor=white)
 
 **🛠️ Development Tools**
 
-![pnpm](https://img.shields.io/badge/pnpm-f69220?style=flat-square&logo=pnpm&logoColor=white)
-![ESLint](https://img.shields.io/badge/ESLint-4b32c3?style=flat-square&logo=eslint&logoColor=white)
-![Prettier](https://img.shields.io/badge/Prettier-f7b93e?style=flat-square&logo=prettier&logoColor=white)
-![Turbopack](https://img.shields.io/badge/Turbopack-000000?style=flat-square&logo=vercel&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=fff)
+![ESLint](https://img.shields.io/badge/ESLint-4b32c3?logo=eslint&logoColor=white)
+![Prettier](https://img.shields.io/badge/Prettier-f7b93e?logo=prettier&logoColor=white)
+![Turbopack](https://img.shields.io/badge/Turbopack-000000?logo=vercel&logoColor=white)
 
 ---
 
@@ -93,11 +93,11 @@ Your resume tells your story, but static PDFs can't answer follow-up questions. 
 
 ## 🛡️ **Built for Personal Use**
 
-🔒 **Secure by Design** - Your resume data stays encrypted and private  
-🤖 **AI-Powered** - Natural conversations powered by leading AI models  
-📱 **Works Everywhere** - Mobile-friendly chat interface  
-⚡ **Real-Time** - Instant responses with typing indicators  
-🎨 **Professional UI** - Clean, modern design that reflects well on you  
+- 🔒 **Secure by Design** - Your resume data stays encrypted and private  
+- 🤖 **AI-Powered** - Natural conversations powered by leading AI models  
+- 📱 **Works Everywhere** - Mobile-friendly chat interface  
+- ⚡ **Real-Time** - Instant responses with typing indicators  
+- 🎨 **Professional UI** - Clean, modern design that reflects well on you  
 
 ---
 
@@ -150,7 +150,7 @@ Your resume tells your story, but static PDFs can't answer follow-up questions. 
 - **Node.js 22+** - [Download here](https://nodejs.org/)
 - **pnpm** - Install with `npm install -g pnpm`
 - **Supabase account** - [Sign up free](https://supabase.com/)
-- **AI Provider** - Get API key from [OpenAI](https://openai.com/api/), [Anthropic](https://www.anthropic.com/api), or [Google AI](https://aistudio.google.com/app/apikey)
+- **AI Provider** - Get API key from [OpenAI](https://openai.com/api/) or [Anthropic](https://www.anthropic.com/api)
 
 ### **Installation**
 
@@ -218,7 +218,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see your chat resume!
 ### **🎯 First Steps**
 
 1. **Visit `/admin/login`** - Sign in with your `ADMIN_EMAIL` and your original password (not the hash)
-2. **Configure AI** - Set up your preferred AI provider (OpenAI, Anthropic, Google AI, Azure OpenAI, or AWS Bedrock)
+2. **Configure AI** - Set up your preferred AI provider (OpenAI, Anthropic, Azure OpenAI, AWS Bedrock or any OpenAI compatible provider)
 3. **Upload your resume** - PDF files are automatically parsed and encrypted
 4. **Test the chat** - Visit the main page and try asking questions about your experience
 5. **Share your link** - Your interactive resume is ready for visitors!
@@ -271,7 +271,6 @@ docker run -p 3000:3000 --env-file .env.local chat-my-cv
 Configure your preferred AI provider in the admin panel (API keys are encrypted and stored securely):
 - **OpenAI**: Direct API access with model selection
 - **Anthropic**: Direct API access with model selection
-- **Google AI**: Direct API access with model selection
 - **Azure OpenAI**: Use your Azure deployment
 - **AWS Bedrock**: Claude models via AWS
 - **OpenAI Compatible**: Ollama, LM Studio, or custom endpoints
