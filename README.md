@@ -138,7 +138,8 @@ Your resume tells your story, but static PDFs can't answer follow-up questions. 
 - Redis for rate limiting
 
 **Security & Auth**
-- NextAuth.js for secure admin authentication  
+- NextAuth.js for secure admin authentication
+- Bcrypt password hashing
 - Rate limiting and security headers
 - Environment-based configuration management
 
@@ -166,7 +167,14 @@ pnpm install
 # Copy your Supabase project URL and anon key
 ```
 
-**3. Configure Environment**
+**3. Generate Admin Password Hash**
+```bash
+# Generate a secure bcrypt hash for your admin password
+node scripts/hash-password.js "your-secure-password"
+# Copy the base64-encoded hash from the output
+```
+
+**4. Configure Environment**
 ```bash
 cp .env.local.example .env.local
 ```
@@ -180,7 +188,7 @@ Edit `.env.local` with your configuration:
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key | `eyJ0eXAiOiJKV1Q...` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key | `eyJ0eXAiOiJKV1Q...` |
 | `ADMIN_EMAIL` | Your admin login email | `you@example.com` |
-| `ADMIN_PASSWORD` | Your admin login password | `secure-password` |
+| `ADMIN_PASSWORD_HASH` | Base64-encoded bcrypt hash of your admin password | `JDJiJDEw...` |
 | `ENCRYPTION_KEY` | 32-character encryption key | `your-32-char-encryption-key-here` |
 | `IP_HASH_SALT` | Salt for IP address hashing | `random-salt-string` |
 | `NEXTAUTH_SECRET` | Random secret for sessions | `your-secret-here` |
@@ -195,9 +203,12 @@ Edit `.env.local` with your configuration:
 | `MAX_FILE_SIZE` | Max resume file size in bytes | `10485760` (10MB) | `20971520` (20MB) |
 | `NEXT_PUBLIC_SENTRY_DSN` | Sentry error monitoring | None | `https://xyz@sentry.io/123` |
 
-> **Note**: AI API keys are configured securely through the admin panel, not as environment variables
+> **Security Notes**: 
+> - AI API keys are configured securely through the admin panel, not as environment variables
+> - Admin password is hashed with bcrypt and base64-encoded to prevent shell variable expansion issues
+> - Never store plain text passwords in environment variables
 
-**4. Run the Application**
+**5. Run the Application**
 ```bash
 pnpm dev
 ```
@@ -206,7 +217,7 @@ Visit [http://localhost:3000](http://localhost:3000) to see your chat resume!
 
 ### **🎯 First Steps**
 
-1. **Visit `/admin/login`** - Sign in with your `ADMIN_EMAIL` and `ADMIN_PASSWORD`
+1. **Visit `/admin/login`** - Sign in with your `ADMIN_EMAIL` and your original password (not the hash)
 2. **Configure AI** - Set up your preferred AI provider (OpenAI, Anthropic, Google AI, Azure OpenAI, or AWS Bedrock)
 3. **Upload your resume** - PDF files are automatically parsed and encrypted
 4. **Test the chat** - Visit the main page and try asking questions about your experience

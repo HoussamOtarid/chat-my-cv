@@ -1,4 +1,5 @@
 import CredentialsProvider from 'next-auth/providers/credentials';
+import bcrypt from 'bcrypt';
 
 export const authOptions = {
     providers: [
@@ -13,12 +14,26 @@ export const authOptions = {
                     return null;
                 }
 
-                // Check if the credentials match the admin user
                 const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com';
-                const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+                const adminPasswordHashBase64 = process.env.ADMIN_PASSWORD_HASH;
 
+                if (!adminPasswordHashBase64) {
+                    console.error('Failed to authenticate: ADMIN_PASSWORD_HASH not configured');
+                    
+                    return null;
+                }
+
+                const adminPasswordHash = Buffer.from(adminPasswordHashBase64, 'base64').toString('utf-8');
                 const isValidEmail = credentials.email === adminEmail;
-                const isValidPassword = credentials.password === adminPassword;
+                
+                let isValidPassword = false;
+                try {
+                    isValidPassword = await bcrypt.compare(credentials.password, adminPasswordHash);
+                } catch (error) {
+                    console.error('Failed to compare password hash:', error);
+                    
+                    return null;
+                }
 
                 if (isValidEmail && isValidPassword) {
                     return {

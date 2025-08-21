@@ -19,7 +19,7 @@ export const config = {
         url: process.env.NEXTAUTH_URL!,
         secret: process.env.NEXTAUTH_SECRET!,
         adminEmail: process.env.ADMIN_EMAIL!,
-        adminPassword: process.env.ADMIN_PASSWORD!
+        adminPasswordHash: process.env.ADMIN_PASSWORD_HASH!
     },
 
     // Encryption
@@ -47,7 +47,7 @@ export function validateConfig() {
         'NEXT_PUBLIC_SUPABASE_ANON_KEY',
         'SUPABASE_SERVICE_ROLE_KEY',
         'ADMIN_EMAIL',
-        'ADMIN_PASSWORD',
+        'ADMIN_PASSWORD_HASH',
         'ENCRYPTION_KEY'
     ];
 
