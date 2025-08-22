@@ -59,14 +59,25 @@ export default function ChatPage() {
                     throw new Error('Failed to check resume status');
                 }
 
-                // Check configuration (simplified check)
-                // In production, you might want to check the actual configuration endpoint
-                setHasConfiguration(true); // Assume configured for now
+                // Check configuration status
+                const configResponse = await fetch('/api/config/status', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (configResponse.ok) {
+                    const configData = await configResponse.json();
+                    setHasConfiguration(configData.configured);
+                } else {
+                    // If we can't check, assume it's not configured
+                    setHasConfiguration(false);
+                }
             } catch (err) {
                 console.error('Requirements check error:', err);
-                // Assume everything exists if we can't check (optimistic)
-                setHasActiveResume(true);
-                setHasConfiguration(true);
+                // If we can't check requirements, show an error
+                setError('Unable to verify application requirements. Please try again later.');
             } finally {
                 setIsLoading(false);
             }
@@ -131,7 +142,7 @@ export default function ChatPage() {
             <AppLayout>
                 <div className='container mx-auto px-4 py-16'>
                     <Suspense fallback={<Skeleton className='mx-auto h-64 max-w-md' />}>
-                        <NoConfigurationEmptyState className='mx-auto max-w-md' actionHref='/admin' />
+                        <NoConfigurationEmptyState className='mx-auto max-w-md' actionHref='/admin/settings' />
                     </Suspense>
                     <div className='mt-4 flex justify-center'>
                         <Button onClick={() => router.push('/')} variant='outline'>
