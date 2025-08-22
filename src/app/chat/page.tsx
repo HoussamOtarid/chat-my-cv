@@ -149,8 +149,8 @@ export default function ChatPage() {
             <Suspense fallback={null}>
                 <ConnectionStatusIndicator showBanner position='top' />
             </Suspense>
-            <div className='container mx-auto max-w-4xl px-4 py-4'>
-                <div className='bg-background h-[calc(100vh-8rem)] overflow-hidden rounded-lg border shadow-sm'>
+            <div className='container mx-auto flex h-full max-w-4xl flex-col px-4 py-4'>
+                <div className='bg-background flex flex-1 flex-col overflow-hidden rounded-lg border shadow-sm'>
                     <Suspense fallback={<Skeleton className='h-full' />}>
                         <ChatInterface
                             className='h-full'

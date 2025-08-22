@@ -36,7 +36,7 @@ export function AppLayout({
     };
 
     return (
-        <div className={cn('bg-background flex min-h-screen flex-col', className)}>
+        <div className={cn('bg-background flex h-screen flex-col overflow-hidden', className)}>
             {/* Header */}
             {showHeader && (
                 <Header
@@ -51,7 +51,7 @@ export function AppLayout({
             {showNavigation && <MobileNav open={mobileNavOpen} onOpenChange={setMobileNavOpen} />}
 
             {/* Main Content */}
-            <main className='flex flex-1 flex-col'>{children}</main>
+            <main className='flex flex-1 flex-col overflow-auto'>{children}</main>
 
             {/* Footer */}
             {showFooter && <Footer />}
