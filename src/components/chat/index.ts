@@ -8,3 +8,4 @@ export { ChatInput } from './ChatInput';
 export { StreamingIndicator, StreamingText } from './StreamingIndicator';
 export { SuggestedQuestions } from './SuggestedQuestions';
 export { ChatInterface } from './ChatInterface';
+export { MarkdownRenderer } from './MarkdownRenderer';

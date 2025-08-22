@@ -5,14 +5,13 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-import { Badge } from '@/registry/new-york-v4/ui/badge';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
 import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
-import { Separator } from '@/registry/new-york-v4/ui/separator';
 
 import { ArrowLeft, Bot, Copy, User } from 'lucide-react';
 import { toast } from 'sonner';
+import { MarkdownRenderer } from '@/components/chat';
 
 interface Message {
     id: string;
@@ -193,49 +192,64 @@ export default function SessionDetailPage() {
                             No messages in this session
                         </div>
                     ) : (
-                        session.messages.map((message, index) => (
-                            <div key={message.id}>
-                                {index > 0 && <Separator className='my-4' />}
-                                <div className='space-y-2'>
-                                    <div className='flex items-start justify-between'>
-                                        <div className='flex items-center gap-2'>
+                        <div className='space-y-4'>
+                            {session.messages.map((message) => (
+                                <div 
+                                    key={message.id}
+                                    className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                >
+                                    {/* Avatar for assistant messages */}
+                                    {message.role === 'assistant' && (
+                                        <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-muted'>
+                                            <Bot className='h-4 w-4' />
+                                        </div>
+                                    )}
+                                    
+                                    {/* Message bubble */}
+                                    <div className={`group relative max-w-[70%] ${message.role === 'user' ? 'flex flex-col items-end' : ''}`}>
+                                        <div 
+                                            className={`rounded-lg px-4 py-2.5 text-sm ${
+                                                message.role === 'user' 
+                                                    ? 'bg-primary text-primary-foreground' 
+                                                    : 'bg-muted border border-border'
+                                            }`}
+                                        >
                                             {message.role === 'user' ? (
-                                                <>
-                                                    <User className='h-5 w-5 text-blue-600' />
-                                                    <Badge variant='outline' className='text-blue-600'>
-                                                        User
-                                                    </Badge>
-                                                </>
-                                            ) : message.role === 'assistant' ? (
-                                                <>
-                                                    <Bot className='h-5 w-5 text-green-600' />
-                                                    <Badge variant='outline' className='text-green-600'>
-                                                        Assistant
-                                                    </Badge>
-                                                </>
+                                                // User messages as plain text (matching MessageBubble behavior)
+                                                <p className='mb-0'>{message.content}</p>
                                             ) : (
-                                                <Badge variant='outline'>System</Badge>
+                                                // Assistant messages with markdown
+                                                <div className='prose prose-sm max-w-none dark:prose-invert'>
+                                                    <MarkdownRenderer content={message.content} />
+                                                </div>
                                             )}
+                                        </div>
+                                        
+                                        {/* Time and copy button */}
+                                        <div className='mt-1 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity'>
                                             <span className='text-xs text-muted-foreground'>
                                                 {formatTime(message.createdAt)}
                                             </span>
-                                        </div>
-                                        <Button
-                                            variant='ghost'
-                                            size='sm'
-                                            onClick={() => copyToClipboard(message.content)}
-                                        >
-                                            <Copy className='h-3 w-3' />
-                                        </Button>
-                                    </div>
-                                    <div className='pl-7'>
-                                        <div className='prose prose-sm max-w-none whitespace-pre-wrap rounded-lg bg-muted p-3'>
-                                            {message.content}
+                                            <Button
+                                                variant='ghost'
+                                                size='sm'
+                                                className='h-6 px-2'
+                                                onClick={() => copyToClipboard(message.content)}
+                                            >
+                                                <Copy className='h-3 w-3' />
+                                            </Button>
                                         </div>
                                     </div>
+                                    
+                                    {/* Avatar for user messages */}
+                                    {message.role === 'user' && (
+                                        <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10'>
+                                            <User className='h-4 w-4' />
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     )}
                 </CardContent>
             </Card>
