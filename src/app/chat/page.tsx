@@ -168,11 +168,9 @@ export default function ChatPage() {
                             welcomeMessage="Welcome! Ask me anything about this person's background, skills, or experience."
                             placeholder='Ask a question about their experience...'
                             showSuggestedQuestions={true}
-                            onMessageSent={(message) => {
-                                console.log('Message sent:', message);
+                            onMessageSent={() => {
                             }}
-                            onMessageReceived={(message) => {
-                                console.log('Message received:', message);
+                            onMessageReceived={() => {
                             }}
                         />
                     </Suspense>

@@ -2,6 +2,8 @@
 // Application Constants
 // ============================================
 
+import { FILE_SIZE_LIMITS } from './config';
+
 export const APP_NAME = 'Chat My CV';
 export const APP_VERSION = '1.0.0';
 
@@ -22,7 +24,7 @@ export const RATE_LIMIT = {
 
 // File Upload
 export const FILE_UPLOAD = {
-    MAX_SIZE: 10 * 1024 * 1024, // 10MB
+    MAX_SIZE: FILE_SIZE_LIMITS.MAX_UPLOAD_SIZE,
     ALLOWED_TYPES: ['application/pdf'],
     ALLOWED_EXTENSIONS: ['.pdf']
 } as const;

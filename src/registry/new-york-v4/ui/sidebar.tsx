@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import { useIsMobile } from '@/registry/new-york-v4/hooks/use-mobile';
-import { cn } from '@/registry/new-york-v4/lib/utils';
+import { cn } from '@/lib/utils';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Input } from '@/registry/new-york-v4/ui/input';
 import { Separator } from '@/registry/new-york-v4/ui/separator';

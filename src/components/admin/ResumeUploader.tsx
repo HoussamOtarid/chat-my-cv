@@ -12,6 +12,8 @@ import { Progress } from '@/registry/new-york-v4/ui/progress';
 
 import { AlertCircle, CheckCircle2, FileText, Loader2, Upload } from 'lucide-react';
 
+import { FILE_SIZE_LIMITS } from '@/constants/config';
+
 interface UploadResponse {
     success: boolean;
     message?: string;
@@ -39,7 +41,7 @@ interface ResumeUploaderProps {
     className?: string;
 }
 
-const MAX_FILE_SIZE_DEFAULT = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE_DEFAULT = FILE_SIZE_LIMITS.DEFAULT_MAX_FILE_SIZE;
 
 export function ResumeUploader({
     onUploadSuccess,

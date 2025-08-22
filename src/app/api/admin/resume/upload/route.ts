@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { FILE_SIZE_LIMITS } from '@/constants/config';
 import { authOptions } from '@/lib/auth';
 import { handleApiError } from '@/lib/api-error-handler';
 import { extractTextFromPDF } from '@/lib/langchain';
@@ -10,7 +11,7 @@ import { getServerSession } from 'next-auth';
 
 export const runtime = 'nodejs';
 
-const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || '10485760', 10); // 10MB default
+const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || String(FILE_SIZE_LIMITS.DEFAULT_MAX_FILE_SIZE), 10);
 
 export async function POST(request: NextRequest) {
     try {
@@ -74,7 +75,6 @@ export async function POST(request: NextRequest) {
 
             if (extractionResult.success && extractionResult.content) {
                 extractedContent = extractionResult.content;
-                console.log(`Successfully extracted ${extractedContent.length} characters from PDF`);
             } else {
                 extractionError = extractionResult.error?.message || 'Failed to extract text from PDF';
                 console.error('PDF extraction failed:', extractionError);

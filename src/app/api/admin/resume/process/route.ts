@@ -62,7 +62,6 @@ export async function POST(request: NextRequest) {
             if (extractionResult.success && extractionResult.content) {
                 extractedContent = extractionResult.content;
                 metadata = extractionResult.metadata;
-                console.log(`Successfully extracted ${extractedContent.length} characters from PDF`);
             } else {
                 extractionError = extractionResult.error?.message || 'Failed to extract text from PDF';
                 console.error('PDF extraction failed:', extractionError);

@@ -2,6 +2,8 @@
 // Application Configuration
 // ============================================
 
+import { FILE_SIZE_LIMITS } from '@/constants/config';
+
 export const config = {
     // Environment
     isDevelopment: process.env.NODE_ENV === 'development',
@@ -35,7 +37,7 @@ export const config = {
 
     // Application
     app: {
-        maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10),
+        maxFileSize: parseInt(process.env.MAX_FILE_SIZE || String(FILE_SIZE_LIMITS.DEFAULT_MAX_FILE_SIZE), 10),
         ipHashSalt: process.env.IP_HASH_SALT!
     }
 } as const;

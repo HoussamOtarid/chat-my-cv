@@ -268,7 +268,6 @@ export async function GET(request: Request) {
                 }
             } catch (error) {
                 // Resume not available, continue with base questions only
-                console.log('Resume not available for contextual questions');
             }
         }
 

@@ -200,7 +200,6 @@ export async function POST(request: NextRequest) {
                     }
                 }
 
-                console.log(`Archived ${data.messages.length} messages for session ${sessionId}`);
             } catch (error) {
                 console.error('Async archival error:', error);
                 // Don't throw - we already responded to the client

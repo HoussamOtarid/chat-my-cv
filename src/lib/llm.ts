@@ -174,12 +174,6 @@ export function createChatModel(config: LLMConfig): BaseChatModel {
         case 'openai-compatible': {
             const { baseUrl, apiKey = 'dummy', model = 'gpt-3.5-turbo', defaultHeaders } = config;
 
-            console.log({
-                baseUrl,
-                apiKey,
-                model,
-                defaultHeaders
-            });
 
             if (!baseUrl) {
                 throw new Error('Base URL is required for OpenAI-compatible endpoints');

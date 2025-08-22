@@ -24,7 +24,6 @@ export {
     rateLimitResponse,
     getRateLimitIdentifier,
     rateLimiters,
-    TieredRateLimiter
 } from './rate-limit';
 export type { RateLimitConfig, RateLimitResult } from './rate-limit';
 export { withRateLimit, withMethodRateLimit, skipConditions, createRateLimitedRoute } from './rate-limit-middleware';

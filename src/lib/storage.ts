@@ -1,7 +1,9 @@
+import { FILE_SIZE_LIMITS } from '@/constants/config';
+
 import { createSupabaseAdmin } from './supabase';
 
 const RESUME_BUCKET = 'resumes';
-const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || '10485760', 10); // 10MB default
+const MAX_FILE_SIZE = parseInt(process.env.MAX_FILE_SIZE || String(FILE_SIZE_LIMITS.DEFAULT_MAX_FILE_SIZE), 10);
 
 export interface UploadResumeOptions {
     file: File | Buffer;
