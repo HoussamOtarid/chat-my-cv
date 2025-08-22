@@ -76,6 +76,11 @@ export class SessionStorage {
     private constructor() {
         this.clientId = getClientId();
         this.loadSession();
+        
+        // Create initial session if needed
+        if (!this.session) {
+            this.createNewSession();
+        }
     }
 
     /**
@@ -120,7 +125,8 @@ export class SessionStorage {
             }
         } catch (error) {
             console.error('Failed to load session from localStorage:', error);
-            this.clearSession();
+            this.session = null;
+            this.messageHistory = [];
         }
     }
 
@@ -174,23 +180,40 @@ export class SessionStorage {
      */
     getSession(): ChatSession {
         if (!this.session) {
-            this.session = {
-                id: generateUUID(),
-                clientId: this.clientId,
-                messages: [],
-                createdAt: new Date()
-            };
-            this.saveSession();
+            this.createNewSession();
         }
 
-        return this.session;
+        return this.session!;
     }
 
     /**
-     * Get session ID (if exists)
+     * Create a new session
      */
-    getSessionId(): string | undefined {
-        return this.session?.id;
+    private createNewSession(): void {
+        if (this.session) {
+            return;
+        }
+        
+        const newSessionId = generateUUID();
+        
+        this.session = {
+            id: newSessionId,
+            clientId: this.clientId,
+            messages: this.messageHistory,
+            createdAt: new Date()
+        };
+        this.saveSession();
+    }
+
+    /**
+     * Get session ID (always returns a session ID, creates one if needed)
+     */
+    getSessionId(): string {
+        if (!this.session) {
+            this.createNewSession();
+        }
+
+        return this.session!.id;
     }
 
     /**
@@ -267,11 +290,11 @@ export class SessionStorage {
     }
 
     /**
-     * Clear session and start fresh
+     * Clear session and start fresh with a new session ID
      */
     clearSession(): void {
-        this.session = null;
         this.messageHistory = [];
+        this.session = null;
 
         if (typeof window !== 'undefined') {
             try {
@@ -283,6 +306,9 @@ export class SessionStorage {
                 console.error('Failed to clear localStorage:', error);
             }
         }
+
+        // Create a new session immediately
+        this.createNewSession();
     }
 
     /**
@@ -412,7 +438,7 @@ export function useSessionStorage() {
         // Return mock for SSR
         return {
             clientId: '',
-            sessionId: undefined as string | undefined,
+            sessionId: '',
             messages: [] as ChatMessage[],
             addMessage: () => ({}) as ChatMessage,
             updateMessage: () => {},

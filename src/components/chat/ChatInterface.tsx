@@ -152,7 +152,8 @@ export function ChatInterface({
         addUserMessage,
         addAssistantMessage,
         updateMessage,
-        clearSession
+        clearSession,
+        archiveMessage
     } = useChatSession();
 
     // SSE chat streaming
@@ -174,10 +175,16 @@ export function ChatInterface({
             if (currentAssistantId.current) {
                 updateMessage(currentAssistantId.current, fullResponse);
 
-                // Callback
-                const message = messages.find((m) => m.id === currentAssistantId.current);
-                if (message && onMessageReceived) {
-                    onMessageReceived(message);
+                // Find and archive the completed message
+                const completedMessage = messages.find((m) => m.id === currentAssistantId.current);
+                if (completedMessage) {
+                    // Archive the completed assistant message
+                    archiveMessage({ ...completedMessage, content: fullResponse });
+                    
+                    // Callback
+                    if (onMessageReceived) {
+                        onMessageReceived(completedMessage);
+                    }
                 }
 
                 currentAssistantId.current = null;
@@ -234,8 +241,8 @@ export function ChatInterface({
                     onMessageSent(userMessage);
                 }
 
-                // Create placeholder for assistant message
-                const assistantMessage = addAssistantMessage('');
+                // Create placeholder for assistant message (skip archival)
+                const assistantMessage = addAssistantMessage('', true);
                 currentAssistantId.current = assistantMessage.id;
                 currentAssistantResponse.current = '';
 
@@ -250,7 +257,7 @@ export function ChatInterface({
                 });
             }
         },
-        [addUserMessage, addAssistantMessage, updateMessage, sendMessage, clientId, sessionId, onMessageSent]
+        [addUserMessage, addAssistantMessage, updateMessage, sendMessage, clientId, sessionId, onMessageSent, archiveMessage, messages, onMessageReceived]
     );
 
     // Handle selecting a suggested question

@@ -7,7 +7,7 @@ import type { ChatMessage } from '@/types';
 
 export interface UseSessionStorageReturn {
     clientId: string;
-    sessionId: string | undefined;
+    sessionId: string;
     messages: ChatMessage[];
     isLoading: boolean;
 
@@ -182,7 +182,7 @@ export function useSessionStorage(): UseSessionStorageReturn {
     // Return values
     return {
         clientId: storage?.getClientId() || '',
-        sessionId: storage?.getSessionId(),
+        sessionId: storage?.getSessionId() || '',
         messages,
         isLoading,
 

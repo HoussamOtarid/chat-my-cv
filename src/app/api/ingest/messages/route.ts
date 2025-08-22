@@ -112,58 +112,57 @@ export async function POST(request: NextRequest) {
             const supabase = await createSupabaseAdmin();
 
             try {
-                // 1. Upsert chat session
+                // 1. Handle session
                 const clientIP = getClientIP(request);
                 const ipHash = hashIP(clientIP);
-                const userAgent = data.user_agent || request.headers.get('user-agent') || null;
-
-                // First, try to get existing session
-                const { data: existingSession } = await supabase
-                    .from('chat_session')
-                    .select('id')
-                    .eq('client_id', data.client_id)
-                    .single();
-
+                
                 let sessionId: string;
 
-                if (existingSession) {
-                    sessionId = existingSession.id;
+                // Use provided session_id if available
+                if (data.session_id) {
+                    sessionId = data.session_id;
+                    
+                    // Check if session exists in DB, create if not
+                    const { data: existingSession, error: checkError } = await supabase
+                        .from('chat_session')
+                        .select('id')
+                        .eq('id', sessionId)
+                        .single();
 
-                    // Update session metadata if needed
-                    if (ipHash || userAgent) {
-                        await supabase
+                    // Only create if we get a not found error (no rows returned)
+                    if (!existingSession && checkError?.code === 'PGRST116') {
+                        const { error: sessionError } = await supabase
                             .from('chat_session')
-                            .update({
+                            .insert({
+                                id: sessionId,
+                                client_id: data.client_id,
                                 ip_hash: ipHash
-                                // Note: user_agent column doesn't exist in current schema
-                                // We'd need to add it to track user agent
                             })
-                            .eq('id', sessionId);
+                            .select('id')
+                            .single();
+
+                        if (sessionError) {
+                            console.error('Failed to create session with provided ID:', sessionError);
+                        }
                     }
                 } else {
-                    // Create new session
+                    // No session_id provided, create a new one
                     const { data: newSession, error: sessionError } = await supabase
                         .from('chat_session')
                         .insert({
                             client_id: data.client_id,
                             ip_hash: ipHash
-                            // user_agent would go here if column existed
                         })
                         .select('id')
                         .single();
 
                     if (sessionError || !newSession) {
                         console.error('Failed to create session:', sessionError);
-
+                        
                         return;
                     }
 
                     sessionId = newSession.id;
-                }
-
-                // Use provided session_id if it matches
-                if (data.session_id && data.session_id === sessionId) {
-                    sessionId = data.session_id;
                 }
 
                 // 2. Batch insert messages with deduplication

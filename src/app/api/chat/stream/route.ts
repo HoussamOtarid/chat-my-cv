@@ -153,31 +153,43 @@ async function handleGET(request: NextRequest) {
 
             // 4. Get or create session
             if (!sessionIdToUse) {
-                const { data: existingSession } = await supabase
+                // Fallback: create new session if not provided
+                const { data: newSession, error: sessionError } = await supabase
                     .from('chat_session')
+                    .insert({
+                        client_id: clientId,
+                        ip_hash: null
+                    })
                     .select('id')
-                    .eq('client_id', clientId)
                     .single();
 
-                if (existingSession) {
-                    sessionIdToUse = existingSession.id;
+                if (sessionError || !newSession) {
+                    console.error('Failed to create fallback session:', sessionError);
                 } else {
-                    // Create new session
-                    const { data: newSession, error: sessionError } = await supabase
+                    sessionIdToUse = newSession.id;
+                }
+            } else {
+                // Check if the session exists in the database, create if not
+                const { data: existingSession, error: checkError } = await supabase
+                    .from('chat_session')
+                    .select('id')
+                    .eq('id', sessionIdToUse)
+                    .single();
+
+                // Only create if we get a not found error (no rows returned)
+                if (!existingSession && checkError?.code === 'PGRST116') {
+                    const { error: sessionError } = await supabase
                         .from('chat_session')
                         .insert({
+                            id: sessionIdToUse,
                             client_id: clientId,
-                            user_agent: request.headers.get('user-agent') || null,
-                            ip_hash: null // Could add IP hashing if needed
+                            ip_hash: null
                         })
                         .select('id')
                         .single();
 
-                    if (sessionError || !newSession) {
-                        console.error('Failed to create session:', sessionError);
-                        // Continue without session logging
-                    } else {
-                        sessionIdToUse = newSession.id;
+                    if (sessionError) {
+                        console.error('Failed to create session with provided ID:', sessionError);
                     }
                 }
             }
@@ -229,8 +241,7 @@ async function handleGET(request: NextRequest) {
                         session_id: sessionIdToUse,
                         client_message_id: `${clientMessageId}-response`,
                         role: 'assistant',
-                        content: fullResponse,
-                        model: config.model || config.provider
+                        content: fullResponse
                     })
                     .then(({ error }) => {
                         if (error) console.error('Failed to log assistant message:', error);

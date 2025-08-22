@@ -43,9 +43,13 @@ export function useChatSession() {
     );
 
     const addAssistantMessage = useCallback(
-        (content: string): ChatMessage => {
+        (content: string, skipArchival: boolean = false): ChatMessage => {
             const message = addAssistantMessageBase(content);
-            queueMessage(message, clientId, sessionId);
+            
+            // Only queue for archival if not skipped
+            if (!skipArchival) {
+                queueMessage(message, clientId, sessionId);
+            }
 
             return message;
         },
@@ -60,6 +64,14 @@ export function useChatSession() {
             return message;
         },
         [addSystemMessageBase, queueMessage, clientId, sessionId]
+    );
+
+    // Archive a specific message
+    const archiveMessage = useCallback(
+        (message: ChatMessage) => {
+            queueMessage(message, clientId, sessionId);
+        },
+        [queueMessage, clientId, sessionId]
     );
 
     // Clear session and flush remaining messages
@@ -113,6 +125,7 @@ export function useChatSession() {
         // Archival status
         archivalStatus: getStatus,
         archivalQueueSize: getQueueSize,
-        flushArchival: () => flush(clientId, sessionId)
+        flushArchival: () => flush(clientId, sessionId),
+        archiveMessage
     };
 }
