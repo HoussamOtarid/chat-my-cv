@@ -318,7 +318,7 @@ export function ChatInterface({
             <div className='bg-muted/30 flex items-center justify-between border-b px-3 py-2 sm:px-4 sm:py-3'>
                 <div className='flex items-center gap-1.5 sm:gap-2'>
                     <Sparkles className='text-primary h-4 w-4 sm:h-5 sm:w-5' />
-                    <span className='text-sm font-semibold sm:text-base'>AI Resume Chat</span>
+                    <span className='text-sm font-semibold font-heading sm:text-base'>AI Resume Chat</span>
                     {isStreaming && (
                         <span className='text-muted-foreground hidden items-center gap-1 text-xs sm:flex'>
                             <Loader2 className='h-3 w-3 animate-spin' />

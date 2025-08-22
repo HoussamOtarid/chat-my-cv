@@ -64,7 +64,7 @@ export function Header({
                 {showBranding && (
                     <Link href='/' className='hover:text-primary flex items-center space-x-2 transition-colors'>
                         <MessagesSquare className='text-primary h-6 w-6' />
-                        <span className='hidden text-lg font-bold sm:inline'>Chat My CV</span>
+                        <span className='hidden text-lg font-bold font-heading sm:inline'>Chat My CV</span>
                     </Link>
                 )}
 

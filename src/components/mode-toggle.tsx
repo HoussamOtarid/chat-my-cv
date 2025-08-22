@@ -31,7 +31,7 @@ export function ModeToggle() {
         );
     }
 
-    // Show the appropriate icon based on current theme
+    // Show the icon for the state you'll switch TO (not current state)
     const isDark = resolvedTheme === 'dark';
 
     return (
@@ -39,13 +39,14 @@ export function ModeToggle() {
             variant='ghost' 
             className='h-8 w-8 px-0' 
             onClick={toggleTheme}
+            aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
         >
             {isDark ? (
-                <MoonIcon className='h-4 w-4 transition-transform duration-200 hover:scale-110' />
-            ) : (
                 <SunIcon className='h-4 w-4 transition-transform duration-200 hover:scale-110' />
+            ) : (
+                <MoonIcon className='h-4 w-4 transition-transform duration-200 hover:scale-110' />
             )}
-            <span className='sr-only'>Toggle theme</span>
+            <span className='sr-only'>{isDark ? 'Switch to light mode' : 'Switch to dark mode'}</span>
         </Button>
     );
 }

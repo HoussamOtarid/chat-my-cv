@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import type { Metadata } from 'next';
-import localFont from 'next/font/local';
+import { Plus_Jakarta_Sans, Inter, Fira_Code } from 'next/font/google';
 
 import '@/app/globals.css';
 import { Providers } from '@/app/providers';
@@ -9,15 +9,24 @@ import ErrorBoundary from '@/components/error-boundary';
 import { StructuredData } from '@/components/seo/structured-data';
 import { Toaster } from '@/registry/new-york-v4/ui/sonner';
 
-const geistSans = localFont({
-    src: './fonts/GeistVF.woff',
-    variable: '--font-geist-sans',
-    weight: '100 900'
+const plusJakarta = Plus_Jakarta_Sans({
+    subsets: ['latin'],
+    variable: '--font-plus-jakarta',
+    display: 'swap',
+    weight: ['500', '600', '700', '800']
 });
-const geistMono = localFont({
-    src: './fonts/GeistMonoVF.woff',
-    variable: '--font-geist-mono',
-    weight: '100 900'
+
+const inter = Inter({
+    subsets: ['latin'],
+    variable: '--font-inter',
+    display: 'swap'
+});
+
+const firaCode = Fira_Code({
+    subsets: ['latin'],
+    variable: '--font-fira-code',
+    display: 'swap',
+    weight: ['400', '500', '600']
 });
 
 export const metadata: Metadata = {
@@ -98,12 +107,12 @@ export const viewport = {
 
 const Layout = ({ children }: Readonly<{ children: ReactNode }>) => {
     return (
-        <html suppressHydrationWarning lang='en'>
+        <html suppressHydrationWarning lang='en' className={`${plusJakarta.variable} ${inter.variable} ${firaCode.variable}`}>
             <head>
                 <StructuredData />
             </head>
             <body
-                className={`${geistSans.variable} ${geistMono.variable} bg-background text-foreground overscroll-none antialiased`}>
+                className={`bg-background text-foreground overscroll-none antialiased`}>
                 <Providers>
                     <ErrorBoundary level='page' showDetails={process.env.NODE_ENV === 'development'}>
                         {children}

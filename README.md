@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🤖 Chat My CV
+# 💬 Chat My CV
 
 ### *Intelligent conversational interface for exploring professional backgrounds through AI-powered natural language interactions*
 
