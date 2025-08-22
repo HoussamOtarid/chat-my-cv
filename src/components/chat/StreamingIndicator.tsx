@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/registry/new-york-v4/ui/avatar';
+import { Avatar, AvatarFallback } from '@/registry/new-york-v4/ui/avatar';
 
 import { Bot } from 'lucide-react';
 
@@ -154,7 +154,6 @@ export function StreamingIndicator({
         <div className={cn('mb-4 flex gap-3', className)}>
             {/* Avatar */}
             <Avatar className='h-8 w-8 shrink-0'>
-                <AvatarImage src='/ai-avatar.png' alt='AI Assistant' />
                 <AvatarFallback>
                     <Bot className='h-4 w-4' />
                 </AvatarFallback>

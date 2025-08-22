@@ -4,7 +4,7 @@ import React from 'react';
 
 import { toast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '@/registry/new-york-v4/ui/avatar';
+import { Avatar, AvatarFallback } from '@/registry/new-york-v4/ui/avatar';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card } from '@/registry/new-york-v4/ui/card';
 import type { ChatMessage } from '@/types';
@@ -61,7 +61,6 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
             {/* Avatar for assistant messages */}
             {isAssistant && (
                 <Avatar className='h-7 w-7 shrink-0 sm:h-8 sm:w-8'>
-                    <AvatarImage src='/ai-avatar.png' alt='AI Assistant' />
                     <AvatarFallback>
                         <Bot className='h-4 w-4' />
                     </AvatarFallback>
@@ -184,7 +183,6 @@ export function MessageBubble({ message, isStreaming = false, className }: Messa
             {/* Avatar for user messages */}
             {isUser && (
                 <Avatar className='h-7 w-7 shrink-0 sm:h-8 sm:w-8'>
-                    <AvatarImage src='/user-avatar.png' alt='User' />
                     <AvatarFallback>
                         <User className='h-4 w-4' />
                     </AvatarFallback>

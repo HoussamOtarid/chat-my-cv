@@ -4,18 +4,13 @@ export function StructuredData() {
         '@type': 'WebApplication',
         name: 'Chat My CV',
         description: 'AI-powered resume conversations for exploring professional backgrounds',
-        url: process.env.NEXT_PUBLIC_APP_URL || 'https://chatmycv.com',
+        url: process.env.NEXT_PUBLIC_APP_URL || 'https://chatmycv.houss.am',
         applicationCategory: 'BusinessApplication',
         operatingSystem: 'All',
-        offers: {
-            '@type': 'Offer',
-            price: '0',
-            priceCurrency: 'USD'
-        },
         creator: {
-            '@type': 'Organization',
-            name: 'Chat My CV',
-            url: process.env.NEXT_PUBLIC_APP_URL || 'https://chatmycv.com'
+            '@type': 'Person',
+            name: 'Houssam',
+            url: 'https://houss.am'
         },
         featureList: [
             'AI-powered chat interface',
