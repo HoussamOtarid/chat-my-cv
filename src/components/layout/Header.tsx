@@ -9,7 +9,7 @@ import { ModeToggle } from '@/components/mode-toggle';
 import { cn } from '@/lib/utils';
 import { Button } from '@/registry/new-york-v4/ui/button';
 
-import { Menu, Sparkles, X } from 'lucide-react';
+import { Github, Menu, MessagesSquare, X } from 'lucide-react';
 
 interface HeaderProps {
     className?: string;
@@ -59,13 +59,12 @@ export function Header({
                 'bg-background/95 supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b backdrop-blur',
                 className
             )}>
-            <div className='container flex h-14 items-center px-4 md:px-6'>
+            <div className='container mx-auto flex h-14 items-center px-4 md:px-6'>
                 {/* Logo/Branding */}
                 {showBranding && (
                     <Link href='/' className='hover:text-primary flex items-center space-x-2 transition-colors'>
-                        <Sparkles className='text-primary h-6 w-6' />
+                        <MessagesSquare className='text-primary h-6 w-6' />
                         <span className='hidden text-lg font-bold sm:inline'>Chat My CV</span>
-                        <span className='text-lg font-bold sm:hidden'>CV Chat</span>
                     </Link>
                 )}
 
@@ -89,6 +88,21 @@ export function Header({
 
                 {/* Right Side Actions */}
                 <div className='ml-auto flex items-center space-x-2'>
+                    {/* GitHub Link */}
+                    <Button
+                        variant='ghost'
+                        size='icon'
+                        asChild
+                        className='hover:text-primary'
+                        aria-label='View source on GitHub'>
+                        <Link 
+                            href='https://github.com/HoussamOtarid/chat-my-cv' 
+                            target='_blank' 
+                            rel='noopener noreferrer'>
+                            <Github className='h-5 w-5' />
+                        </Link>
+                    </Button>
+
                     {/* Theme Toggle */}
                     {showThemeToggle && <ModeToggle />}
 

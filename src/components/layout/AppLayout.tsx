@@ -15,9 +15,6 @@ interface AppLayoutProps {
     showFooter?: boolean;
     showNavigation?: boolean;
     showThemeToggle?: boolean;
-    minimalFooter?: boolean;
-    showSocialLinks?: boolean;
-    showFooterLinks?: boolean;
 }
 
 /**
@@ -31,9 +28,6 @@ export function AppLayout({
     showFooter = true,
     showNavigation = true,
     showThemeToggle = true,
-    minimalFooter = true,
-    showSocialLinks = false,
-    showFooterLinks = false
 }: AppLayoutProps) {
     const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -60,7 +54,7 @@ export function AppLayout({
             <main className='flex flex-1 flex-col'>{children}</main>
 
             {/* Footer */}
-            {showFooter && <Footer minimal={minimalFooter} showSocial={showSocialLinks} showLinks={showFooterLinks} />}
+            {showFooter && <Footer />}
         </div>
     );
 }
