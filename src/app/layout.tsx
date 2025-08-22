@@ -67,7 +67,12 @@ export const metadata: Metadata = {
         creator: '@chatmycv'
     },
     icons: {
-        icon: '/favicon.ico'
+        icon: [
+            {
+                url: '/favicon.svg',
+                type: 'image/svg+xml'
+            }
+        ]
     },
     manifest: '/site.webmanifest',
     appleWebApp: {
