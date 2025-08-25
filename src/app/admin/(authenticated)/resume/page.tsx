@@ -65,14 +65,67 @@ export default function ResumeManagementPage() {
 
                     {/* Manage Tab - Show current resume */}
                     <TabsContent value='manage' className='space-y-4'>
-                        <Suspense fallback={<Skeleton className='h-96 w-full' />}>
+                        <Suspense fallback={
+                            <Card>
+                                <CardHeader>
+                                    <Skeleton className='h-7 w-32 mb-2' />
+                                    <Skeleton className='h-4 w-64' />
+                                </CardHeader>
+                                <CardContent className='space-y-4'>
+                                    {/* Resume Info Skeleton */}
+                                    <div className='flex items-start justify-between'>
+                                        <div className='space-y-2'>
+                                            <Skeleton className='h-5 w-48' />
+                                            <Skeleton className='h-4 w-32' />
+                                            <Skeleton className='h-4 w-40' />
+                                        </div>
+                                        <Skeleton className='h-6 w-20' />
+                                    </div>
+                                    
+                                    {/* Preview Section Skeleton */}
+                                    <div className='border-t pt-4'>
+                                        <Skeleton className='h-5 w-40 mb-3' />
+                                        <div className='space-y-2'>
+                                            {[...Array(8)].map((_, i) => (
+                                                <Skeleton key={i} className='h-4 w-full' />
+                                            ))}
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Action Buttons Skeleton */}
+                                    <div className='flex gap-2 pt-4'>
+                                        <Skeleton className='h-10 w-32' />
+                                        <Skeleton className='h-10 w-32' />
+                                        <Skeleton className='h-10 w-24' />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        }>
                             <ResumePreview key={`preview-${refreshKey}`} onResumeChange={handleResumeChange} />
                         </Suspense>
                     </TabsContent>
 
                     {/* Upload Tab - Upload new resume */}
                     <TabsContent value='upload' className='space-y-4'>
-                        <Suspense fallback={<Skeleton className='h-64 w-full' />}>
+                        <Suspense fallback={
+                            <Card>
+                                <CardHeader>
+                                    <Skeleton className='h-7 w-40 mb-2' />
+                                    <Skeleton className='h-4 w-64' />
+                                </CardHeader>
+                                <CardContent>
+                                    {/* Upload Area Skeleton */}
+                                    <div className='border-2 border-dashed rounded-lg p-8'>
+                                        <div className='flex flex-col items-center space-y-4'>
+                                            <Skeleton className='h-12 w-12 rounded-full' />
+                                            <Skeleton className='h-5 w-48' />
+                                            <Skeleton className='h-4 w-32' />
+                                            <Skeleton className='h-10 w-32' />
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        }>
                             <ResumeUploader
                                 onUploadSuccess={handleUploadSuccess}
                                 onUploadError={(error) => console.error('Upload error:', error)}

@@ -18,6 +18,7 @@ import {
 import { Label } from '@/registry/new-york-v4/ui/label';
 import { ScrollArea } from '@/registry/new-york-v4/ui/scroll-area';
 import { Separator } from '@/registry/new-york-v4/ui/separator';
+import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 import { Switch } from '@/registry/new-york-v4/ui/switch';
 
 import {
@@ -233,8 +234,51 @@ export function ResumePreview({ onResumeChange, className }: ResumePreviewProps)
     if (isLoading) {
         return (
             <Card className={cn('w-full', className)}>
-                <CardContent className='flex items-center justify-center py-12'>
-                    <Loader2 className='text-muted-foreground h-8 w-8 animate-spin' />
+                <CardHeader>
+                    <div className='flex items-start justify-between'>
+                        <div className='space-y-1'>
+                            <Skeleton className='h-7 w-48' />
+                            <Skeleton className='h-4 w-64' />
+                        </div>
+                        <Skeleton className='h-6 w-20' />
+                    </div>
+                </CardHeader>
+                <CardContent className='space-y-6'>
+                    {/* Resume Metadata Skeleton */}
+                    <div className='space-y-3'>
+                        {[...Array(3)].map((_, i) => (
+                            <div key={i} className='flex items-center justify-between'>
+                                <Skeleton className='h-4 w-24' />
+                                <Skeleton className='h-4 w-32' />
+                            </div>
+                        ))}
+                    </div>
+                    
+                    <Separator />
+                    
+                    {/* Active Toggle Skeleton */}
+                    <div className='flex items-center justify-between'>
+                        <div className='space-y-1'>
+                            <Skeleton className='h-5 w-32' />
+                            <Skeleton className='h-4 w-64' />
+                        </div>
+                        <Skeleton className='h-6 w-11 rounded-full' />
+                    </div>
+                    
+                    <Separator />
+                    
+                    {/* Preview Section Skeleton */}
+                    <div className='space-y-2'>
+                        <Skeleton className='h-5 w-40' />
+                        <Skeleton className='h-64 w-full rounded-md' />
+                    </div>
+                    
+                    {/* Action Buttons Skeleton */}
+                    <div className='flex gap-2'>
+                        <Skeleton className='h-10 w-32' />
+                        <Skeleton className='h-10 w-32' />
+                        <Skeleton className='h-10 w-24' />
+                    </div>
                 </CardContent>
             </Card>
         );

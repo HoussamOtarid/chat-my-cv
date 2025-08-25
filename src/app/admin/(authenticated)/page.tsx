@@ -8,12 +8,12 @@ import { getLLMProviderDisplayName } from '@/constants';
 import { Badge } from '@/registry/new-york-v4/ui/badge';
 import { Button } from '@/registry/new-york-v4/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/registry/new-york-v4/ui/card';
+import { Skeleton } from '@/registry/new-york-v4/ui/skeleton';
 
 import {
     AlertCircle,
     CheckCircle2,
     FileText,
-    Loader2,
     MessageSquare,
     Settings,
     Upload,
@@ -109,8 +109,62 @@ export default function AdminDashboard() {
 
     if (loading) {
         return (
-            <div className='flex h-64 items-center justify-center'>
-                <Loader2 className='h-8 w-8 animate-spin' />
+            <div className='container mx-auto max-w-6xl space-y-6 px-4 py-8'>
+                <div>
+                    <Skeleton className='h-9 w-48 mb-2' />
+                    <Skeleton className='h-5 w-96' />
+                </div>
+
+                {/* Status Cards Skeleton */}
+                <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
+                    {[...Array(4)].map((_, i) => (
+                        <Card key={i}>
+                            <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
+                                <Skeleton className='h-4 w-24' />
+                                <Skeleton className='h-4 w-4' />
+                            </CardHeader>
+                            <CardContent>
+                                <Skeleton className='h-5 w-16 mb-1' />
+                                <Skeleton className='h-3 w-32' />
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+
+                {/* Quick Actions Skeleton */}
+                <Card>
+                    <CardHeader>
+                        <Skeleton className='h-6 w-32 mb-2' />
+                        <Skeleton className='h-4 w-48' />
+                    </CardHeader>
+                    <CardContent className='grid gap-4 md:grid-cols-3'>
+                        {[...Array(3)].map((_, i) => (
+                            <Skeleton key={i} className='h-10 w-full' />
+                        ))}
+                    </CardContent>
+                </Card>
+
+                {/* System Status Skeleton */}
+                <Card>
+                    <CardHeader>
+                        <Skeleton className='h-6 w-32 mb-2' />
+                        <Skeleton className='h-4 w-64' />
+                    </CardHeader>
+                    <CardContent>
+                        <div className='space-y-4'>
+                            {[...Array(2)].map((_, i) => (
+                                <div key={i} className='flex items-start justify-between'>
+                                    <div>
+                                        <Skeleton className='h-4 w-32 mb-2' />
+                                        <Skeleton className='h-4 w-48 mb-1' />
+                                        <Skeleton className='h-3 w-40' />
+                                    </div>
+                                    <Skeleton className='h-5 w-16' />
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         );
     }

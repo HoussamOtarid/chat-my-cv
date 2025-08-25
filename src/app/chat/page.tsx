@@ -90,8 +90,8 @@ export default function ChatPage() {
     if (isLoading) {
         return (
             <AppLayout>
-                <div className='container mx-auto px-4 py-8'>
-                    <Skeleton className='h-[600px] w-full rounded-lg' />
+                <div className='container mx-auto flex h-full max-w-4xl flex-col px-4 py-4'>
+                    <Skeleton className='flex-1 rounded-lg' />
                 </div>
             </AppLayout>
         );
@@ -162,7 +162,7 @@ export default function ChatPage() {
             </Suspense>
             <div className='container mx-auto flex h-full max-w-4xl flex-col px-4 py-4'>
                 <div className='bg-background flex flex-1 flex-col overflow-hidden rounded-lg border shadow-sm'>
-                    <Suspense fallback={<Skeleton className='h-full' />}>
+                    <Suspense fallback={<Skeleton className='h-full rounded-none border-0' />}>
                         <ChatInterface
                             className='h-full'
                             welcomeMessage="Welcome! Ask me anything about this person's background, skills, or experience."

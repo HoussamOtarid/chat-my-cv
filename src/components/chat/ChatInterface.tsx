@@ -39,30 +39,34 @@ interface ChatInterfaceProps {
 /**
  * Loading skeleton for chat interface
  */
-function ChatInterfaceSkeleton() {
+function ChatInterfaceSkeleton({ className }: { className?: string }) {
     return (
-        <div className='space-y-4'>
+        <div className={cn('bg-background flex h-full flex-col', className)}>
             {/* Header skeleton */}
-            <div className='flex items-center justify-between border-b p-4'>
-                <Skeleton className='h-6 w-32' />
-                <Skeleton className='h-8 w-8 rounded-full' />
-            </div>
-
-            {/* Messages skeleton */}
-            <div className='space-y-4 p-4'>
-                <div className='flex justify-start'>
-                    <Skeleton className='h-16 w-3/4 rounded-lg' />
-                </div>
-                <div className='flex justify-end'>
-                    <Skeleton className='h-12 w-1/2 rounded-lg' />
-                </div>
-                <div className='flex justify-start'>
-                    <Skeleton className='h-20 w-2/3 rounded-lg' />
+            <div className='bg-muted/30 flex items-center justify-between border-b px-3 py-2 sm:px-4 sm:py-3'>
+                <div className='flex items-center gap-1.5 sm:gap-2'>
+                    <Skeleton className='h-4 w-4 sm:h-5 sm:w-5' />
+                    <Skeleton className='h-5 w-32 sm:h-6' />
                 </div>
             </div>
 
-            {/* Input skeleton */}
-            <div className='border-t p-4'>
+            {/* Messages area skeleton */}
+            <div className='flex-1 overflow-hidden p-4'>
+                <div className='space-y-4'>
+                    <div className='flex justify-start'>
+                        <Skeleton className='h-16 w-3/4 rounded-lg' />
+                    </div>
+                    <div className='flex justify-end'>
+                        <Skeleton className='h-12 w-1/2 rounded-lg' />
+                    </div>
+                    <div className='flex justify-start'>
+                        <Skeleton className='h-20 w-2/3 rounded-lg' />
+                    </div>
+                </div>
+            </div>
+
+            {/* Input area skeleton */}
+            <div className='border-t p-3 sm:p-4'>
                 <Skeleton className='h-20 w-full rounded-lg' />
             </div>
         </div>
@@ -293,11 +297,7 @@ export function ChatInterface({
 
     // Loading state
     if (isInitializing || isSessionLoading) {
-        return (
-            <Card className={cn('overflow-hidden', className)}>
-                <ChatInterfaceSkeleton />
-            </Card>
-        );
+        return <ChatInterfaceSkeleton className={className} />;
     }
 
     // Error state for critical errors

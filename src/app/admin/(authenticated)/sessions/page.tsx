@@ -103,8 +103,68 @@ export default function SessionsPage() {
     if (loading && sessions.length === 0) {
         return (
             <div className='container mx-auto max-w-6xl space-y-6 px-4 py-8'>
-                <Skeleton className='h-10 w-48' />
-                <Skeleton className='h-96 w-full' />
+                {/* Page Header Skeleton */}
+                <div>
+                    <Skeleton className='h-9 w-48 mb-2' />
+                    <Skeleton className='h-5 w-96' />
+                </div>
+
+                {/* Search Bar Skeleton */}
+                <div className='flex gap-2'>
+                    <Skeleton className='h-10 flex-1 max-w-md' />
+                    <Skeleton className='h-10 w-20' />
+                </div>
+
+                {/* Sessions Table Skeleton */}
+                <Card>
+                    <CardHeader>
+                        <Skeleton className='h-6 w-24 mb-2' />
+                        <Skeleton className='h-4 w-32' />
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                                    <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                                    <TableHead className='text-center'><Skeleton className='h-4 w-20 mx-auto' /></TableHead>
+                                    <TableHead><Skeleton className='h-4 w-20' /></TableHead>
+                                    <TableHead className='w-[100px]'></TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {[...Array(5)].map((_, i) => (
+                                    <TableRow key={i}>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-24' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-32' />
+                                        </TableCell>
+                                        <TableCell className='text-center'>
+                                            <Skeleton className='h-4 w-12 mx-auto' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-4 w-36' />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Skeleton className='h-8 w-12' />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+
+                {/* Pagination Skeleton */}
+                <div className='flex items-center justify-between'>
+                    <Skeleton className='h-4 w-24' />
+                    <div className='flex gap-2'>
+                        <Skeleton className='h-9 w-24' />
+                        <Skeleton className='h-9 w-20' />
+                    </div>
+                </div>
             </div>
         );
     }
